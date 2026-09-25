@@ -1,8 +1,14 @@
 item,qty,spec,supplier,unit_cost_usd,make_buy,notes
-IP65 enclosure with vent and cable glands,,,,,,
-6 W solar panel and bracket,,,,,,
-"LiFePO4 cell, about 6 Ah",,,,,,
-MPPT charge and power board,,,,,,
-Low-power microcontroller with LoRa radio,,,,,,
-Sensor header with standard connector pinout,,,,,,
-Pole and wall mounting kit,,,,,,
+1 Enclosure body with membrane vent,1,"Light grey polycarbonate, about 200 x 150 x 90 mm, IP65 or better, UV stabilized; M12 ePTFE pressure-equalizing vent",Electrical enclosure distributor,18.00,buy,Indicative price including vent
+2 Enclosure lid with gasket,1,"Gasketed lid with captive stainless screws",Supplied with item 1,0.00,buy,Included in item 1
+3 Cable gland,2,"M16 x 1.5 nylon gland, IP68, 4 to 8 mm cable; one fitted, one blanking plug",Electrical distributor,1.50,buy,Indicative price
+4 Solar panel,1,"6 W monocrystalline, 6 V class (Vmp about 6 V), about 290 x 200 x 17 mm, with 1 m lead",Solar or electronics distributor,14.00,buy,Indicative price
+5 Panel tilt bracket,1,"Aluminium flat bar 25 x 3 mm, two posts and two struts, tilt set by hole position",Local make,6.00,make,Indicative material cost
+6 LiFePO4 cell with fused holder,1,"32700 LiFePO4, 3.2 V, 6 Ah (about 19 Wh); holder with inline 5 A fuse and 10 k NTC",Battery distributor,9.00,buy,Indicative price; buy from a reputable maker with a datasheet
+7 Power board,1,"1S LiFePO4 MPPT-style charger (bq24650 or LT3652 class) set to 3.6 V; protection IC; fuel gauge; switched 3.3 V, 5 V and 12 V rails",Custom carrier plus distributor parts,22.00,make,Indicative prototype cost; board design is TRL 4 work and not started
+8 Controller and LoRa module,1,"STM32WL-class LoRaWAN module (for example RAK3172 or Wio-E5) on a carrier with 16 MB SPI flash and status LED",Electronics distributor,14.00,buy,Indicative price; module choice proposed awaiting Amish
+9 Antenna,1,"Sub-GHz whip, about 2 dBi, band-specific (868 or 915 MHz), with bulkhead and pigtail",Electronics distributor,10.00,buy,Indicative price
+10 Sensor ports,2,"M12 5-pin A-coded panel-mount socket with sealing cap",Industrial connector distributor,6.00,buy,Indicative price; pinout proposed awaiting Amish
+11 Internal mounting plate,1,"2 to 3 mm aluminium or printed ASA plate, lifts out with cell and boards",Local make,4.00,make,Indicative material cost
+12 Pole mounting kit,1,"Aluminium back plate, two V-blocks, two stainless band clamps for 40 to 60 mm poles, wall screws and plugs",Hardware shop plus local make,8.00,make,Indicative price
+13 Hardware and consumables,1,"Standoffs, screws, hook-up wire, ferrules, desiccant pack, cable ties",Hardware shop,6.00,buy,Indicative price; no exploded-view callout

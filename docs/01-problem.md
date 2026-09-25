@@ -3,7 +3,7 @@ doc_id: FND-PRB-001
 title: FieldNode problem statement
 project: FieldNode
 doc_type: Problem statement
-version: "0.1"
+version: "0.2"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -13,16 +13,64 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Initial scaffold
+- version: "0.2"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: Populate to TRL 2 (problem, users, context, constraints, prior work, open questions)
 ---
 
 # FieldNode problem statement
 
-Every outdoor sensing project rebuilds the same things: an enclosure that survives sun and rain, a small solar charger, a battery that lasts the night, and a low-power radio. Commercial nodes are closed or costly, and one-off builds fail in the field for the same few reasons.
+Outdoor sensing projects rarely fail because of the sensor. They fail because the box leaks, the battery goes flat in a cloudy week, the charger cooks in the sun or refuses to charge in the cold, or the radio link drops. Every project in the Design Molecule lab that measures something outdoors has been about to solve these same problems again, on its own, with a new enclosure and a new charger.
+
+## The problem
+
+Monitoring networks for weather, water, air and ground movement are thin exactly where hazards are highest. The World Meteorological Organization notes that Germany has more stations meeting the Global Basic Observing Network standard than the whole of Africa ([WMO](https://wmo.int/media/news/closing-gaps-observing-network)). UNEP found that 37 % of countries do not legally require air quality monitoring ([UNEP, 2021](https://www.unep.org/news-and-stories/press-release/one-three-countries-world-lack-any-legally-mandated-standards)). Low-cost sensor nodes are one way to fill such gaps, but only if they keep working for months without a visit.
+
+The field record shows where they stop working. The SensorScope team at EPFL reported water ingress and corrosion, battery charging failures below freezing, crystal drift in the cold, radio interference and miscalibrated sensors across their deployments ([Barrenetxea et al., SenSys 2008](https://gsfr.github.io/pdf/sensys2008.pdf)). None of these are sensor problems; all of them are platform problems. A lab that solves them once, in the open, can reuse the answer across many projects.
+
+Open loggers exist. The EnviroDIY Mayfly is an Arduino-compatible logger released under the CERN Open Hardware License with solar charging support ([EnviroDIY](https://www.envirodiy.org/mayfly/); [GitHub](https://github.com/EnviroDIY/EnviroDIY_Mayfly_Logger)). The Things Network provides an open community LoRaWAN network ([TTN](https://www.thethingsnetwork.org/docs/lorawan/duty-cycle/)). What is missing for this lab is a complete, documented node: enclosure, solar and battery sizing, mounting, a standard sensor port and a LoRa radio, specified together as one reference design that each sensing project plugs into.
 
 ## Users and context
 
-_To be developed._
+| User | Need | Context |
+| --- | --- | --- |
+| Lab project teams (WaterWatch, FloodGauge, SlopeWatch, WellSense, AirStreet, NoiseMap, HeatMap Node, CurbCount, BridgePulse, LoadZone and others) | A tested base so they design only the sensor and its firmware | Prototypes and pilots at outdoor sites |
+| Community groups, schools and NGOs | A node they can build, mount and repair with hand tools | Villages, farms, catchments, school grounds |
+| Municipal and utility technicians | A node that mounts on a pole or wall in minutes and reports for a season without a visit | Streets, drains, pump houses, bridges |
+| Researchers | An inspectable, calibratable platform whose power and data paths are documented | Field studies; calibration against CalRig before and after deployment |
+| Network operators | Nodes that stay inside regional radio rules and fair-use limits | TwinKit gateways, The Things Network or a private LoRaWAN server |
+
+## Operating environment
+
+- Outdoors, pole or wall mounted at about 1.8 to 2.5 m above ground, in full sun or partial shade.
+- Ambient -20 to +45 °C (-4 to +113 °F), rain, dust, insects and UV; coastal salt air at some sites.
+- Worst-month solar resource as low as about 2 peak sun hours per day (monsoon or high-latitude winter). Estimate; site data to be checked at TRL 3.
+- No mains power and no on-site Wi-Fi; a LoRaWAN gateway within a few kilometers, or none (store and forward).
 
 ## Constraints
 
-- Garage-buildable prototype, about $150 USD
+- Garage-buildable prototype, about $150 USD per node in parts, using off-the-shelf modules, a stock enclosure and hand tools.
+- Open design: hardware under CERN-OHL-S-2.0, firmware under MIT; no dependency on a closed cloud service.
+- Must comply with regional radio rules (for example the 1 % duty cycle sub-bands of EU868) and should fit The Things Network fair-use policy of 30 s uplink airtime per node per day ([TTN](https://www.thethingsnetwork.org/docs/lorawan/duty-cycle/)).
+- Lithium chemistry must be safe when unattended outdoors for months.
+- Where a project states a privacy rule (counts or levels only, no images or audio leaving the device), the node must not weaken it.
+
+## Out of scope
+
+- The sensors themselves; each project owns its sensor and calibration.
+- The gateway and data platform (see TwinKit).
+- Cellular or satellite backhaul in the first version (kept as an open question).
+- Mains-powered or high-power payloads such as cameras or pumps.
+
+## Co-design and deployment partner
+
+- [ ] Identify the first two lab projects to adopt FieldNode and their pilot sites.
+- [ ] Agree a sensor port pinout with those project teams before TRL 3.
+- [ ] Find a site host (school, utility or municipality) for a first season outdoors.
+
+## Open questions
+
+- Which lab projects adopt the node first, and in which region (which sets the radio band)? Proposed, awaiting Amish.
+- Is a single common node realistic for both low-power sensors (water level, tilt) and higher-power ones (particulate fans, microphones)? The concept sets a sensor power allowance; payloads above it would need a larger panel option.
+- Should a cellular (LTE-M or NB-IoT) variant exist for sites with no gateway? Proposed as a later option, awaiting Amish.
