@@ -1,0 +1,17 @@
+# Card metadata consumed by https://designmolecule.com
+name: FieldNode
+slug: fieldnode
+area: Shared Components
+status: concept          # concept | design | prototype | tested | released
+shortlisted: false
+pitch: >-
+  A solar-powered, weatherproof sensor node with a common mounting, power and radio core, so any lab project that needs to measure something outdoors starts from the same tested base instead of a new enclosure and charger each time.
+problem: >-
+  Every outdoor sensing project rebuilds the same things: an enclosure that survives sun and rain, a small solar charger, a battery that lasts the night, and a low-power radio. Commercial nodes are closed or costly, and one-off builds fail in the field for the same few reasons.
+budget_usd: 150
+difficulty: 3  # 1 easiest, 5 hardest
+hero_image: media/hero.png
+licenses:
+  hardware: CERN-OHL-S-2.0
+  software: MIT
+tags: [shared-components, open-hardware, cern-ohl-s]
