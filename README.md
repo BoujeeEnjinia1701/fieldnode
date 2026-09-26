@@ -1,18 +1,18 @@
 # FieldNode
 
-![TRL 2](https://img.shields.io/badge/TRL-2%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827)
+![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827)
 
-**Area:** Shared Components · **TRL:** 2 of 9 (concept formulated) · **Prototype budget:** about $150 USD · **Difficulty:** 3 of 5
+**Area:** Shared Components · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** about $150 USD · **Difficulty:** 3 of 5
 
 A solar-powered, weatherproof sensor node with a common mounting, power and radio core, so any lab project that needs to measure something outdoors starts from the same tested base instead of a new enclosure and charger each time.
 
 ![FieldNode concept](media/hero.png)
 
-[Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [Review note](docs/REVIEW.md)
+[Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement (PDF)](cad/drawings/FND-DWG-001.pdf) · [Calculations](docs/04-calcs/01-sizing.md) · [Review note](docs/REVIEW.md)
 
 ## Concept rationale
 
-Outdoor sensing projects in the lab fail for the same few reasons: water gets in, the battery runs flat in a cloudy week, the charger overheats or will not charge in the cold, or the radio link drops. FieldNode solves these once. It pairs a stock IP65 enclosure with a 6 W panel that also shades the box, a single LiFePO4 cell, an MPPT charger with a cold-charge lockout, and an STM32WL-class LoRaWAN module, with two sealed sensor ports. Each project then designs only its sensor and firmware, and a fix found in one deployment reaches all of them.
+Outdoor sensing projects in the lab fail for the same few reasons: water gets in, the battery runs flat in a cloudy week, the charger overheats or will not charge in the cold, or the radio link drops. FieldNode solves these once. It pairs a stock IP65 enclosure with a 6 W panel that also hoods the box, a single LiFePO4 cell, an MPPT charger with a cold-charge lockout, and an STM32WL-class LoRaWAN module, with two sealed sensor ports. Each project then designs only its sensor and firmware, and a fix found in one deployment reaches all of them.
 
 Keeping it open and garage-buildable matters because the users who most need monitoring are the least able to buy closed commercial nodes or pay for their clouds. Every part is off the shelf or cut from flat bar with hand tools, the design files are under CERN-OHL-S-2.0, and the node talks to any LoRaWAN server, including the lab's TwinKit gateway and The Things Network.
 
@@ -61,15 +61,15 @@ Full design precis: [docs/02-concept.md](docs/02-concept.md)
 
 ## Key components
 
-- IP65 polycarbonate enclosure with membrane vent and cable gland
-- 6 W solar panel on a tilt bracket, doubling as a sun and rain hood
-- LiFePO4 cell, 3.2 V 6 Ah, fused, with a cold-charge lockout
+- IP65 polycarbonate enclosure, 150 x 90 x 200 mm, with membrane vent and two cable glands
+- 6 W solar panel on a tilt bracket, doubling as a rain hood
+- LiFePO4 cell, 3.2 V 6 Ah, fused, with a 0 to 45 °C charge lockout
 - MPPT charge and power board with switched 3.3, 5 and 12 V sensor rails
 - STM32WL-class microcontroller with LoRaWAN radio and SPI flash for store and forward
-- Two sealed M12 sensor ports with a standard pinout (proposed)
-- Pole and wall mounting kit
+- Two sealed M12 sensor ports (pinout still open)
+- Pole and wall mounting kit for 40 to 60 mm poles
 
-First-order estimates (to be checked at TRL 3): about 5 days without sun at full sensor load, about 115 mW average for sensors, energy neutral at 2 peak sun hours, about 1.7 kg and about $126 in parts. See the [design precis](docs/02-concept.md) and [requirements](docs/03-requirements.md), including the requirements not yet met.
+TRL 3 calculations ([FND-CAL-001](docs/04-calcs/01-sizing.md)): in the worst month (2 peak sun hours) the cell stores 7.75 Wh a day against 2.67 Wh drawn with a 100 mW sensor allowance, and a full cell lasts 5.75 days without sun. The node costs $126 in parts and weighs 2.41 kg. One requirement is not met: in full sun at 45 °C ambient the enclosure reaches 59 to 73 °C, above the 60 °C target, and the cell is then too hot to charge for most of a clear day. A sun shield would fix this and is proposed, awaiting a decision. See the [requirements](docs/03-requirements.md) for the five requirements at risk.
 
 The working bill of materials is in [bom/bom.csv](bom/bom.csv).
 

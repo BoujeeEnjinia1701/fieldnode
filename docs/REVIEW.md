@@ -65,3 +65,76 @@ Requirements not met or at risk:
 ### Recommended next step
 
 Review this note and the media, then decide items 1 to 5 and 8. If approved, run `/advance-trl3` to check the energy budget, interior temperature, link budget and wind load by calculation and to produce the parametric model and drawing sheet.
+
+## Session 2026-09-25: TRL 3
+
+On 2026-09-25 Amish asked for this batch of repos to go through the usual process with the instruction "you know the drill, nothing gets past TRL 3". He has not reviewed this repo's TRL 2 items one by one, so every item that carried a recommendation is adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review. This session ran `/advance-trl3` on that basis and stopped at TRL 3.
+
+### What was done
+
+- `docs/decisions/0001-trl2-review-decisions.md` (FND-DDR-001 v0.1, status proposed): twelve items adopted as recommended for TRL 3, open for Amish's review (D1 to D12), and three left open (O1 to O3).
+- `docs/04-calcs/01-sizing.md` (FND-CAL-001 v0.1) and `docs/04-calcs/sizing.py`: core consumption, energy budget and autonomy, airtime, link budget, store and forward, enclosure temperature and charging window on hot and cold design days, panel voltage, wind and mounting, installation and service times, mass and cost, with a status for every requirement. The script imports the model, reads the BOM and `project.yaml`, prints every number the note quotes and writes `docs/04-calcs/results.csv`.
+- `cad/src/model.py`: parametric build123d model (enclosure, lid, two glands, two M12 ports, antenna, internal plate, cell, power board, controller, panel, flat-bar bracket, back plate, V-blocks and band clamps on a 48.3 mm pole). Exports `cad/step/` and `cad/stl/` for `fieldnode-assembly`, `fieldnode-core` and `fieldnode-mount`.
+- `cad/src/sheets.py` and `cad/drawings/FND-DWG-001.svg`, `.pdf`, `.png`: general arrangement at Rev P1, 1:10, marked "CONCEPT, NOT FOR FABRICATION" and "PRELIMINARY, NOT FOR FABRICATION". FND-DWG-001 was free because the concept blueprint is FND-DWG-010.
+- `bom/bom.csv` (13 lines, all priced with a supplier or supplier type, $126.00 against the $150 budget) and `bom/bom-notes.md`. Two changes, total unchanged: both glands are now fitted, because the panel lead needs one; the internal plate is printed ASA.
+- `cad/src/concept_media.py` now builds from the model; all of `media/` was re-rendered and every image checked; temporary `_views` folders deleted.
+- FND-PRB-001, FND-PRC-001 and FND-REQ-001 revised to v0.3; `README.md` (TRL line, links, key figures) and `project.yaml` (`trl: 3`, `trl_target: 3`, evidence list) updated. PDFs rebuilt in `docs/pdf/`.
+
+### Requirement status (FND-CAL-001, Table 4)
+
+1 not met, 5 at risk, 6 met on paper, 5 met by design, 1 not verifiable at TRL 3.
+
+| ID | Status | Key number |
+| --- | --- | --- |
+| R3 Interior temperature | **Not met** | 58.7 °C clean, 66.2 °C dusty on a 45 °C design day; 63.3 to 73.3 °C with the sun in its worst position (target 60 °C); 48.5 °C with a shield |
+| R2 Operating temperature | At risk | Dusty worst case 73.3 °C against the 70 °C electronics rating; no charging on clear days below about -13 °C |
+| R5 Energy neutral | At risk | Worst month 7.75 Wh stored against 2.67 Wh drawn, but a hot clear day stores 0.8 Wh because the cell is above 45 °C; 6 V class panel Vmp 4.95 V when hot |
+| R6 Autonomy | At risk | 5.75 days at 100 mW; exactly 5.00 days at 115 mW; 4.03 days at -20 °C; 4.60 days at end of life |
+| R9 Airtime | At risk | 23.7 s/day at SF9; not met at SF10 (43.5 s) to SF12 at 15 min |
+| R14 Mass | At risk | 2.41 kg against 2.5 kg (TRL 2 said 1.7 kg); 2.56 kg with a shield |
+| R12 Install | Not verifiable at TRL 3 | Fit met by design (40 to 71 mm poles); 15 min estimate, at the limit |
+| R7, R8, R10, R11, R13, R16 | Met on paper | 115.0 mW ceiling; 18.6 dB link margin at 2 km; 30 days in 90 kB; pin count; clamp pull 59 N against 2,000 N; $126.00 |
+| R1, R4, R15, R17, R18 | Met by design | |
+
+Key numbers: core 4.0 mWh/day; 145.0 dB link budget at SF9; 52.2 N on the panel at 35 m/s; bracket buckling factor 32.
+
+### Decisions recorded (FND-DDR-001)
+
+Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review: D1 LoRaWAN, cellular later; D2 STM32WL-class module; D3 one 6 Ah LiFePO4 cell with its own 1S protection, CellGuard not used; D4 6 W panel standard; D5 two M12 5-pin ports plus a gland; D6 15 min default interval; D7 TwinKit first, The Things Network as fallback; D8 stock polycarbonate IP65 enclosure; D9 to D11 panel as hood, antenna down, 1.75 m mounting height (precis choices); D12 no change to budget, pitch or problem. As consequences, R11 is restated to one switched rail per port (a 5-pin connector cannot carry three rails, a bus and an analog input) and R16 is restated as the FieldNode core cost, the figure sibling repos cite.
+
+### Still awaiting Amish
+
+1. **O1, first adopting projects and pilot region** (sets the band and antenna). No preference stated.
+2. **O2, sensor port pinout**, with the adopting teams. FND-CAL-001 offers a candidate only.
+3. **O3, firmware update method in the field.** No recommendation was made.
+4. **New, sun shield (R3, R5, R2).** Options: (a) a ventilated white aluminium shield as standard (+$8, +0.15 kg; $134.00 and 2.56 kg, which breaks R14); (b) shield only for hot-climate sites, with R14 applying to the base node; (c) no shield and accept that R3 is not met and hot sites lose charge. Recommendation: (b). Not applied.
+5. **New, R14 mass.** If (a) is chosen, relax R14 to 2.75 kg or thin the back plate. Recommendation: keep 2.5 kg for the base node. Not applied.
+6. **New, panel voltage class.** Options: 6 V class (current) or 9 V class of the same power, which keeps about 7.4 V when hot. Recommendation: 9 V class, subject to the charger chosen at TRL 4. Not applied.
+7. **New, published sensor allowance.** Options: 115 mW (exactly 5 days, no margin) or 100 mW (5.75 days). Recommendation: 100 mW. Sibling notes cite 115 mW; all their quoted loads except CurbCount (about 300 mW) fit 100 mW. Not applied to any other repo.
+8. **New, firmware airtime rule (R9).** Recommendation: lengthen the interval automatically at SF10 and slower (22 min at SF10, 87 min at SF12) when on The Things Network. Not applied.
+
+Suggestion only, not in the repo: a panel-powered cell heater for sites with long sub-zero spells.
+
+### Cross-repo consistency
+
+- TwinKit recommends an 8-channel LoRaWAN concentrator and FieldNode as its first example twin; consistent with D1 and D7. Its twin example refers to the cell as FieldNode BOM part 4; in this repo the cell is line 6 (the panel is 4). Noted here, TwinKit not edited.
+- CellGuard's note that FieldNode needs its own one-cell protector agrees with D3.
+- The FieldNode core cost stays $126.00, the figure AirStreet, BridgePulse, FloodGauge, LoadZone, SlopeWatch and WellSense use; NoiseMap ($119) and CurbCount (about $95) quote other figures. The allowance change (item 7) would affect sibling notes that cite 115 mW. No other repo was edited.
+
+### Safety concerns
+
+- Heat: without a shield the enclosure reaches 66 to 73 °C when dusty in 45 °C sun, near or above the electronics rating and well above LiFePO4 comfort. The 45 °C charge lockout must never be defeated to recover energy.
+- Cold: the cell must not charge below 0 °C; a node on a long overcast freeze will stop rather than charge unsafely.
+- Mounting: clamp preload (assumed 1,000 N) carries every wind margin; installers need a torque figure. The node adds about 80 N of wind load about 2 m up a site pole that this design does not check. Work at height and overhead lines as at TRL 2.
+- About 19 Wh LiFePO4 cell left unattended: fuse, protection IC and NTC as specified.
+
+### Gaps and notes
+
+- No citations were flagged as unchecked in the TRL 2 note, so no WebFetch checks were run. The panel voltage coefficient, charger minimum input, cell cold capacity and clamp preload are typical values, not checked against a chosen part.
+- Assumptions only tests can settle: the shield factor (0.25, borrowed from WWT-CAL-001), band preload, gateway sensitivity and real path loss.
+- The kit's cutaway still cuts at the mean Y of the parts; with the scene shifted down by the enclosure's center height (as at TRL 2) the section shows the cell, boards and controller. The ports and glands fall in the removed half and show only in the exploded view, where callouts 3 and 10 partly cover their small parts.
+- Existing material beyond TRL 3: `build-log/README.md` (scaffold) is present, untouched and not extended. No test, build or firmware material exists.
+
+### Recommended next step
+
+TRL 4 is on hold by Amish's instruction; this repo stops at TRL 3. Amish's review is needed on items 4 to 8 above and on O1 to O3. For the record only, TRL 4 would need: a bench build of the power board and core; a lab test report (TST, `environment: lab`) covering enclosure temperature in sun with and without the shield, charge lockout at 0 and 45 °C, sleep current and energy per report, and clamp preload and slip; and build log entries. None of this has been started.

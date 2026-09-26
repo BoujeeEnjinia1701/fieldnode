@@ -3,7 +3,7 @@ doc_id: FND-PRB-001
 title: FieldNode problem statement
 project: FieldNode
 doc_type: Problem statement
-version: "0.2"
+version: "0.3"
 status: Draft
 date: '2026-09-25'
 author: Amish Chadha
@@ -17,6 +17,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Populate to TRL 2 (problem, users, context, constraints, prior work, open questions)
+- version: "0.3"
+  date: '2026-09-25'
+  author: Amish Chadha
+  change: TRL 3 update; open questions aligned with FND-DDR-001 and the thermal findings of FND-CAL-001
 ---
 
 # FieldNode problem statement
@@ -45,12 +49,13 @@ Open loggers exist. The EnviroDIY Mayfly is an Arduino-compatible logger release
 
 - Outdoors, pole or wall mounted at about 1.8 to 2.5 m above ground, in full sun or partial shade.
 - Ambient -20 to +45 °C (-4 to +113 °F), rain, dust, insects and UV; coastal salt air at some sites.
-- Worst-month solar resource as low as about 2 peak sun hours per day (monsoon or high-latitude winter). Estimate; site data to be checked at TRL 3.
+- Worst-month solar resource as low as about 2 peak sun hours per day (monsoon or high-latitude winter). This is the design assumption in FND-CAL-001; site data are still to be checked for each pilot.
+- Hot, sunny seasons matter as much as dark ones: FND-CAL-001 shows that at 45 °C ambient the cell sits above its 45 °C charge limit for most of a clear day unless the enclosure is shaded.
 - No mains power and no on-site Wi-Fi; a LoRaWAN gateway within a few kilometers, or none (store and forward).
 
 ## Constraints
 
-- Garage-buildable prototype, about $150 USD per node in parts, using off-the-shelf modules, a stock enclosure and hand tools.
+- Garage-buildable prototype, $150 USD or less in parts for the FieldNode core (enclosure, power, radio, panel and mounting; sensors and gateway excluded), using off-the-shelf modules, a stock enclosure and hand tools.
 - Open design: hardware under CERN-OHL-S-2.0, firmware under MIT; no dependency on a closed cloud service.
 - Must comply with regional radio rules (for example the 1 % duty cycle sub-bands of EU868) and should fit The Things Network fair-use policy of 30 s uplink airtime per node per day ([TTN](https://www.thethingsnetwork.org/docs/lorawan/duty-cycle/)).
 - Lithium chemistry must be safe when unattended outdoors for months.
@@ -66,11 +71,12 @@ Open loggers exist. The EnviroDIY Mayfly is an Arduino-compatible logger release
 ## Co-design and deployment partner
 
 - [ ] Identify the first two lab projects to adopt FieldNode and their pilot sites.
-- [ ] Agree a sensor port pinout with those project teams before TRL 3.
+- [ ] Agree a sensor port pinout with those project teams (FND-DDR-001, O2; still open at TRL 3).
 - [ ] Find a site host (school, utility or municipality) for a first season outdoors.
 
 ## Open questions
 
-- Which lab projects adopt the node first, and in which region (which sets the radio band)? Proposed, awaiting Amish.
-- Is a single common node realistic for both low-power sensors (water level, tilt) and higher-power ones (particulate fans, microphones)? The concept sets a sensor power allowance; payloads above it would need a larger panel option.
-- Should a cellular (LTE-M or NB-IoT) variant exist for sites with no gateway? Proposed as a later option, awaiting Amish.
+- Which lab projects adopt the node first, and in which region (which sets the radio band)? Proposed, awaiting Amish (FND-DDR-001, O1).
+- Is a single common node realistic for both low-power sensors (water level, tilt) and higher-power ones (particulate fans, microphones)? FND-CAL-001 finds that every sibling load quoted so far fits a 100 mW allowance except CurbCount (about 300 mW), which would need more storage and the 10 W panel variant kept as a later option (FND-DDR-001, D4).
+- A cellular (LTE-M or NB-IoT) variant for sites with no gateway is kept as a later variant (FND-DDR-001, D1), adopted for TRL 3 pending Amish's review.
+- Should hot-climate nodes carry a sun shield as standard? Proposed, awaiting Amish (see `docs/REVIEW.md`).
