@@ -1,4 +1,4 @@
-"""FieldNode sizing calculations, FND-CAL-001 v0.1 (TRL 3).
+"""FieldNode sizing calculations, FND-CAL-001 v0.2 (TRL 3, decisions of FND-DDR-002 applied).
 
 Run from the repo root:  python docs/04-calcs/sizing.py
 Prints every number quoted in docs/04-calcs/01-sizing.md (tags in brackets, for example
@@ -16,7 +16,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "cad/src"))
-from model import PARAMS as P, derived, build_parts, bracket_geometry  # noqa: E402
+from model import PARAMS as P, derived, build_parts, bracket_geometry, build_shield, shield_geometry  # noqa: E402
 
 D = derived(P)
 rows = []
@@ -43,7 +43,7 @@ USABLE = 0.80            # of nameplate, as R6 states
 CAP_COLD = 0.70          # discharge capacity at -20 C, typical LiFePO4 cell data
 CAP_EOL = 0.80           # end of life capacity
 AUTONOMY_REQ = 5.0       # days (R6)
-ALLOW_REQ = 0.100        # W (R7)
+ALLOW_REQ = 0.100        # W (R7); published sensor allowance (FND-DDR-002)
 # Core: SX1262 at +14 dBm about 45 mA; receive 4.6 mA (Semtech datasheet); controller awake 8 mA
 I_TX, I_RX, I_MCU = 45e-3, 4.6e-3, 8e-3
 T_RX, N_RX, T_AWAKE = 0.10, 2, 0.5          # s per RX window, windows per uplink, controller awake per report
@@ -73,14 +73,17 @@ H_COMB = 10.0            # W/m2K combined convection and radiation, still air
 ALPHA = {"clean": 0.45, "dusty": 0.70}      # light grey polycarbonate
 SHIELD_F = 0.25          # share of solar gain reaching a box under a ventilated white shield (assumed, as WWT-CAL-001)
 ALBEDO = 0.20
-SHIELD_COST, SHIELD_KG = 8.0, 0.15    # proposed option: ventilated white aluminium hood, indicative
+SHIELD_COST = 8.0        # hot-climate option, BOM line 14 (FND-DDR-002); mass from the model below
+SHIELD_FIX_KG = 0.02     # screws and standoffs for the shield
+T_DESIGN_MAX = 60.0      # C, R3 interior limit
 P_BASE_INT = 0.10        # W average dissipation inside the box outside charging
 CP = {"enclosure": 1200.0, "cell": 1000.0, "boards": 900.0, "asa": 1300.0}   # J/kgK
 T_CHG_MIN, T_CHG_MAX = 0.0, 45.0
 BETA_VMP = -0.0035       # 1/K, panel Vmp temperature coefficient (typical crystalline silicon)
-VMP_STC = 6.0            # V, "6 V class" panel
+VMP_STC = 9.0            # V, "9 V class" panel (FND-DDR-002); 6 V class kept for comparison
+VMP_STC_OLD = 6.0
 NOCT_RISE = 30.0         # K, panel cell above ambient at 1000 W/m2, mounted in the open
-VIN_MIN = 5.0            # V, typical minimum input of the proposed charger class (to confirm per part)
+VIN_MIN = 5.0            # V, typical minimum input of the charger class (to confirm per part at TRL 4)
 # Wind and mounting
 RHO, V_GUST = 1.225, 35.0
 CD_PANEL, CD_BOX = 1.2, 1.3
@@ -139,7 +142,7 @@ out("A6", f"largest energy-neutral sensor load in the worst month {allow_neutral
 # siblings' loads quoted in their TRL 2 notes (mW) against the allowances
 SIBLINGS = {"AirStreet": 45, "NoiseMap": 21, "FloodGauge (10 s sampling)": 7, "WellSense": 0.75,
             "HeatMap Node": 1, "SlopeWatch": 1, "CurbCount": 300}
-out("A7", "sibling loads within 100 mW: " + ", ".join(f"{k} {v:g} mW" for k, v in SIBLINGS.items() if v <= 100)
+out("A7", "published allowance 100 mW (FND-DDR-002); sibling loads within it: " + ", ".join(f"{k} {v:g} mW" for k, v in SIBLINGS.items() if v <= 100)
     + "; above: " + ", ".join(f"{k} {v:g} mW" for k, v in SIBLINGS.items() if v > 100))
 
 # =============================================================== B. Airtime (R9), link (R8), store and forward (R10)
@@ -151,6 +154,10 @@ for sf in range(7, 13):
     tab.append((sf, t, per_day, min_int))
     out("B1", f"SF{sf}: {t * 1000:.1f} ms per uplink, {per_day:.1f} s/day at {INTERVAL_MIN:.0f} min; "
               f"shortest interval within {TTN_S:.0f} s/day {min_int} min; EU868 1 % off-time {t / EU_DC:.0f} s")
+RULE = {sf: max(INTERVAL_MIN, float(mi)) for sf, _, _, mi in tab}         # firmware airtime rule (FND-DDR-002)
+worst_rule = max(t * 24 * 60 / RULE[sf] for sf, t, _, _ in tab)
+out("B1b", "firmware rule on The Things Network: interval " + ", ".join(f"SF{sf} {RULE[sf]:.0f} min" for sf in RULE)
+    + f"; largest airtime under the rule {worst_rule:.1f} s/day")
 
 
 def hata_suburban(f, hb, hm, d):
@@ -302,6 +309,13 @@ for case, al in ALPHA.items():
 s_front = np.array([0, -math.cos(math.radians(60)), math.sin(math.radians(60))])
 out("C2b", f"top face shaded by the panel with the sun 60 deg high in front: {shaded_fraction('top', s_front) * 100:.0f} %; "
            f"front face {shaded_fraction('front', s_front) * 100:.0f} %")
+rise_worst = {k: (v[0] + P_BASE_INT) / UA for k, v in worst.items()}
+rise_worst_sh = {k: (SHIELD_F * v[0] + P_BASE_INT) / UA for k, v in worst.items()}
+t_hot_site = T_DESIGN_MAX - rise_worst["dusty"]
+out("C2c", f"worst sun position with the shield at 45 C: {45 + rise_worst_sh['clean']:.1f} C clean, {45 + rise_worst_sh['dusty']:.1f} C dusty; "
+           f"without it the dusty box stays at {T_DESIGN_MAX:.0f} C or less up to {t_hot_site:.1f} C ambient, so the shield "
+           f"is needed where the design maximum exceeds {math.floor(t_hot_site / 5) * 5:.0f} C")
+T_HOT_SITE = math.floor(t_hot_site / 5) * 5
 
 
 def design_day(lat, dec, tmin, tmax, alpha, shield=False, days=3, dt=60.0):
@@ -349,6 +363,10 @@ for case in ("clean", "dusty"):
     deficit = d100 - hot[(case, False)][2]
     out("C3b", f"{case}, no shield: a run of hot clear days loses {deficit:.2f} Wh/day at 100 mW; from full the cell lasts "
                f"{e_usable / deficit:.1f} days; with the shield the day ends {hot[(case, True)][2] - d100:+.1f} Wh")
+for case in ("clean", "dusty"):
+    r = design_day(HOT[0], HOT[1], T_HOT_SITE - 15, T_HOT_SITE, ALPHA[case], False)
+    out("C3c", f"base node, no shield, clear day {T_HOT_SITE - 15:.0f} to {T_HOT_SITE:.0f} C: {case}: peak inside {r[0]:.1f} C; "
+               f"charging allowed {r[1]:.1f} of {r[4]:.1f} sun h; stored {r[2]:.1f} Wh against {d100:.2f} Wh drawn")
 cold = {}
 for case in ("clean", "dusty"):
     r = design_day(*COLD, ALPHA[case], False)
@@ -362,8 +380,9 @@ out("C5", f"peak rise above the day's maximum ambient on the cold day {rise_cold
 # panel voltage headroom on the hot day
 t_panel = HOT[3] + NOCT_RISE
 vmp_hot = VMP_STC * (1 + BETA_VMP * (t_panel - 25))
-out("C6", f"panel at {t_panel:.0f} C: Vmp {vmp_hot:.2f} V against a {VIN_MIN:.1f} V charger minimum input ({vmp_hot - VIN_MIN:.2f} V headroom); "
-          f"a 9 V class panel gives {9.0 * (1 + BETA_VMP * (t_panel - 25)):.2f} V")
+vmp_old = VMP_STC_OLD * (1 + BETA_VMP * (t_panel - 25))
+out("C6", f"panel at {t_panel:.0f} C: 9 V class Vmp {vmp_hot:.2f} V against a {VIN_MIN:.1f} V charger minimum input ({vmp_hot - VIN_MIN:.2f} V headroom); "
+          f"the 6 V class panel it replaces gave {vmp_old:.2f} V ({vmp_old - VIN_MIN:.2f} V)")
 
 # =============================================================== F1. Mass (R14), needed for the wind case
 _pr = P["pole_od"] / 2
@@ -373,7 +392,11 @@ m_made = {"enclosure body and lid (PC)": m_box, "internal plate (ASA)": m_mplate
           "back plate and V-blocks (Al)": (vol["mount"] - band_vol) * RHO_KG["al"]}
 m_total = sum(m_made.values()) + sum(M_BOUGHT.values())
 out("F1", "made parts: " + ", ".join(f"{k} {v:.2f}" for k, v in m_made.items())
-    + f" kg; bought parts {sum(M_BOUGHT.values()):.2f} kg; total {m_total:.2f} kg")
+    + f" kg; bought parts {sum(M_BOUGHT.values()):.2f} kg; total {m_total:.2f} kg (base node)")
+SG = shield_geometry()
+SHIELD_KG = build_shield().volume * RHO_KG["al"] + SHIELD_FIX_KG
+out("F1b", f"sun shield option {SG['w']:.0f} x {SG['d']:.0f} x {SG['h']:.0f} mm, {P['shield_t']} mm aluminium, {SG['area_m2']:.4f} m2: "
+           f"{SHIELD_KG:.2f} kg with fixings; hot-climate node {m_total + SHIELD_KG:.2f} kg")
 
 # =============================================================== D. Wind and mounting (R13, R12)
 q = 0.5 * RHO * V_GUST ** 2
@@ -414,6 +437,16 @@ pull = M_max / (D["clamp_span"] / 1000)
 N_clamp = 2 * T_BAND
 out("D3", f"worst pull on one clamp {pull:.0f} N against a band preload that holds {2 * T_BAND:.0f} N "
           f"(factor {2 * T_BAND / pull:.1f})")
+# the same check with the shield fitted: larger front area and weight on the enclosure
+F_e_sh = q * CD_BOX * SG["front_m2"]
+M_sh = 0.0
+for sgn in (-1, 1):
+    fp = sgn * F_p * nrm
+    loads = [(pan, fp), (box_c, np.array([0, -sgn * F_e_sh, 0])), (pan, np.array([0, 0, -M_BOUGHT["panel"] * 9.81])),
+             (box_c, np.array([0, 0, -(m_total + SHIELD_KG - M_BOUGHT["panel"]) * 9.81]))]
+    M_sh = max(M_sh, abs(moment_lower(loads)))
+pull_sh = M_sh / (D["clamp_span"] / 1000)
+out("D3b", f"with the shield: enclosure front load {F_e_sh:.1f} N; worst pull on one clamp {pull_sh:.0f} N (factor {2 * T_BAND / pull_sh:.1f})")
 # slip along and around the pole
 torque = F_side * abs(D["enc_yc"]) / 1000
 slip_ax = 2 * MU * N_clamp
@@ -460,40 +493,42 @@ for line in (ROOT / "project.yaml").read_text().splitlines():
     if line.startswith("budget_usd:"):
         budget = float(line.split(":")[1].split("#")[0])
 unpriced = [r["item"] for r in bom if not r["unit_cost_usd"].strip()]
-out("F2", f"BOM {len(bom)} lines, all priced: {not unpriced}; total ${total:.2f} against budget_usd ${budget:.0f}; "
+options = [r["item"] for r in bom if float(r["qty"]) == 0]
+out("F2", f"BOM {len(bom)} lines ({len(options)} option at qty 0), all priced: {not unpriced}; base node ${total:.2f} against budget_usd ${budget:.0f}; "
           f"margin ${budget - total:.2f} ({(budget - total) / budget * 100:.0f} %)")
-out("F3", f"with the proposed sun shield (+${SHIELD_COST:.0f}, +{SHIELD_KG} kg): ${total + SHIELD_COST:.2f}, {m_total + SHIELD_KG:.2f} kg")
+out("F3", f"hot-climate node with the shield (+${SHIELD_COST:.0f}, +{SHIELD_KG:.2f} kg): ${total + SHIELD_COST:.2f}, {m_total + SHIELD_KG:.2f} kg")
 
 # =============================================================== L. Results against every requirement
 cc, cs = hot[("clean", False)], hot[("clean", True)]
 dd = hot[("dusty", False)]
 res("R1", "IP65 enclosure, ePTFE vent; 2 glands, 2 capped M12 ports, antenna bulkhead, all IP67 class", "IP65, sealed penetrations",
     "Met by design (sealing of fitted glands not verifiable at TRL 3)")
-res("R2", f"Electronics -20 to +70 C; hot day peak {cc[0]:.1f} C clean, {dd[0]:.1f} C dusty; worst sun position {45 + (worst['dusty'][0] + P_BASE_INT) / UA:.1f} C dusty; no charge while the cell is below 0 C",
-    "-20 to +45 C ambient; -20 to +70 C inside", "At risk")
-res("R3", f"Hot-day peak {cc[0]:.1f} C clean, {dd[0]:.1f} C dusty; {cs[0]:.1f} C with the proposed shield; worst sun position {45 + (worst['clean'][0] + P_BASE_INT) / UA:.1f} C",
-    "60 C or less at 45 C ambient", "Not met")
+ds = hot[("dusty", True)]
+res("R2", f"Electronics -20 to +70 C; worst sun position {45 + rise_worst_sh['dusty']:.1f} C dusty with the shield at 45 C, {T_HOT_SITE + rise_worst['dusty']:.1f} C dusty without it at {T_HOT_SITE:.0f} C; no charging on clear days below about {-rise_cold:.0f} C",
+    "-20 to +45 C ambient; -20 to +70 C inside", "At risk (cold charging)")
+res("R3", f"With the shield at 45 C: hot-day peak {cs[0]:.1f} C clean, {ds[0]:.1f} C dusty, worst sun position {45 + rise_worst_sh['dusty']:.1f} C; without it at {T_HOT_SITE:.0f} C: worst sun position {T_HOT_SITE + rise_worst['dusty']:.1f} C dusty (at 45 C: {cc[0]:.1f} to {45 + rise_worst['dusty']:.1f} C)",
+    f"60 C or less; shield fitted where the design maximum exceeds {T_HOT_SITE:.0f} C", "Met on paper (shield factor assumed)")
 res("R4", "NTC on the cell gates the charger at 0 and 45 C", "Charging blocked below 0 C and above 45 C", "Met by design")
-res("R5", f"Worst month: stored {stored:.2f} Wh/day against {d100:.2f} Wh/day drawn ({stored / d100:.1f} times); hot clear day without shield {cc[2]:.1f} Wh stored; no charge on clear days below about {-rise_cold:.0f} C; Vmp headroom {vmp_hot - VIN_MIN:.2f} V when hot",
-    "Harvest exceeds demand at 2 peak sun hours", "At risk")
-res("R6", f"{e_usable / d100:.2f} d at 100 mW; {e_usable / draw(0.115):.2f} d at 115 mW; {e_usable * CAP_COLD / d100:.2f} d at -20 C; {e_usable * CAP_EOL / d100:.2f} d at end of life",
-    "5 days or more at full allowance", "At risk")
-res("R7", f"Allowance {allow_max * 1000:.1f} mW for exactly 5 days; 100 mW design value", "100 mW or more", "Met on paper")
+res("R5", f"Worst month: stored {stored:.2f} Wh/day against {d100:.2f} Wh/day drawn ({stored / d100:.1f} times); hot clear day with the shield {cs[2]:.1f} Wh clean, {ds[2]:.1f} Wh dusty stored; 9 V class Vmp headroom {vmp_hot - VIN_MIN:.2f} V when hot",
+    "Harvest exceeds demand at 2 peak sun hours", "Met on paper")
+res("R6", f"{e_usable / d100:.2f} d at the published 100 mW ({(e_usable / d100 / AUTONOMY_REQ - 1) * 100:.0f} % margin); {e_usable * CAP_COLD / d100:.2f} d at -20 C; {e_usable * CAP_EOL / d100:.2f} d at end of life",
+    "5 days or more at full allowance", "At risk (cold or aged cell)")
+res("R7", f"Published allowance 100 mW; {allow_max * 1000:.1f} mW would give exactly 5 days", "100 mW or more", "Met on paper")
 res("R8", f"SF9 budget {link9[0]:.1f} dB; Hata suburban loss {link9[1]:.1f} dB at 2 km (30 m gateway); margin {link9[2]:.1f} dB",
     "2 km suburban at SF9 or faster", "Met on paper")
-res("R9", f"{tab[2][2]:.1f} s/day at SF9; {tab[3][2]:.1f} s at SF10; {tab[5][2]:.1f} s at SF12 (15 min)",
-    "30 s/day or less at the default interval", "At risk (not met at SF10 to SF12)")
+res("R9", f"{tab[2][2]:.1f} s/day at SF9 at 15 min; firmware rule lengthens the interval to {RULE[10]:.0f} min at SF10 and {RULE[12]:.0f} min at SF12; largest {worst_rule:.1f} s/day",
+    "30 s/day or less on The Things Network", "Met on paper (firmware rule)")
 res("R10", f"30 days = {per_day_b * OUTAGE_D / 1024:.0f} kB of 16 MB flash; backlog upload limited by fair use",
     "30 days or more kept on the node", "Met on paper")
 res("R11", "Two M12 5-pin ports: V+, GND and three signal pins; one switched rail per port, 3.3, 5 or 12 V",
     "Two sealed ports, I2C, UART or RS-485, analog, switched rails", "Met on paper (pinout awaiting adopting projects)")
 res("R12", f"V-block seats 40 to 60 mm poles; install estimate {t_inst} min", "40 to 60 mm poles and walls; 15 min or less",
     "Not verifiable at TRL 3 (install time); fit met by design")
-res("R13", f"Clamp pull {pull:.0f} N against {2 * T_BAND:.0f} N; slip factor {slip_ax / fz_down:.0f}; bracket factor {Pcr / f_member:.0f}",
+res("R13", f"Clamp pull {pull:.0f} N ({pull_sh:.0f} N with the shield) against {2 * T_BAND:.0f} N; slip factor {slip_ax / fz_down:.0f}; bracket factor {Pcr / f_member:.0f}",
     "35 m/s gusts without loosening", "Met on paper (band preload assumed)")
-res("R14", f"{m_total:.2f} kg; {m_total + SHIELD_KG:.2f} kg with the proposed shield", "2.5 kg or less", "At risk")
+res("R14", f"Base node {m_total:.2f} kg ({2.5 - m_total:.2f} kg margin); {m_total + SHIELD_KG:.2f} kg with the hot-climate shield, which R14 excludes", "2.5 kg or less, base node", "Met on paper")
 res("R15", f"Cell swap estimate {t_srv} min, screwdriver, plug-in cell lead", "10 min or less, no soldering", "Met by design")
-res("R16", f"${total:.2f}", f"${budget:.0f} or less (FieldNode core, gateway excluded)", "Met on paper")
+res("R16", f"${total:.2f} base node; ${total + SHIELD_COST:.2f} with the shield", f"${budget:.0f} or less (FieldNode core, gateway excluded)", "Met on paper")
 res("R17", "CERN-OHL-S-2.0 and MIT; standard LoRaWAN", "Open files, any network server", "Met by design")
 res("R18", "Core forwards only what the sensor firmware passes", "No images or audio leave the node", "Met by design")
 

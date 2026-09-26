@@ -35,18 +35,18 @@ Requirements not met or at risk:
 - **R6 (5 days autonomy)** has no margin.
 - **R2, R8 and R13** depend on unverified estimates.
 
-### Proposed, awaiting Amish
+### Proposed, awaiting Amish (status updated 2026-09-25, FND-DDR-002)
 
-1. **Radio.** Options: LoRaWAN (recommended), LoRa point-to-point, or cellular LTE-M/NB-IoT. Recommendation: LoRaWAN now; cellular as a later variant.
-2. **Controller module.** Options: STM32WL-class module such as RAK3172 or Wio-E5 (recommended), ESP32 plus SX1262, or nRF52840 plus SX1262.
-3. **Energy storage.** Options: one 6 Ah LiFePO4 cell with a 1S protection IC on the power board (recommended), 2 to 3 Li-ion 18650 cells, or a small CellGuard pack. CellGuard covers 4 to 16 cells, so it does not fit a 1S node; a note to the CellGuard project may be worth adding.
-4. **Panel size.** 6 W standard (recommended), with 3 W and 10 W variants for low- and high-power payloads as a later option.
-5. **Sensor port standard.** Two M12 5-pin ports carrying I2C, UART or RS-485, one analog input and switched rails (recommended), versus glands only. Pinout to be agreed with the first two adopting projects.
-6. **Default reporting interval** of 15 min.
-7. **Default network.** TwinKit gateway first, with The Things Network as the public fallback (recommended).
-8. **First adopting projects and region** (which set the radio band).
-9. **Enclosure.** Stock polycarbonate IP65 box (recommended) versus a printed ASA enclosure.
-10. No change is proposed to `budget_usd`, the pitch or the problem in `project.yaml`.
+1. **Radio.** Options: LoRaWAN (recommended), LoRa point-to-point, or cellular LTE-M/NB-IoT. Recommendation: LoRaWAN now; cellular as a later variant. **Decided by Amish, 2026-09-25: go with recommendation.**
+2. **Controller module.** Options: STM32WL-class module such as RAK3172 or Wio-E5 (recommended), ESP32 plus SX1262, or nRF52840 plus SX1262. **Decided by Amish, 2026-09-25: go with recommendation.**
+3. **Energy storage.** Options: one 6 Ah LiFePO4 cell with a 1S protection IC on the power board (recommended), 2 to 3 Li-ion 18650 cells, or a small CellGuard pack. CellGuard covers 4 to 16 cells, so it does not fit a 1S node; a note to the CellGuard project may be worth adding. **Decided by Amish, 2026-09-25: go with recommendation.**
+4. **Panel size.** 6 W standard (recommended), with 3 W and 10 W variants for low- and high-power payloads as a later option. **Decided by Amish, 2026-09-25: go with recommendation.**
+5. **Sensor port standard.** Two M12 5-pin ports carrying I2C, UART or RS-485, one analog input and switched rails (recommended), versus glands only. Pinout to be agreed with the first two adopting projects. **Decided by Amish, 2026-09-25: go with recommendation.**
+6. **Default reporting interval** of 15 min. **Decided by Amish, 2026-09-25: go with recommendation.**
+7. **Default network.** TwinKit gateway first, with The Things Network as the public fallback (recommended). **Decided by Amish, 2026-09-25: go with recommendation.**
+8. **First adopting projects and region** (which set the radio band). No recommendation; still Proposed, awaiting Amish.
+9. **Enclosure.** Stock polycarbonate IP65 box (recommended) versus a printed ASA enclosure. **Decided by Amish, 2026-09-25: go with recommendation.**
+10. No change is proposed to `budget_usd`, the pitch or the problem in `project.yaml`. **Decided by Amish, 2026-09-25: go with recommendation.**
 
 ### Safety concerns
 
@@ -100,18 +100,18 @@ Key numbers: core 4.0 mWh/day; 145.0 dB link budget at SF9; 52.2 N on the panel 
 
 ### Decisions recorded (FND-DDR-001)
 
-Adopted as recommended for TRL 3 under Amish's 2026-09-25 instruction, open for his review: D1 LoRaWAN, cellular later; D2 STM32WL-class module; D3 one 6 Ah LiFePO4 cell with its own 1S protection, CellGuard not used; D4 6 W panel standard; D5 two M12 5-pin ports plus a gland; D6 15 min default interval; D7 TwinKit first, The Things Network as fallback; D8 stock polycarbonate IP65 enclosure; D9 to D11 panel as hood, antenna down, 1.75 m mounting height (precis choices); D12 no change to budget, pitch or problem. As consequences, R11 is restated to one switched rail per port (a 5-pin connector cannot carry three rails, a bus and an analog input) and R16 is restated as the FieldNode core cost, the figure sibling repos cite.
+Decided by Amish, 2026-09-25: go with recommendation (FND-DDR-002; recorded at the time of this session as adopted for TRL 3, open for his review): D1 LoRaWAN, cellular later; D2 STM32WL-class module; D3 one 6 Ah LiFePO4 cell with its own 1S protection, CellGuard not used; D4 6 W panel standard; D5 two M12 5-pin ports plus a gland; D6 15 min default interval; D7 TwinKit first, The Things Network as fallback; D8 stock polycarbonate IP65 enclosure; D9 to D11 panel as hood, antenna down, 1.75 m mounting height (precis choices); D12 no change to budget, pitch or problem. As consequences, R11 is restated to one switched rail per port (a 5-pin connector cannot carry three rails, a bus and an analog input) and R16 is restated as the FieldNode core cost, the figure sibling repos cite.
 
-### Still awaiting Amish
+### Still awaiting Amish (status updated 2026-09-25, FND-DDR-002)
 
 1. **O1, first adopting projects and pilot region** (sets the band and antenna). No preference stated.
 2. **O2, sensor port pinout**, with the adopting teams. FND-CAL-001 offers a candidate only.
 3. **O3, firmware update method in the field.** No recommendation was made.
-4. **New, sun shield (R3, R5, R2).** Options: (a) a ventilated white aluminium shield as standard (+$8, +0.15 kg; $134.00 and 2.56 kg, which breaks R14); (b) shield only for hot-climate sites, with R14 applying to the base node; (c) no shield and accept that R3 is not met and hot sites lose charge. Recommendation: (b). Not applied.
-5. **New, R14 mass.** If (a) is chosen, relax R14 to 2.75 kg or thin the back plate. Recommendation: keep 2.5 kg for the base node. Not applied.
-6. **New, panel voltage class.** Options: 6 V class (current) or 9 V class of the same power, which keeps about 7.4 V when hot. Recommendation: 9 V class, subject to the charger chosen at TRL 4. Not applied.
-7. **New, published sensor allowance.** Options: 115 mW (exactly 5 days, no margin) or 100 mW (5.75 days). Recommendation: 100 mW. Sibling notes cite 115 mW; all their quoted loads except CurbCount (about 300 mW) fit 100 mW. Not applied to any other repo.
-8. **New, firmware airtime rule (R9).** Recommendation: lengthen the interval automatically at SF10 and slower (22 min at SF10, 87 min at SF12) when on The Things Network. Not applied.
+4. **New, sun shield (R3, R5, R2).** Options: (a) a ventilated white aluminium shield as standard (+$8, +0.15 kg; $134.00 and 2.56 kg, which breaks R14); (b) shield only for hot-climate sites, with R14 applying to the base node; (c) no shield and accept that R3 is not met and hot sites lose charge. Recommendation: (b). **Decided by Amish, 2026-09-25: go with recommendation.** Applied (see below).
+5. **New, R14 mass.** If (a) is chosen, relax R14 to 2.75 kg or thin the back plate. Recommendation: keep 2.5 kg for the base node. **Decided by Amish, 2026-09-25: go with recommendation.** Applied.
+6. **New, panel voltage class.** Options: 6 V class (current) or 9 V class of the same power, which keeps about 7.4 V when hot. Recommendation: 9 V class, subject to the charger chosen at TRL 4. **Decided by Amish, 2026-09-25: go with recommendation.** Applied.
+7. **New, published sensor allowance.** Options: 115 mW (exactly 5 days, no margin) or 100 mW (5.75 days). Recommendation: 100 mW. Sibling notes cite 115 mW; all their quoted loads except CurbCount (about 300 mW) fit 100 mW. Not applied to any other repo. **Decided by Amish, 2026-09-25: go with recommendation.** Applied here; siblings listed as a cross-repo action.
+8. **New, firmware airtime rule (R9).** Recommendation: lengthen the interval automatically at SF10 and slower (22 min at SF10, 87 min at SF12) when on The Things Network. **Decided by Amish, 2026-09-25: go with recommendation.** Applied as a requirement; firmware is TRL 4.
 
 Suggestion only, not in the repo: a panel-powered cell heater for sites with long sub-zero spells.
 
@@ -138,3 +138,54 @@ Suggestion only, not in the repo: a panel-powered cell heater for sites with lon
 ### Recommended next step
 
 TRL 4 is on hold by Amish's instruction; this repo stops at TRL 3. Amish's review is needed on items 4 to 8 above and on O1 to O3. For the record only, TRL 4 would need: a bench build of the power board and core; a lab test report (TST, `environment: lab`) covering enclosure temperature in sun with and without the shield, charge lockout at 0 and 45 °C, sleep current and energy per report, and clamp preload and slip; and build log entries. None of this has been started.
+
+## Session 2026-09-25: recommendations accepted
+
+On 2026-09-25 Amish wrote: "i accept all your recommendations, go with them across all repos." Every item in this note and in FND-DDR-001 that carried a recommendation is now decided by Amish, 2026-09-25: go with recommendation. The decisions and their effects are recorded in `docs/decisions/0002-recommendations-accepted.md` (FND-DDR-002 v0.1).
+
+### Decisions applied and what changed
+
+| Decision | Before | After |
+| --- | --- | --- |
+| D1 to D12 (FND-DDR-001) | Adopted for TRL 3, open for review | Decided; no design change; `budget_usd` stays $150, pitch and problem unchanged |
+| Sun shield, option (b): hot-climate sites only | Not in the design; R3 not met (58.7 to 73.3 °C inside at 45 °C) | BOM line 14 option at qty 0, $8.00, 0.15 kg; modeled (`build_shield()`, `cad/step/fieldnode-shield.step`); fitted where the design maximum exceeds 30 °C (FND-CAL-001 [C2c]); 48.5 to 52.2 °C inside at 45 °C with it; R3 restated, met on paper |
+| R14 for the base node | 2.41 kg, at risk; 2.56 kg with a shield | R14 restated to the base node: 2.41 kg, met on paper (0.09 kg margin); hot-climate node 2.55 kg (shield mass now from the model) |
+| 9 V class panel | 6 V class, Vmp 4.95 V when hot (0.05 V short of a 5 V charger minimum) | 9 V class, Vmp 7.42 V when hot (2.42 V headroom); same price; R5 met on paper |
+| Published sensor allowance 100 mW | 115 mW cited by siblings; exactly 5.00 days | 100 mW published; 5.75 days, 15 % margin; R6 stays at risk for a cold (4.03 days) or aged (4.60 days) cell |
+| Firmware airtime rule | R9 at risk: 43.5 s a day at SF10, 173.8 s at SF12 | Rule: 22 min at SF10, 48 min at SF11, 87 min at SF12 on The Things Network; 30.0 s a day or less; R9 restated, met on paper |
+
+Files changed: `bom/bom.csv` (line 4 respecified, line 14 added) and `bom/bom-notes.md`; `cad/src/model.py` (shield parameters, `build_shield()`, `shield_geometry()`, new export) and re-exported STEP and STL; `cad/src/sheets.py` and FND-DWG-001 at Rev P2 (panel class and shield option notes, revision row); `cad/src/concept_media.py` key figures and all of `media/` re-rendered (hero, blueprint and exploded checked; `_views` folders deleted); `docs/04-calcs/sizing.py` and `results.csv`; FND-CAL-001 v0.2, FND-REQ-001 v0.4, FND-PRC-001 v0.4, FND-PRB-001 v0.4, FND-DDR-001 v0.2; `README.md` (key figures, components, and a rewritten "What sparked the idea" citing the 2003 Great Duck Island deployment); `project.yaml` evidence list. All PDFs rebuilt.
+
+### Requirement status (FND-CAL-001 v0.2, Table 4)
+
+None not met, 2 at risk, 1 not verifiable at TRL 3, 10 met on paper, 5 met by design.
+
+| ID | Status | Key number |
+| --- | --- | --- |
+| R2 Operating temperature | At risk (cold) | No charging on clear days below about -13 °C; warm end covered (52.2 °C dusty worst case with the shield) |
+| R6 Autonomy | At risk | 5.75 days at 100 mW; 4.03 days at -20 °C; 4.60 days at end of life |
+| R12 Install | Not verifiable at TRL 3 | 15 min estimate, at the limit |
+| R3, R5, R7, R8, R9, R10, R11, R13, R14, R16 | Met on paper | R3 and R5 rest on the assumed shield factor of 0.25 |
+| R1, R4, R15, R17, R18 | Met by design | |
+
+### Still awaiting Amish
+
+1. **O1, first adopting projects and pilot region** (band and antenna). No recommendation.
+2. **O2, sensor port pinout**, with the adopting teams. Candidate only, no recommendation.
+3. **O3, firmware update method in the field.** No recommendation.
+
+The cell heater for long sub-zero spells remains a suggestion only, not in the repo.
+
+### Cross-repo actions (other repos not edited)
+
+- **Sibling notes that cite a 115 mW allowance** (the adopting projects listed in FND-PRC-001): update to the published 100 mW allowance.
+- **CurbCount** (about 300 mW) exceeds the allowance; it needs its own storage and panel sizing or the 10 W panel variant.
+- **Hot-climate sibling pilots** (for example HeatMap Node or any site with a design maximum above 30 °C): add the $8.00, 0.15 kg shield to their FieldNode cost and mass ($134.00, 2.55 kg).
+- **Sibling notes describing the panel** as 6 V class: now 9 V class.
+- **TwinKit**: its twin example calls the cell FieldNode BOM part 4; the cell is line 6 (the panel is line 4).
+- **NoiseMap ($119) and CurbCount (about $95)**: align their quoted FieldNode core cost with $126.00.
+- **Kit**: the cutaway cutter and scale figure placement for pole-mounted repos (noted at TRL 2).
+
+### TRL 4
+
+TRL 4 remains on hold by Amish's instruction. `trl` and `trl_target` stay at 3. The charger part choice, firmware (including the airtime rule), a sun test of the shield factor, the power board and any purchasing have not been started.

@@ -1,10 +1,12 @@
-"""FieldNode parametric model (build123d), TRL 3, massing-plus level of detail.
+"""FieldNode parametric model (build123d), TRL 3, massing-plus level of detail. Revised for FND-DDR-002.
 
 Run from the repo root:  python cad/src/model.py
 Exports STEP and STL into cad/step and cad/stl:
     fieldnode-assembly.step / .stl   the whole node on a stub of its 48.3 mm design pole
     fieldnode-core.step / .stl       enclosure, lid, penetrations and the parts inside
     fieldnode-mount.step / .stl      back plate, V-blocks, band clamps and panel bracket
+    fieldnode-shield.step / .stl     hot-climate sun shield option (BOM line 14), not in the base
+                                     node or the assembly (FND-DDR-002)
 
 Axes: the site pole is the Z axis (x = y = 0), Z is up with the ground at z = 0, and the
 node faces -Y (toward the equator), so the panel tilts toward -Y and shades the enclosure
@@ -41,6 +43,10 @@ PARAMS = {
     "m12_d": (16.0, 22.0), "m16_d": (20.0, 24.0),
     "whip": (10.0, 190.0),            # whip diameter and length below the bulkhead
     "vent_d": 18.0,                   # ePTFE vent (part of item 1), bottom face, rear right
+    # 14 hot-climate sun shield option (FND-DDR-002): white aluminium sheet thickness, air gap to the
+    #   enclosure front, sides and top, open bottom, and a vent slot at the back of the top sheet
+    #   (clears the bracket strut feet); drop below the enclosure top to the shield's lower edge
+    "shield_t": 0.5, "shield_gap": 15.0, "shield_slot": 30.0, "shield_low": 10.0,
 }
 
 BOM = {  # model key: (BOM line, name)
@@ -56,6 +62,9 @@ BOM = {  # model key: (BOM line, name)
     "ports": (10, "Sensor ports, 2 x M12 5-pin"),
     "mplate": (11, "Internal mounting plate"),
     "mount": (12, "Pole mounting kit"),
+}
+OPTIONS = {  # option parts, not in the base node (FND-DDR-002)
+    "shield": (14, "Sun shield, hot-climate option"),
 }
 
 
@@ -201,6 +210,37 @@ def build_parts(p=PARAMS):
     return parts
 
 
+def build_shield(p=PARAMS):
+    """Hot-climate sun shield option (BOM line 14): front, two sides and a top sheet standing off
+    the enclosure by shield_gap on all exposed faces; open at the bottom and with a slot at the
+    back of the top, so air rises through the gap. Fixed to the back plate. Not in the base node."""
+    D = derived(p)
+    ew, ed, eh = p["enc"]
+    t, g = p["shield_t"], p["shield_gap"]
+    yb = p["plate_y0"] - p["plate"][2]                     # front face of the back plate
+    yf = D["enc_front"] - g                                # inner face of the front sheet
+    xo = ew / 2 + g                                        # inner face of the side sheets
+    zlo, zhi = D["enc_bot"] + p["shield_low"], D["enc_top"] + g
+    h = zhi - zlo
+    front = box(0, yf - t / 2, zlo + h / 2, 2 * (xo + t), t, h)
+    sides = [box(sx * (xo + t / 2), (yb + yf - t) / 2, zlo + h / 2, t, yb - (yf - t), h) for sx in (-1, 1)]
+    ytop0, ytop1 = yf - t, yb - p["shield_slot"]
+    top = box(0, (ytop0 + ytop1) / 2, zhi + t / 2, 2 * (xo + t), ytop1 - ytop0, t)
+    return fuse([front, *sides, top])
+
+
+def shield_geometry(p=PARAMS):
+    """Sheet area (m2) and outside size (mm) of the shield, for FND-CAL-001."""
+    D = derived(p)
+    ew, ed, eh = p["enc"]
+    t, g = p["shield_t"], p["shield_gap"]
+    w = ew + 2 * (g + t)
+    d = (p["plate_y0"] - p["plate"][2]) - (D["enc_front"] - g - t)
+    h = eh + g + t - p["shield_low"]
+    area = (w * h + 2 * d * h + w * (d - p["shield_slot"])) / 1e6
+    return {"w": w, "d": d, "h": h, "area_m2": area, "front_m2": w * h / 1e6, "side_m2": d * h / 1e6}
+
+
 def bracket_geometry(p=PARAMS):
     """Member lengths (mm) and angles from horizontal (deg) of one side frame, for FND-CAL-001."""
     D = derived(p)
@@ -236,6 +276,7 @@ if __name__ == "__main__":
         "fieldnode-assembly": list(P.values()) + [pole_context()],
         "fieldnode-core": [P[k] for k in ("body", "lid", "glands", "ports", "antenna", "mplate", "cell", "power", "ctrl")],
         "fieldnode-mount": [P[k] for k in ("mount", "bracket")],
+        "fieldnode-shield": [build_shield()],
     }
     for name, shapes in groups.items():
         c = Compound(children=shapes)
@@ -246,5 +287,7 @@ if __name__ == "__main__":
     D = derived()
     print(f"panel overhang beyond lid {D['overhang_front']:.1f} mm, front edge {D['clear_top']:.1f} mm above enclosure top; "
           f"top of panel {D['overall_top']:.0f} mm above ground; clamp span {D['clamp_span']:.0f} mm")
+    sg = shield_geometry()
+    print(f"sun shield option: {sg['w']:.0f} x {sg['d']:.0f} x {sg['h']:.0f} mm, sheet {sg['area_m2']:.4f} m2")
     for k, v in bracket_geometry().items():
         print(f"bracket {k}: {v['L']:.0f} mm at {v['angle']:.0f} deg")

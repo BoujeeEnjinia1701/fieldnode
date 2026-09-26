@@ -47,7 +47,7 @@ For air quality, 37 % of countries do not legally require monitoring at all ([UN
 
 ## What sparked the idea
 
-It came out of a September 2026 review of Design Molecule's applied research areas against the open projects already in the lab. Six existing and several proposed projects (WaterWatch, GrainGuard, FloodGauge, SlopeWatch and more) each needed the same outdoor node. The trigger in the wider world is the push to extend early warning to everyone by 2027 under the UN Early Warnings for All initiative ([WMO](https://wmo.int/activities/early-warnings-all/wmo-and-early-warnings-all-initiative)), which depends on many more observations in places that have few today.
+The idea traces back to one of the first long outdoor wireless sensor deployments, on Great Duck Island, Maine, in 2003. Its 150 battery-powered nodes in sealed enclosures showed where field nodes fail: when the enclosures were opened, 22 % of the weather nodes had visible water droplets inside, and the multi-hop burrow nodes reached a median life of 34 days, under 45 % of their estimate ([Szewczyk et al., SenSys 2004](https://patpannuto.com/papers/szewczyk2004greatduckisland.pdf)). None of those failures came from the sensors; they came from the box, the seal and the power budget. FieldNode starts from that lesson: solve the enclosure, the energy budget and the radio once, check them on paper, and let every outdoor sensing project reuse the answer.
 
 ## Problem
 
@@ -62,14 +62,15 @@ Full design precis: [docs/02-concept.md](docs/02-concept.md)
 ## Key components
 
 - IP65 polycarbonate enclosure, 150 x 90 x 200 mm, with membrane vent and two cable glands
-- 6 W solar panel on a tilt bracket, doubling as a rain hood
+- 6 W, 9 V class solar panel on a tilt bracket, doubling as a rain hood
+- Ventilated white sun shield, fitted at hot-climate sites only
 - LiFePO4 cell, 3.2 V 6 Ah, fused, with a 0 to 45 °C charge lockout
 - MPPT charge and power board with switched 3.3, 5 and 12 V sensor rails
 - STM32WL-class microcontroller with LoRaWAN radio and SPI flash for store and forward
 - Two sealed M12 sensor ports (pinout still open)
 - Pole and wall mounting kit for 40 to 60 mm poles
 
-TRL 3 calculations ([FND-CAL-001](docs/04-calcs/01-sizing.md)): in the worst month (2 peak sun hours) the cell stores 7.75 Wh a day against 2.67 Wh drawn with a 100 mW sensor allowance, and a full cell lasts 5.75 days without sun. The node costs $126 in parts and weighs 2.41 kg. One requirement is not met: in full sun at 45 °C ambient the enclosure reaches 59 to 73 °C, above the 60 °C target, and the cell is then too hot to charge for most of a clear day. A sun shield would fix this and is proposed, awaiting a decision. See the [requirements](docs/03-requirements.md) for the five requirements at risk.
+TRL 3 calculations ([FND-CAL-001](docs/04-calcs/01-sizing.md)): in the worst month (2 peak sun hours) the cell stores 7.75 Wh a day against 2.67 Wh drawn at the published 100 mW sensor allowance, and a full cell lasts 5.75 days without sun. The base node costs $126 in parts and weighs 2.41 kg. At sites whose design maximum exceeds 30 °C a ventilated white sun shield is fitted ($134 and 2.55 kg in all), which keeps the inside at or below about 52 °C in 45 °C sun so the cell can still charge. The panel is 9 V class so the charger keeps its input voltage when hot, and firmware lengthens the reporting interval at slow spreading factors to stay within The Things Network's fair use. Two requirements remain at risk: charging on very cold days and autonomy with a cold or aged cell. See the [requirements](docs/03-requirements.md).
 
 The working bill of materials is in [bom/bom.csv](bom/bom.csv).
 

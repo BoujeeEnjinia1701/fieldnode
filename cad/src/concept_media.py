@@ -1,11 +1,12 @@
-"""FieldNode concept media (TRL 3), generated from the parametric model.
+"""FieldNode concept media (TRL 3, FND-DDR-002 applied), generated from the parametric model.
 
 Run from the repo root:  python cad/src/concept_media.py
 Takes the node's parts from cad/src/model.py (PARAMS) and renders the media set with
 .kit/concept.py. Every colored part carries the BOM line number used in bom/bom.csv; grey
 parts (the site pole and footing, the person) are context with no BOM number. Figures on
 the sheet and in the flow diagram come from docs/04-calcs/sizing.py (FND-CAL-001).
-CONCEPT, NOT FOR FABRICATION.
+CONCEPT, NOT FOR FABRICATION. The hot-climate sun shield (BOM line 14) is an option and is
+not shown; the renders show the base node.
 
 Coordinates in mm. Z up, ground at Z = 0 in the model. The site pole stands on the Z axis
 and the node faces -Y (toward the equator).
@@ -77,11 +78,11 @@ for p in parts + context:
 
 render_all(
     parts, project="FieldNode", title="Pole-mounted solar sensor node concept", dwg_no="FND-DWG-010",
-    key_figures=["Enclosure 150 x 90 x 200 mm, IP65; 6 W panel above as rain hood",
+    key_figures=["Enclosure 150 x 90 x 200 mm, IP65; 6 W, 9 V class panel as rain hood",
                  "LiFePO4 cell 3.2 V, 6 Ah, about 19 Wh; charging 0 to 45 °C only",
                  "Worst month: 7.75 Wh/day stored against 2.67 Wh/day drawn",
-                 "Sensor allowance 100 mW; 5.75 days with no sun (FND-CAL-001)",
-                 "LoRaWAN every 15 min, 23.7 s/day at SF9; $126, 2.41 kg"],
+                 "Published sensor allowance 100 mW; 5.75 days with no sun",
+                 "LoRaWAN every 15 min at SF9; $126, 2.41 kg; shield option above 30 °C"],
     scale_figure=False, context=context,
     cut_exclude=("Pole, 48 mm OD (site supplied)", "Solar panel, 6 W", "Panel tilt bracket"),
     flow={"title": "daily energy flow in the worst month, Wh per day (FND-CAL-001 estimates, 2 peak sun hours, 100 mW sensors)",

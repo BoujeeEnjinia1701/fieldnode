@@ -1,4 +1,4 @@
-"""FieldNode general arrangement sheet FND-DWG-001, Rev P1 (TRL 3).
+"""FieldNode general arrangement sheet FND-DWG-001, Rev P2 (TRL 3; FND-DDR-002 applied).
 
 Run from the repo root:  python cad/src/sheets.py
 Writes cad/drawings/FND-DWG-001.svg, .pdf and .png from the parametric model in
@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / ".kit"), str(ROOT / "cad" / "src")]
 from drawing import Sheet, _viewbox, _t, M, TB_Y, INK, MUTED  # noqa: E402
-from model import PARAMS as P, assembly, derived, bracket_geometry  # noqa: E402
+from model import PARAMS as P, assembly, derived, bracket_geometry, shield_geometry  # noqa: E402
 
 DATE = "2026-09-25"
 
@@ -98,10 +98,11 @@ def main():
     asm = assembly(with_pole=True)
     views = safe_project_views(asm, work)
     bb = asm.bounding_box()
-    s = Sheet(project="FieldNode", title="General arrangement", dwg_no="FND-DWG-001", rev="P1",
+    s = Sheet(project="FieldNode", title="General arrangement", dwg_no="FND-DWG-001", rev="P2",
               author="Amish Chadha", date=DATE, scale=0.1, theme="technical",
               material="Bought-in parts per bom/bom.csv; aluminium bracket and plate. PRELIMINARY, NOT FOR FABRICATION",
-              revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC")])
+              revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
+                         ("P2", "FND-DDR-002: 9 V class panel; sun shield option (14)", DATE, "AC")])
     s.add_ortho(views)
     k = s.scale
     c = ortho_cells(s, views)
@@ -148,15 +149,17 @@ def main():
     s._layers += L
     s.add_svg(views["iso"], 276, 32, 140, 100, label="Isometric view", sublabel="Not to scale; grey pole stub is site supplied")
     bg = bracket_geometry()
+    SG = shield_geometry()
     s.add_notes("Main dimensions and interfaces (mm)", [
         f"Enclosure IP65 {ew:.0f} x {ed:.0f} x {eh:.0f} (W x D x H); base {P['z0']:,.0f} above ground",
-        f"Panel 6 W, {P['panel'][0]:.0f} x {P['panel'][1]:.0f}, tilt {P['tilt']:.0f} deg; top {D['overall_top']:,.0f} above ground",
+        f"Panel 6 W 9 V class, {P['panel'][0]:.0f} x {P['panel'][1]:.0f}, tilt {P['tilt']:.0f} deg; top {D['overall_top']:,.0f} above ground",
         f"Panel overhangs lid by {D['overhang_front']:.0f}; front edge {D['clear_top']:.0f} above enclosure",
         f"Back plate {P['plate'][0]:.0f} x {P['plate'][1]:.0f} x {P['plate'][2]:.0f} Al; V-blocks {P['vblock'][0]:.0f} wide",
         f"Band clamps {P['band_w']:.0f} wide, {D['clamp_span']:.0f} apart; poles 40 to 60 OD",
         f"Bracket flat bar {P['bar'][0]:.0f} x {P['bar'][1]:.0f}: posts {bg['post']['L']:.0f}, struts {bg['strut']['L']:.0f}",
         f"Bottom face: 2 x M12 ports, 2 x M16 glands, antenna bulkhead, vent",
         f"Whip {P['whip'][1]:.0f} long; tip {D['whip_tip']:,.0f} above ground",
+        f"Option (14), not shown: sun shield {SG['w']:.0f} x {SG['d']:.0f} x {SG['h']:.0f}, {P['shield_gap']:.0f} gap; sites above 30 C",
         "Third-angle; front view from -Y; pole on the Z axis",
         "Numbers in brackets are BOM lines; loads in FND-CAL-001",
     ], x=276, y=150, width=146)
