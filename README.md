@@ -103,4 +103,4 @@ Controlled documents follow the portfolio [documentation standard](.kit/STANDARD
 - **Hardware** (CAD, drawings, BOM, electronics): [CERN-OHL-S v2](LICENSE)
 - **Software** (firmware, scripts, notebooks): [MIT](LICENSE-SOFTWARE)
 
-A project of the [Design Molecule](https://designmolecule.com) lab. Shared components set.
+A project of the [Design Molecule](https://designmolecule.com) lab.
