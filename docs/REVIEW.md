@@ -189,3 +189,29 @@ The cell heater for long sub-zero spells remains a suggestion only, not in the r
 ### TRL 4
 
 TRL 4 remains on hold by Amish's instruction. `trl` and `trl_target` stay at 3. The charger part choice, firmware (including the airtime rule), a sun test of the shield factor, the power board and any purchasing have not been started.
+
+## Session 2026-09-26: product appearance model and photoreal renders
+
+Amish chose this repo for the first batch of product renders on 2026-09-26. This session added an appearance model for photoreal product renders; the massing model, BOM, calculations and drawing are unchanged.
+
+### What was done
+
+- `cad/src/product_model.py`: `product_parts()` (54 parts: 33 shell, 15 internal, 6 context), `TITLE` and `RENDER_VIEWS` (hero, exploded and a detail view without the pole). It imports `PARAMS`, `derived()`, `build_parts()` and `on_panel()` from `cad/src/model.py` and keeps every main dimension and interface: enclosure envelope and parting line, port, gland and antenna positions, internal plate and the envelopes on it, panel size, tilt and position, bracket members, back plate, V-blocks and clamp heights.
+- Appearance detail added:
+  - Enclosure base with filleted corners, side ribs, lid screw bosses and holes for the penetrations; lid with a parting line, the dark EPDM gasket showing, four captive stainless screws, a label with an accent band, port markings A and B and a lit green status light pipe.
+  - M12 sockets with pin inserts (port A open, port B with a knurled, tethered sealing cap); M16 glands with domed nuts; the ePTFE vent; the whip antenna on a hex bulkhead.
+  - Panel with an aluminium frame, cell grid, junction box and badge; bracket angle clips and M6 bolts; back plate with keyhole and band slots; true 90 deg V-blocks; band clamps with worm housings.
+  - Inside: ASA plate with a lift-out slot, the LiFePO4 cell in its strapped, fused holder, power board and controller carrier with components, LoRa module shield can, antenna pigtail and a desiccant pack.
+  - Context: a short section of the 48.3 mm pole with a cap, the panel lead from gland 1 to the junction box, and a sensor cable plugged into port A and tied to the pole.
+- `README.md`: hero image now points to `media/render-hero.png`, with a link to `media/render-exploded.png`. The render files are produced separately.
+
+### Differences from model.py, proposed, awaiting Amish
+
+1. **Clear window in the lid** (96 x 58 mm, over the upper lid). BOM line 2 describes a plain gasketed lid. The window shows the cell and wiring in the renders and lets a field visit read the status without opening the box. Options: (a) plain grey lid, as the BOM; (b) grey lid with a clear UV-stabilized polycarbonate window, which several enclosure makers offer as a standard variant. **Recommendation: (b)** for the renders only until the enclosure is chosen at TRL 4; check the cost and UV rating then. Proposed, awaiting Amish.
+2. **ePTFE vent position.** In `model.py` the vent sits at (58, -63) mm, which overlaps the antenna bulkhead at (58, -76) mm (13 mm apart for two 18 mm parts). The appearance model moves the vent to (30, -63) mm, about 5 mm clear of the nearer gland flange and 13 mm clear of the bulkhead. **Recommendation:** adopt the new position in `PARAMS` (a `vent_xy` entry) and on FND-DWG-001 at the next revision. Proposed, awaiting Amish.
+3. **Status light pipe on the lid.** The BOM puts the status LED on the controller carrier (line 8); the appearance model adds a small light pipe through the lid so the LED shows from outside. **Recommendation:** keep it if option 1(a) is chosen; with the window it is optional. Proposed, awaiting Amish.
+4. **V-blocks drawn with a true 90 deg V** instead of the cylindrical seat used for massing in `model.py`; the depth and clamp heights are unchanged. No decision needed; noted for the drawing.
+
+### Scope
+
+This is an appearance model only: no tolerances, no PCB layouts and no fabrication detail. `trl` and `trl_target` stay at 3, and TRL 4 remains on hold.
