@@ -3,9 +3,9 @@ doc_id: FND-CAL-001
 title: FieldNode sizing calculations
 project: FieldNode
 doc_type: Calculation
-version: "0.3"
+version: "0.4"
 status: Draft
-date: '2026-09-30'
+date: '2026-10-01'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -21,6 +21,10 @@ revisions:
   date: '2026-09-30'
   author: Amish Chadha
   change: Design for construction (FND-DDR-003) applied; bracket, V-block, mass, cost and cell swap with the shield updated; open for Amish's review
+- version: "0.4"
+  date: '2026-10-01'
+  author: Amish Chadha
+  change: Budget treated as a value-engineering target
 ---
 
 # FieldNode sizing calculations
@@ -121,7 +125,7 @@ The design case is a node on a 48.3 mm pole with the enclosure base 1.75 m above
 ## F. Mass and cost (R14, R16)
 
 - **Mass.** The enclosure body, lid and lugs weigh 0.43 kg, the printed ASA internal plate 0.07 kg, the bracket 0.22 kg and the back plate with V-blocks 0.48 kg; bought parts add 1.24 kg: 2.45 kg in all for the base node [F1]. The TRL 2 figure of about 1.7 kg left out most of the back plate. The design for construction (FND-DDR-003) added clips, bolts, a connector strip and fuses, and took mass out with a window in the back plate behind the enclosure and a 20 mm bar. R14, stated for the base node, is met on paper with 0.05 kg of margin; the margin is thin and rests on catalogue masses. The shield, 181 x 106 x 206 mm of 0.5 mm aluminium with its fixing flanges, weighs 0.16 kg with its thumb screws, so a hot-climate node weighs 2.61 kg [F1b].
-- **Cost.** The BOM has 15 lines, all priced; line 14, the shield, is an option at quantity 0 in the base node, and line 15, the plug-in connectors and rail fuses, was added by FND-DDR-003. The base node totals $139.00 against the $150 `budget_usd`, a margin of $11.00 (7 %) [F2]. A hot-climate node with the shield costs $148.00 and weighs 2.61 kg [F3]. R16 is met on paper for both.
+- **Cost.** The BOM has 15 lines, all priced; line 14, the shield, is an option at quantity 0 in the base node, and line 15, the plug-in connectors and rail fuses, was added by FND-DDR-003. The base node totals $139.00 against the $150 value-engineering target (`budget_usd`, a hypothetical control target), $11.00 (7 %) under [F2]. A hot-climate node with the shield costs $148.00 and weighs 2.61 kg [F3]. R16 is met on paper for both, within the value-engineering target.
 
 ## L. Results against every requirement
 
@@ -141,7 +145,7 @@ The design case is a node on a 48.3 mm pole with the enclosure base 1.75 m above
 | R11 | Standard sensor interface | Two M12 5-pin ports: switched rail, ground and three signal pins | Two sealed ports with a bus, analog input and one switched rail each | Met on paper (pinout open, DDR-001 O2) |
 | R13 | Wind | Clamp pull 59 N (63 N with the shield) against 2,000 N; slip factor 12; bracket factor 30 | 35 m/s without loosening | Met on paper (preload assumed) |
 | R14 | Mass | Base node 2.45 kg (0.05 kg margin); 2.61 kg with the shield, which R14 excludes | 2.5 kg or less, base node | Met on paper |
-| R16 | Cost | $139.00 base node; $148.00 with the shield | $150 or less for the FieldNode core | Met on paper |
+| R16 | Cost | $139.00 base node; $148.00 with the shield | $150 value-engineering target for the FieldNode core | Met on paper, within the target |
 | R1 | Weather protection | IP65 box and ePTFE vent; IP67 class glands, capped ports and bulkhead | IP65; sealed penetrations | Met by design |
 | R4 | Safe charging window | NTC gates the charger at 0 and 45 °C | Charging blocked outside 0 to 45 °C | Met by design |
 | R15 | Serviceable | Cell swap in about 7 min; 9 min with the shield | 10 min or less, no soldering | Met by design |

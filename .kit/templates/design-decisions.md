@@ -29,6 +29,10 @@ Every design decision still to be made, and every decision made, in one place. E
 | # | What to confirm | Why it matters | Source |
 | --- | --- | --- | --- |
 
+## Value engineering
+
+Value-engineering target: USD X (a hypothetical control target, not a limit). Estimated cost of the constructable design: USD Y (USD Z over or under the target). Main cost drivers and savings worth trying:
+
 ## Decisions made
 
 | Date | Decision | Decided by | Record |

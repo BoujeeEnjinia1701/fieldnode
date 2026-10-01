@@ -3,9 +3,9 @@ doc_id: FND-DEC-001
 title: FieldNode design decisions register
 project: FieldNode
 doc_type: Design decisions register
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-09-30'
+date: '2026-10-01'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,6 +13,10 @@ revisions:
   date: '2026-09-30'
   author: Amish Chadha
   change: Register opened; open decisions moved out of the build plan
+- version: "0.2"
+  date: '2026-10-01'
+  author: Amish Chadha
+  change: Budget treated as a value-engineering target
 ---
 
 # FieldNode design decisions register
@@ -34,6 +38,14 @@ Every design decision still to be made, and every decision made, in one place. E
 | 1 | The solar panel frame has a flat back lip at least 12 mm wide | The panel clips bolt through it; without it the clip position changes | FND-DDR-003 |
 | 2 | The enclosure model, its boss spacing and its lug kit | They set the internal plate holes and the lug positions | FND-DDR-003 |
 | 3 | The band clamp torque that gives 1,000 N of preload | The calculation note assumes that preload | FND-CAL-001 |
+
+## Value engineering
+
+Value-engineering target: USD 150 (a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 139 for the base node (USD 11 under the target); USD 148 with the sun shield (USD 2 under the target). Main cost drivers and savings worth trying:
+
+- The largest lines are the power board (USD 22, a prototype carrier price; the board design is TRL 4 work), the enclosure with vent and lug kit (USD 20), the solar panel (USD 14), the controller and LoRa module (USD 14) and the antenna (USD 10).
+- Making the design constructable repriced lines 1, 5, 13 and 14 and added line 15, the plug-in connectors and rail fuses (USD 5); the base node rose from USD 126 to USD 139.
+- Savings worth trying: the sun shield (USD 9) is an option for hot-climate sites only, so the base node carries none; the power board price should fall once its design is done.
 
 ## Decisions made
 

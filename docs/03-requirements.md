@@ -3,9 +3,9 @@ doc_id: FND-REQ-001
 title: FieldNode requirements
 project: FieldNode
 doc_type: Requirements
-version: "0.5"
+version: "0.6"
 status: Draft
-date: '2026-09-30'
+date: '2026-10-01'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -29,6 +29,10 @@ revisions:
   date: '2026-09-30'
   author: Amish Chadha
   change: "Design for construction (FND-DDR-003) applied; mass, cost, bracket, mounting and service figures updated; open for Amish's review"
+- version: "0.6"
+  date: '2026-10-01'
+  author: Amish Chadha
+  change: Budget treated as a value-engineering target
 ---
 
 # FieldNode requirements
@@ -54,7 +58,7 @@ Table 1. Requirements and status at TRL 3
 | R13 | Wind | Survives 35 m/s (126 km/h) gusts on the panel without loosening | Load calculation | Met on paper: clamp pull 59 N against 2,000 N; band preload assumed |
 | R14 | Mass | 2.5 kg or less for the base node, including panel and mounts; the hot-climate sun shield is excluded | Massing model, then weighing | Met on paper: 2.45 kg, a thin 0.05 kg margin on catalogue masses after the design for construction (FND-DDR-003); 2.61 kg with the shield |
 | R15 | Serviceable | Cell replaced in 10 min or less with a screwdriver; no soldering in the field | Design review | Met by design: about 7 min; about 9 min where the shield is fitted, since it lifts off after four thumb screws |
-| R16 | Cost | FieldNode core (enclosure, power, radio, panel and mounting) $150 or less at quantity 1; sensors and gateway excluded | Priced BOM | Met on paper: $139.00 base node; $148.00 with the shield |
+| R16 | Cost | FieldNode core (enclosure, power, radio, panel and mounting) at the $150 value-engineering target or under at quantity 1 (a hypothetical control target); sensors and gateway excluded | Priced BOM | Met on paper, within the value-engineering target: $139.00 base node ($11.00 under); $148.00 with the shield ($2.00 under) |
 | R17 | Open and independent | All design files under CERN-OHL-S-2.0 and MIT; works with any LoRaWAN network server, no closed cloud | Design review | Met by design |
 | R18 | Privacy pass-through | The core sends only what the sensor firmware passes to it; no images or audio leave the node | Firmware design review | Met by design; each project states its own rule |
 

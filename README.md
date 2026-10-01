@@ -2,7 +2,7 @@
 
 ![TRL 3](https://img.shields.io/badge/TRL-3%20of%209-0F766E) ![Hardware: CERN-OHL-S-2.0](https://img.shields.io/badge/hardware-CERN--OHL--S--2.0-111827) ![Software: MIT](https://img.shields.io/badge/software-MIT-111827) [![DOI](https://zenodo.org/badge/1388476370.svg)](https://zenodo.org/badge/latestdoi/1388476370) [![REUSE compliant](https://github.com/BoujeeEnjinia1701/fieldnode/actions/workflows/reuse.yml/badge.svg)](https://github.com/BoujeeEnjinia1701/fieldnode/actions/workflows/reuse.yml) [![Archived in Software Heritage](https://archive.softwareheritage.org/badge/origin/https://github.com/BoujeeEnjinia1701/fieldnode/)](https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/BoujeeEnjinia1701/fieldnode)
 
-**Area:** Shared Components · **TRL:** 3 of 9 (proof of concept on paper) · **Prototype budget:** about $150 USD · **Difficulty:** 3 of 5
+**Area:** Shared Components · **TRL:** 3 of 9 (proof of concept on paper) · **Value-engineering target:** about $150 USD · **Difficulty:** 3 of 5
 
 A solar-powered, weatherproof sensor node with a common mounting, power and radio core, so any lab project that needs to measure something outdoors starts from the same tested base instead of a new enclosure and charger each time.
 

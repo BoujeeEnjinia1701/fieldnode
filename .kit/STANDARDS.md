@@ -371,6 +371,10 @@ A repo reaches TRL 3 only when its design is constructable and its build plan sh
 7. **Tools, skills and workspace.**
 8. **Where the numbers come from**: the model, drawings, calculation note and BOM, by file name.
 
+### Budgets are value-engineering targets
+
+`budget_usd` in `project.yaml` is a hypothetical control target that keeps the design thinking along a value-engineering lens; it is not a spending limit (Amish, 2026-10-01: "the budgets are a hypothethical control target to ensure we are thinking along a value engineering lens. its ok to ensure wording reflects that the hypothesis budget was x - the real cost being accrued is y"). Write it that way everywhere: "Value-engineering target: USD X. Estimated cost of the constructable design: USD Y (USD Z over or under the target)." A cost requirement is reported against the target ("over the value-engineering target by USD Z"), never as a failure that needs a budget decision, and the design decisions register does not carry "raise the budget" decisions. Instead the register has a short **Value engineering** section: target, estimated cost, the main cost drivers and the savings worth trying.
+
 ### Decisions live in their own document
 
 The build plan describes the design as it stands; it never lists outstanding decisions, open questions or items awaiting Amish (Amish, 2026-09-30: "don't log outstanding decisions in this build plan - that is not the place for it. that should be in a separate design document logged and named as such"). Those go in the **design decisions register**, `docs/06-design-decisions.md` (`PRJ-DEC-001`), which has two tables: open decisions (what is to be decided, options, recommendation, what it affects in the build, source record) and decisions made (date, decision, Amish's words where recorded, link to the decision record). Things to confirm when parts are bought (for example a panel's frame lip) are open items in the register too. The build plan may say "see the design decisions register" once, in its introduction.

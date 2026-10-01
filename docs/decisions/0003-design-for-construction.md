@@ -3,9 +3,9 @@ doc_id: FND-DDR-003
 title: FieldNode design for construction
 project: FieldNode
 doc_type: Design decision record
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-09-30'
+date: '2026-10-01'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,6 +17,10 @@ revisions:
   date: '2026-09-30'
   author: Amish Chadha
   change: Accepted by Amish, including the recommendations for A1 to A4
+- version: "0.3"
+  date: '2026-10-01'
+  author: Amish Chadha
+  change: Budget treated as a value-engineering target
 ---
 
 # 0003: Design for construction
@@ -51,7 +55,7 @@ The changes keep what the node does: the same enclosure, panel size, tilt, posit
 | Item | Change | Reason |
 | --- | --- | --- |
 | Mass | Back plate gets a 100 x 150 mm window behind the enclosure (6 mm corner radius); post and strut bar is 20 x 3 mm instead of 25 x 3 mm. Base node 2.45 kg (was 2.41 kg), 0.05 kg under R14's 2.5 kg [F1]; hot-climate node 2.61 kg [F1b]. | The clips, bolts, connector strip and fuses added about 0.2 kg. The window is hidden behind the box and away from every fixing; the narrower bar still has a buckling factor of 30 [D5]. |
-| Cost | BOM lines 1, 5, 13 and 14 repriced and line 15 added: base node $139.00, hot-climate node $148.00, both within the unchanged $150 `budget_usd` [F2], [F3]. | Parts added for construction. |
+| Cost | BOM lines 1, 5, 13 and 14 repriced and line 15 added: base node $139.00, hot-climate node $148.00, both within the unchanged $150 value-engineering target (`budget_usd`), $11.00 and $2.00 under [F2], [F3]. | Parts added for construction. |
 | Drawing | FND-DWG-001 Rev P3; making sketches FND-DWG-101 to 109 added. | Follows the model. |
 | Documents | FND-CAL-001 v0.3, FND-PRC-001 v0.5, FND-REQ-001 v0.5: mass, cost, bracket, pole range and cell swap figures updated. No requirement changed status. | Follows the model. |
 | Thermal and wind | Unchanged: the enclosure, panel and shield keep their size and position, and the lugs are not counted as heat capacity. Clamp pull 59 N (63 N with the shield) against 2,000 N [D3]. | |
@@ -63,7 +67,7 @@ The changes keep what the node does: the same enclosure, panel size, tilt, posit
 | A1 | The shield now comes off by hand, which lowers tamper resistance at a node mounted at 1.75 m partly to deter tampering (FND-PRC-001, choice 8). | (a) knurled thumb screws, as modelled; (b) M4 pan-head screws needing a screwdriver, which R15 allows. | (a) for the prototype; decide for deployments after the first site visit. |
 | A2 | Wall mounting. The plate's back now carries screw heads (2.8 mm) and the V-blocks (33 mm), so it cannot lie flat on a wall as the concept says. | (a) for a wall, unscrew the V-blocks and fit 5 mm spacers on the four wall screws; (b) a separate wall plate. | (a): no new part, and the spacers also let water drain. |
 | A3 | The R14 mass margin is now 0.05 kg on catalogue masses. | (a) accept, weigh the prototype at TRL 4; (b) look for more mass now (for example a 2.5 mm back plate). | (a). |
-| A4 | Whether the first prototype includes the sun shield (carried over from the earlier planning pass; the hot-climate node is now $148.00, within budget). | (a) build it with the shield; (b) base node first. | (a), since the shield factor is the assumption most in need of a test. |
+| A4 | Whether the first prototype includes the sun shield (carried over from the earlier planning pass; the hot-climate node is now $148.00, within the value-engineering target). | (a) build it with the shield; (b) base node first. | (a), since the shield factor is the assumption most in need of a test. |
 
 ## Consequences
 

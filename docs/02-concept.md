@@ -3,9 +3,9 @@ doc_id: FND-PRC-001
 title: FieldNode design precis
 project: FieldNode
 doc_type: Design precis
-version: "0.5"
+version: "0.6"
 status: Draft
-date: '2026-09-30'
+date: '2026-10-01'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -29,6 +29,10 @@ revisions:
   date: '2026-09-30'
   author: Amish Chadha
   change: "Design for construction (FND-DDR-003) applied; mass, cost, bracket, mounting and service figures updated; open for Amish's review"
+- version: "0.6"
+  date: '2026-10-01'
+  author: Amish Chadha
+  change: Budget treated as a value-engineering target
 ---
 
 # FieldNode design precis
@@ -132,7 +136,7 @@ Table 3. Airtime per day at a 15 min interval (96 uplinks)
 
 **Mass.** 2.45 kg for the base node: enclosure with lugs 0.43 kg, back plate and V-blocks 0.48 kg, bracket 0.22 kg, internal plate 0.07 kg and bought parts 1.24 kg (panel 0.55 kg). The TRL 2 estimate of 1.7 kg under-counted the back plate. The shield adds 0.16 kg (2.61 kg); R14 applies to the base node.
 
-**Cost.** $139.00 in parts at quantity 1 for the base node (see `bom/bom.csv`), within the $150 budget; $148.00 with the shield. The gateway is not included.
+**Cost.** $139.00 in parts at quantity 1 for the base node (see `bom/bom.csv`), within the $150 value-engineering target ($11.00 under); $148.00 with the shield ($2.00 under). The gateway is not included.
 
 ## Key design choices
 

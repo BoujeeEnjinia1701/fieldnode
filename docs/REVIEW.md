@@ -255,7 +255,7 @@ Run under `/build-plan` steps 1 to 4 with Amish's instruction of 2026-09-30 to r
 
 - Constructability checks: 97 of 97 pass.
 - Mass: base node **2.45 kg** (was 2.41 kg), **0.05 kg** under R14; hot-climate node 2.61 kg. R14 is met on paper, but the margin is thin.
-- Cost: base node $139.00, hot-climate node $148.00, both within the unchanged $150 `budget_usd`.
+- Cost: base node $139.00, hot-climate node $148.00, both within the unchanged $150 value-engineering target (`budget_usd`).
 - Thermal, energy, radio and wind results unchanged (enclosure, panel and shield keep their size and place); clamp pull 59 N (63 N with the shield) against 2,000 N; bracket buckling factor 30.
 - Requirement status unchanged: none not met; R2 and R6 at risk; R12 install time not verifiable at TRL 3.
 
@@ -264,7 +264,7 @@ Run under `/build-plan` steps 1 to 4 with Amish's instruction of 2026-09-30 to r
 1. **A1, shield fixing:** thumb screws (tool free) lower tamper resistance at a node mounted at 1.75 m partly against tampering. Options: (a) thumb screws; (b) M4 pan-head screws. Recommendation: (a) for the prototype. **Decided by Amish, 2026-09-30: go with recommendation.**
 2. **A2, wall mounting:** the plate's back now carries screw heads and the V-blocks. Options: (a) remove the V-blocks and use 5 mm spacers on the wall screws; (b) a separate wall plate. Recommendation: (a). **Decided by Amish, 2026-09-30: go with recommendation.**
 3. **A3, mass margin 0.05 kg:** (a) accept and weigh at TRL 4; (b) remove more mass now. Recommendation: (a). **Decided by Amish, 2026-09-30: go with recommendation.**
-4. **A4, shield on the first prototype** (carried over): (a) yes, $148.00 within budget; (b) base node first. Recommendation: (a). **Decided by Amish, 2026-09-30: go with recommendation.**
+4. **A4, shield on the first prototype** (carried over): (a) yes, $148.00 within the value-engineering target; (b) base node first. Recommendation: (a). **Decided by Amish, 2026-09-30: go with recommendation.**
 5. Still open: O1 pilot region and band, O2 port pin assignment, O3 firmware update method; the enclosure part (boss spacing, lug kit); a panel with a back lip at least 12 mm wide; the band torque that gives 1,000 N preload.
 
 ### Stale, to regenerate on Amish's Mac
