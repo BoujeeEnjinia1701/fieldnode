@@ -11,9 +11,9 @@ R9,23.7 s/day at SF9 at 15 min; firmware rule lengthens the interval to 22 min a
 R10,30 days = 90 kB of 16 MB flash; backlog upload limited by fair use,30 days or more kept on the node,Met on paper
 R11,"Two M12 5-pin ports: V+, GND and three signal pins; one switched rail per port, 3.3, 5 or 12 V","Two sealed ports, I2C, UART or RS-485, analog, switched rails",Met on paper (pinout awaiting adopting projects)
 R12,V-block seats 40 to 60 mm poles; install estimate 15 min,40 to 60 mm poles and walls; 15 min or less,Not verifiable at TRL 3 (install time); fit met by design
-R13,Clamp pull 59 N (63 N with the shield) against 2000 N; slip factor 13; bracket factor 32,35 m/s gusts without loosening,Met on paper (band preload assumed)
-R14,"Base node 2.41 kg (0.09 kg margin); 2.55 kg with the hot-climate shield, which R14 excludes","2.5 kg or less, base node",Met on paper
-R15,"Cell swap estimate 7 min, screwdriver, plug-in cell lead","10 min or less, no soldering",Met by design
-R16,$126.00 base node; $134.00 with the shield,"$150 or less (FieldNode core, gateway excluded)",Met on paper
+R13,Clamp pull 59 N (63 N with the shield) against 2000 N; slip factor 12; bracket factor 30,35 m/s gusts without loosening,Met on paper (band preload assumed)
+R14,"Base node 2.45 kg (0.05 kg margin); 2.61 kg with the hot-climate shield, which R14 excludes","2.5 kg or less, base node",Met on paper
+R15,"Cell swap estimate 7 min (9 min with the shield, which lifts off after four thumb screws), screwdriver, plug-in cell lead","10 min or less, no soldering",Met by design
+R16,$139.00 base node; $148.00 with the shield,"$150 or less (FieldNode core, gateway excluded)",Met on paper
 R17,CERN-OHL-S-2.0 and MIT; standard LoRaWAN,"Open files, any network server",Met by design
 R18,Core forwards only what the sensor firmware passes,No images or audio leave the node,Met by design

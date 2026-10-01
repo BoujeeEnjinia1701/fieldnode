@@ -16,7 +16,7 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "cad/src"))
-from model import PARAMS as P, derived, build_parts, bracket_geometry, build_shield, shield_geometry  # noqa: E402
+from model import PARAMS as P, derived, build_parts, build_components, bracket_geometry, build_shield, shield_geometry  # noqa: E402
 
 D = derived(P)
 rows = []
@@ -73,7 +73,7 @@ H_COMB = 10.0            # W/m2K combined convection and radiation, still air
 ALPHA = {"clean": 0.45, "dusty": 0.70}      # light grey polycarbonate
 SHIELD_F = 0.25          # share of solar gain reaching a box under a ventilated white shield (assumed, as WWT-CAL-001)
 ALBEDO = 0.20
-SHIELD_COST = 8.0        # hot-climate option, BOM line 14 (FND-DDR-002); mass from the model below
+SHIELD_COST = 9.0        # hot-climate option, BOM line 14 (FND-DDR-002); mass from the model below
 SHIELD_FIX_KG = 0.02     # screws and standoffs for the shield
 T_DESIGN_MAX = 60.0      # C, R3 interior limit
 P_BASE_INT = 0.10        # W average dissipation inside the box outside charging
@@ -92,7 +92,10 @@ MU = 0.20                # friction, V-block and band on a galvanized pole
 E_AL, FY_AL = 69e3, 150.0                   # MPa, 6063-T5 class flat bar
 # Mass (bought parts, typical catalogue masses, kg)
 M_BOUGHT = {"panel": 0.55, "cell": 0.15, "holder_fuse_ntc": 0.03, "power": 0.05, "ctrl": 0.02,
-            "antenna": 0.06, "ports": 0.06, "glands": 0.03, "vent": 0.01, "bands": 0.08, "hardware": 0.10}
+            "antenna": 0.06, "ports": 0.06, "glands": 0.03, "vent": 0.01, "bands": 0.08, "hardware": 0.10,
+            # added by FND-DDR-003 (design for construction): plug-in connector strip and two
+            # resettable fuses (line 15); bracket, lug, clip and panel-clip bolts and nuts (line 13)
+            "connectors_fuses": 0.02, "construction_fixings": 0.08}
 RHO_KG = {"pc": 1.20e-6, "al": 2.70e-6, "asa": 1.07e-6}     # kg/mm3
 
 # =============================================================== A. Core consumption and energy budget
@@ -284,7 +287,9 @@ def sun_vec(lat, dec, omega):
 # thermal mass inside and of the box, from the model
 parts = build_parts()
 vol = {k: v.volume for k, v in parts.items()}
-m_box = (vol["body"] + vol["lid"]) * RHO_KG["pc"]
+_comp = build_components()
+m_lugs = _comp["lugs"].shape.volume * RHO_KG["pc"]       # external lugs sit on the back plate: mass only, not heat capacity
+m_box = (vol["body"] + vol["lid"]) * RHO_KG["pc"] - m_lugs
 m_mplate = vol["mplate"] * RHO_KG["asa"]          # printed ASA (BOM line 11)
 C_TH = (m_box * CP["enclosure"] + (M_BOUGHT["cell"] + M_BOUGHT["holder_fuse_ntc"]) * CP["cell"]
         + (M_BOUGHT["power"] + M_BOUGHT["ctrl"]) * CP["boards"] + m_mplate * CP["asa"])
@@ -386,10 +391,9 @@ out("C6", f"panel at {t_panel:.0f} C: 9 V class Vmp {vmp_hot:.2f} V against a {V
 
 # =============================================================== F1. Mass (R14), needed for the wind case
 _pr = P["pole_od"] / 2
-band_vol = len(D["clamps"]) * math.pi * ((_pr + 2) ** 2 - _pr ** 2) * P["band_w"]    # massing rings, counted as bought bands
-m_made = {"enclosure body and lid (PC)": m_box, "internal plate (ASA)": m_mplate,
+m_made = {"enclosure body, lid and lugs (PC)": m_box + m_lugs, "internal plate (ASA)": m_mplate,
           "bracket (Al)": vol["bracket"] * RHO_KG["al"],
-          "back plate and V-blocks (Al)": (vol["mount"] - band_vol) * RHO_KG["al"]}
+          "back plate and V-blocks (Al)": sum(_comp[k].shape.volume for k in ("plate", "vblock_low", "vblock_up")) * RHO_KG["al"]}
 m_total = sum(m_made.values()) + sum(M_BOUGHT.values())
 out("F1", "made parts: " + ", ".join(f"{k} {v:.2f}" for k, v in m_made.items())
     + f" kg; bought parts {sum(M_BOUGHT.values()):.2f} kg; total {m_total:.2f} kg (base node)")
@@ -467,7 +471,9 @@ for dpole in P["pole_range"]:
     half_w_contact = r * math.sin(math.radians(45))
     out("D6", f"pole {dpole:.0f} mm: V contact points {half_w_contact:.1f} mm either side of center (block half-width "
               f"{P['vblock'][0] / 2:.0f} mm); band length around pole and block about {math.pi * dpole / 2 + 2 * (D['vblock_depth'] + r) + P['vblock'][0]:.0f} mm")
-out("D6b", f"largest pole the {P['vblock'][0]:.0f} mm V-block seats: {2 * P['vblock'][0] / 2 / math.sin(math.radians(45)):.0f} mm")
+out("D6b", f"V-block {P['vblock'][0]:.0f} x {P['vblock'][1]:.0f} x {P['vblock'][2]:.0f} mm, V {D['v_mouth']:.1f} mm wide at its face, apex {D['v_apex']:.1f} mm "
+           f"from the plate; the {P['pole_od']} mm pole touches the V faces {D['v_contact']:.1f} mm from the plate; "
+           f"largest pole whose contact stays inside the V: {D['v_mouth'] * math.sqrt(2):.0f} mm")
 
 # =============================================================== E. Installation and service (R12, R15)
 INSTALL = [("Fit bracket and panel to the back plate on the ground", 3), ("Carry the node up a step ladder, hold it on the pole", 2),
@@ -479,6 +485,9 @@ SERVICE = [("Open lid (4 captive screws)", 1), ("Unplug cell lead at the holder"
            ("Replace desiccant, check gasket", 1), ("Close lid, confirm an uplink", 2)]
 t_srv = sum(t for _, t in SERVICE)
 out("E2", "cell swap: " + "; ".join(f"{n} {t} min" for n, t in SERVICE) + f"; total {t_srv} min")
+SHIELD_OFF_ON = [("Unscrew four thumb screws and lift the shield off", 1), ("Refit the shield and its thumb screws", 1)]
+t_srv_sh = t_srv + sum(t for _, t in SHIELD_OFF_ON)
+out("E2b", "cell swap with the hot-climate shield fitted: " + "; ".join(f"{n} {t} min" for n, t in SHIELD_OFF_ON) + f"; total {t_srv_sh} min")
 
 # =============================================================== F. Cost (R16)
 w_node = m_total * 9.81
@@ -527,7 +536,7 @@ res("R12", f"V-block seats 40 to 60 mm poles; install estimate {t_inst} min", "4
 res("R13", f"Clamp pull {pull:.0f} N ({pull_sh:.0f} N with the shield) against {2 * T_BAND:.0f} N; slip factor {slip_ax / fz_down:.0f}; bracket factor {Pcr / f_member:.0f}",
     "35 m/s gusts without loosening", "Met on paper (band preload assumed)")
 res("R14", f"Base node {m_total:.2f} kg ({2.5 - m_total:.2f} kg margin); {m_total + SHIELD_KG:.2f} kg with the hot-climate shield, which R14 excludes", "2.5 kg or less, base node", "Met on paper")
-res("R15", f"Cell swap estimate {t_srv} min, screwdriver, plug-in cell lead", "10 min or less, no soldering", "Met by design")
+res("R15", f"Cell swap estimate {t_srv} min ({t_srv_sh} min with the shield, which lifts off after four thumb screws), screwdriver, plug-in cell lead", "10 min or less, no soldering", "Met by design")
 res("R16", f"${total:.2f} base node; ${total + SHIELD_COST:.2f} with the shield", f"${budget:.0f} or less (FieldNode core, gateway excluded)", "Met on paper")
 res("R17", "CERN-OHL-S-2.0 and MIT; standard LoRaWAN", "Open files, any network server", "Met by design")
 res("R18", "Core forwards only what the sensor firmware passes", "No images or audio leave the node", "Met by design")

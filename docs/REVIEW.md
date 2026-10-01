@@ -221,3 +221,70 @@ This is an appearance model only: no tolerances, no PCB layouts and no fabricati
 - Kit 1.5.0 synced: STANDARDS v1.5 (sections 12 to 15: product renders, storefront images and image quality, public release, authorship and signing), `.kit/cards.py`, `.kit/image_qc.py`, `.kit/release_gate.py`, issue templates, and the `/render-product` and `/release` commands. `CLAUDE.md` now matches `.kit/CLAUDE.md`.
 - Every `media/render-*.png` recaptioned from its original render with the new layout: the title, concept label and repository sit in a band above the render and the view note in a band below it, each line wrapped to the image width, so no text overlaps other text or the render or runs off the image. `media/card.png` and `media/social-preview.png` regenerated with the same rules.
 - `python .kit/image_qc.py` and `python .kit/release_gate.py` pass. trl stays 3.
+
+## Session 2026-09-30: design for construction and illustrated build plan (BLD-001)
+
+Run under `/build-plan` steps 1 to 4 with Amish's instruction of 2026-09-30 to replace the text-only plan: "Design concept and constructability are different states", speak plainly, draw every component and how it fits, and "fix the design assumptions to match and be physically feasible". This section replaces the earlier 2026-09-30 build plan section. Commit and push were skipped by instruction. TRL cap respected: no PCB layout, firmware, purchasing list, test plan or build log; the power board is bought modules wired at block level.
+
+### What was done
+
+- `cad/src/model.py`: rebuilt as components with every fixing, plus 97 build123d constructability checks (`python cad/src/model.py --check`: overlap volume and gap for every pair that must touch or must clear). All 97 pass. STEP and STL regenerated in `cad/step/` and `cad/stl/` (the shield file now includes its thumb screws).
+- `docs/decisions/0003-design-for-construction.md` (FND-DDR-003): every change and its reason, "made under Amish's 2026-09-30 instruction to make the design physically buildable; open for his review".
+- `docs/05-build-plan.md` (FND-BLD-001 v0.2): rewritten from `.kit/templates/build-plan.md` in plain English, components in build order, each with a making sketch, numbered making steps, a joint close-up and a check; twelve assembly steps each with a picture; first checks; safety stops; tools; open questions. The old text-only v0.1 is withdrawn (its research on modules, wiring and safety holds is reused).
+- `cad/src/build_plan_media.py` (new) with `.kit/build_views.py`: overview, nine making sketches FND-DWG-101 to 109, two drilling layouts, eight joint close-ups, twelve step pictures and the block wiring diagram. Every picture was looked at and reworked where it was cluttered or unclear.
+- `docs/04-calcs/sizing.py` re-run: mass from the new components, V-block geometry [D6b], cell swap with the shield [E2b]. FND-CAL-001 v0.3, FND-PRC-001 v0.5 and FND-REQ-001 v0.5 carry the new mass, cost, bracket and service figures. `bom/bom.csv`: lines 1, 5, 12, 13 and 14 respecified, line 15 added.
+- Drawing FND-DWG-001 Rev P3 (`cad/src/sheets.py`): new penetration leaders and notes; its annotation offsets fixed (they no longer matched the kit 1.7 view layout, so dimensions sat about 11 mm off the views).
+- Concept media regenerated (`cad/src/concept_media.py`): hero, blueprint, cutaway, exploded (now with callout 15), flow, model.glb and viewer.
+- `project.yaml`: `design_state: constructable`; FND-DDR-003, the overview picture and `build_plan_media.py` added to `trl_evidence`. README: new "Building the prototype" section with the overview picture.
+- Kit fixes, reported for the kit source: `.kit/build_views.py` (picture band kept clear of the title and subtitle; leader lines end on the part itself; joints drop parts a window leaves empty; `component_sheet` takes a laid-flat shape for the views and an inset camera); `.kit/drawing.py` (front and right view sublabels no longer overlap when the right view is narrow).
+
+### Design changes made for construction (FND-DDR-003)
+
+1. **V-blocks (P1):** 60 x 33 x 20 mm with a true 90° V, 50.3 mm wide, point 7.8 mm from the plate; the 48.3 mm pole touches both faces 24.9 mm from the plate; poles 40 to 71 mm seat. Two M4 countersunk screws each. The pole stays where the concept put it.
+2. **Penetrations (P2, P3):** two rows 27 and 55 mm from the back face. Back row: glands at 40 and 8 mm left, vent 24 mm right. Front row: ports at 54 and 22 mm left, antenna 30 mm right. Flanges at least 8.0 mm apart (was 2 mm); vent and antenna 10.6 mm apart (were overlapping).
+3. **Bracket (P4):** per side, a 30 x 30 x 3 angle plate clip (two M5 to the plate), a 20 x 3 flat-bar post on two M6 bolts (rigid), a 20 x 3 strut on one M6 bolt each end, and two 30 x 30 x 3 angle panel clips bolted through the panel frame's back lip (two M4 each). Every joint is face to face. The concept's pinned post and strut formed a linkage that could swing; the two-bolt post foot makes a rigid triangle.
+4. **Shield (P5):** 12 mm flanges folded in at the back of each side, four M4 knurled thumb screws into tapped holes in the plate; slides off forward. Cell swap on a hot-climate node about 9 min (was 7 min); R15 (10 min) still met.
+5. **Fuses and connectors (P6):** BOM line 15, a plug-in terminal strip on the internal plate (modelled) and a 0.5 A resettable fuse on each sensor supply.
+6. **Enclosure fixing (P7):** four bought external lugs, one M5 button-head screw each through the plate.
+7. **Internal plate fixing (P8):** on the enclosure's four moulded bosses, 6 mm off the back wall, four M4 screws.
+8. **Band path (P9):** each band round the pole, through two slots in the plate 51 mm each side of centre and across the plate front (below the box and above it).
+9. **Mass:** a 100 x 150 mm window in the back plate behind the box and 20 mm bar (was 25 mm) offset the added parts.
+10. **Found while drawing:** the upper plate clip hole sat 5 mm below the plate edge; moved so it is 15 mm clear.
+
+### Key results
+
+- Constructability checks: 97 of 97 pass.
+- Mass: base node **2.45 kg** (was 2.41 kg), **0.05 kg** under R14; hot-climate node 2.61 kg. R14 is met on paper, but the margin is thin.
+- Cost: base node $139.00, hot-climate node $148.00, both within the unchanged $150 `budget_usd`.
+- Thermal, energy, radio and wind results unchanged (enclosure, panel and shield keep their size and place); clamp pull 59 N (63 N with the shield) against 2,000 N; bracket buckling factor 30.
+- Requirement status unchanged: none not met; R2 and R6 at risk; R12 install time not verifiable at TRL 3.
+
+### Proposed, awaiting Amish
+
+1. **A1, shield fixing:** thumb screws (tool free) lower tamper resistance at a node mounted at 1.75 m partly against tampering. Options: (a) thumb screws; (b) M4 pan-head screws. Recommendation: (a) for the prototype. **Decided by Amish, 2026-09-30: go with recommendation.**
+2. **A2, wall mounting:** the plate's back now carries screw heads and the V-blocks. Options: (a) remove the V-blocks and use 5 mm spacers on the wall screws; (b) a separate wall plate. Recommendation: (a). **Decided by Amish, 2026-09-30: go with recommendation.**
+3. **A3, mass margin 0.05 kg:** (a) accept and weigh at TRL 4; (b) remove more mass now. Recommendation: (a). **Decided by Amish, 2026-09-30: go with recommendation.**
+4. **A4, shield on the first prototype** (carried over): (a) yes, $148.00 within budget; (b) base node first. Recommendation: (a). **Decided by Amish, 2026-09-30: go with recommendation.**
+5. Still open: O1 pilot region and band, O2 port pin assignment, O3 firmware update method; the enclosure part (boss spacing, lug kit); a panel with a back lip at least 12 mm wide; the band torque that gives 1,000 N preload.
+
+### Stale, to regenerate on Amish's Mac
+
+- `media/render-hero.png`, `media/render-exploded.png`, `media/render-detail.png` (Blender photoreal renders) still show the concept bracket, V-blocks and penetration layout. `media/card.png` and `media/social-preview.png` are built from them.
+- `cad/src/product_model.py` (the appearance model for those renders) still reads PARAMS keys the model no longer has (`port_x`, `gland_x`, `ant_x`, `bracket_x`, `post_ly` and others) and will not run until it is updated to the constructable geometry.
+- `docs/pdf/` PDFs of FND-CAL-001, FND-PRC-001 and FND-REQ-001 are the older versions until `python .kit/render.py` is run.
+- Cross-repo: sibling READMEs that cost the FieldNode core at about $126 should read $139.
+
+### Safety concerns
+
+- First charge of the LiFePO4 cell: the plan holds charging until the 3.6 V charge voltage and both temperature stops are shown with substitute resistors, then requires an attended first charge on a non-combustible surface.
+- The charger's temperature window must be 0 to 45 °C and the protection board must use LiFePO4 limits; both are checked on the datasheet before buying.
+- The new rail fuses limit a shorted sensor cable; the 5 A cell fuse stays.
+- Sharp edges on cut bar, angle and 0.5 mm sheet; ASA print fumes; work at height stays outside the plan.
+
+### Recommended next step
+
+Amish reviews FND-DDR-003 and the illustrated plan, decides A1 to A4, and says whether this plan format should be used across the portfolio. The photoreal renders and `product_model.py` can then be brought up to the constructable design on his Mac. Building to the plan is TRL 4 work and stays on hold.
+
+### Decisions, 2026-09-30
+
+Amish, 2026-09-30: "i accept your recommended changes on design that are currently being sent across for my approval". FND-DDR-003 (design for construction) is accepted as v0.2, and A1 to A4 are decided as recommended: thumb screws on the shield for the prototype, 5 mm spacers for wall mounting with the V-blocks removed, accept the 0.05 kg mass margin and weigh at TRL 4, and fit the shield on the first prototype.

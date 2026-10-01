@@ -1,4 +1,4 @@
-"""FieldNode concept media (TRL 3, FND-DDR-002 applied), generated from the parametric model.
+"""FieldNode concept media (TRL 3, FND-DDR-002 and FND-DDR-003 applied), generated from the parametric model.
 
 Run from the repo root:  python cad/src/concept_media.py
 Takes the node's parts from cad/src/model.py (PARAMS) and renders the media set with
@@ -56,6 +56,7 @@ STYLE = {  # key: (color, exploded offset)
     "ports": ("#D4A017", add(BODY, scr(-120, -250, 0))),
     "mplate": ("#94A3B8", GROUP),
     "mount": ("#A8A29E", (0, 0, 0)),
+    "connectors": ("#7C3AED", add(GROUP, scr(-20, -75, 60))),
 }
 parts = [Part("Pole, 48 mm OD (site supplied)", pole_context(P), "#9CA3AF", None)]
 for key, (num, name) in BOM.items():
@@ -82,7 +83,7 @@ render_all(
                  "LiFePO4 cell 3.2 V, 6 Ah, about 19 Wh; charging 0 to 45 °C only",
                  "Worst month: 7.75 Wh/day stored against 2.67 Wh/day drawn",
                  "Published sensor allowance 100 mW; 5.75 days with no sun",
-                 "LoRaWAN every 15 min at SF9; $126, 2.41 kg; shield option above 30 °C"],
+                 "LoRaWAN every 15 min at SF9; $139, 2.45 kg; shield option above 30 °C"],
     scale_figure=False, context=context,
     cut_exclude=("Pole, 48 mm OD (site supplied)", "Solar panel, 6 W", "Panel tilt bracket"),
     flow={"title": "daily energy flow in the worst month, Wh per day (FND-CAL-001 estimates, 2 peak sun hours, 100 mW sensors)",

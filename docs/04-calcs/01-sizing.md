@@ -3,9 +3,9 @@ doc_id: FND-CAL-001
 title: FieldNode sizing calculations
 project: FieldNode
 doc_type: Calculation
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-09-25'
+date: '2026-09-30'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,11 +17,15 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.3"
+  date: '2026-09-30'
+  author: Amish Chadha
+  change: Design for construction (FND-DDR-003) applied; bracket, V-block, mass, cost and cell swap with the shield updated; open for Amish's review
 ---
 
 # FieldNode sizing calculations
 
-With the decisions of FND-DDR-002 applied, FieldNode meets fifteen of its eighteen requirements on paper (ten by calculation, five by design), has two at risk, misses none and leaves one that only a timed installation can settle. Version 0.1 found one miss, heat: in full sun at 45 °C ambient the base enclosure reaches 58.7 °C clean and 66.2 °C dusty on a hot design day, and up to 73.3 °C with the sun in its worst position, against the 60 °C of R3, and the cell is then too hot to charge for most of the day. Amish decided on 2026-09-25 to fit a ventilated white sun shield at hot-climate sites only. This note shows that the shield is needed where the site's design maximum exceeds 30 °C; with it the inside peaks at 48.5 to 52.2 °C at 45 °C ambient and the node stores 10.8 to 13.1 Wh on a hot clear day. The shield is BOM line 14, an option at $8.00 and 0.15 kg; the hot-climate node costs $134.00 and weighs 2.55 kg, and R14 now applies to the base node (2.41 kg). The panel is now 9 V class, which keeps 2.42 V of headroom above a typical charger's 5 V minimum input when hot, where the 6 V class panel had none. The published sensor allowance is 100 mW, which gives 5.75 days of autonomy, a 15 % margin; a cold or aged cell still falls short of 5 days (R6 at risk), and the cell will not charge on clear days colder than about -13 °C (R2 at risk). A firmware rule lengthens the reporting interval at SF10 and slower, so airtime stays within 30 s a day on The Things Network. Every number in this note is printed by `docs/04-calcs/sizing.py`; the tag in brackets, for example [A3], is the line of that script's output that carries it.
+With the decisions of FND-DDR-002 applied, FieldNode meets fifteen of its eighteen requirements on paper (ten by calculation, five by design), has two at risk, misses none and leaves one that only a timed installation can settle. Version 0.1 found one miss, heat: in full sun at 45 °C ambient the base enclosure reaches 58.7 °C clean and 66.2 °C dusty on a hot design day, and up to 73.3 °C with the sun in its worst position, against the 60 °C of R3, and the cell is then too hot to charge for most of the day. Amish decided on 2026-09-25 to fit a ventilated white sun shield at hot-climate sites only. This note shows that the shield is needed where the site's design maximum exceeds 30 °C; with it the inside peaks at 48.5 to 52.2 °C at 45 °C ambient and the node stores 10.8 to 13.1 Wh on a hot clear day. The shield is BOM line 14, an option at $9.00 and 0.16 kg; the hot-climate node costs $148.00 and weighs 2.61 kg, and R14 now applies to the base node (2.45 kg after the design for construction of FND-DDR-003). The panel is now 9 V class, which keeps 2.42 V of headroom above a typical charger's 5 V minimum input when hot, where the 6 V class panel had none. The published sensor allowance is 100 mW, which gives 5.75 days of autonomy, a 15 % margin; a cold or aged cell still falls short of 5 days (R6 at risk), and the cell will not charge on clear days colder than about -13 °C (R2 at risk). A firmware rule lengthens the reporting interval at SF10 and slower, so airtime stays within 30 s a day on The Things Network. Every number in this note is printed by `docs/04-calcs/sizing.py`; the tag in brackets, for example [A3], is the line of that script's output that carries it.
 
 > **Safety:** These are first-principles estimates for a paper proof of concept. They do not show that the lithium iron phosphate cell, the charger or the pole mounting is safe. Cell temperature, charge lockout and clamp preload must be checked on hardware before any node is left unattended. See FND-PRC-001, Safety.
 
@@ -103,21 +107,21 @@ The design case is a node on a 48.3 mm pole with the enclosure base 1.75 m above
 ## D. Wind and mounting (R12, R13)
 
 - **Loads.** A 35 m/s gust gives a dynamic pressure of 750 Pa: 52.2 N normal to the panel, 29.3 N on the enclosure front-on and 17.6 N side-on [D1].
-- **Overturning.** With wind from behind, the panel lifts and pushes forward; together with the node's weight this gives 14.8 N·m about the lower clamp and pulls the upper clamp off the pole with 59 N. Wind from the front presses the node onto the pole [D2]. Against the 2,000 N that a 1,000 N band preload holds, the factor is 33.9 [D3]. With the shield fitted the enclosure presents 36.3 N front-on and the worst clamp pull rises to 63 N, a factor of 31.8 [D3b].
-- **Slip.** Weight and wind push the node down the pole with 64 N against 800 N of friction (factor 13); side wind twists it with 1.58 N·m against 19.3 N·m (factor 12) [D4]. These factors depend on the assumed preload, which a torque check at installation must confirm.
-- **Bracket.** The rear posts are 170 mm long at 89° and the front struts 171 mm at 50°. Each member carries at most about 41 N, and a 25 x 3 mm flat bar of that length buckles out of plane at 1,317 N, a factor of 32 [D5].
-- **Pole range.** On a 40 mm pole the V contacts sit 14.1 mm either side of the center and on a 60 mm pole 21.2 mm, both inside the 50 mm V-block, which seats poles up to 71 mm. Each band needs about 197 to 248 mm of length around the pole and block [D6], [D6b].
+- **Overturning.** With wind from behind, the panel lifts and pushes forward; together with the node's weight this gives 14.8 N·m about the lower clamp and pulls the upper clamp off the pole with 59 N. Wind from the front presses the node onto the pole [D2]. Against the 2,000 N that a 1,000 N band preload holds, the factor is 33.8 [D3]. With the shield fitted the enclosure presents 36.3 N front-on and the worst clamp pull rises to 63 N, a factor of 31.7 [D3b].
+- **Slip.** Weight and wind push the node down the pole with 64 N against 800 N of friction (factor 12); side wind twists it with 1.58 N·m against 19.3 N·m (factor 12) [D4]. These factors depend on the assumed preload, which a torque check at installation must confirm.
+- **Bracket.** Since FND-DDR-003 each side has a post, 161 mm between its lower foot bolt and its head bolt at 80°, and a strut, 129 mm between bolts at 38°, bolted flat to angle clips on the back plate and on the panel frame's back lip. Each member carries at most about 39 N, and a 20 x 3 mm flat bar of that length buckles out of plane at 1,180 N, a factor of 30 [D5]. The post is held by two bolts at its foot, so the side frame is a rigid triangle, not a linkage.
+- **Pole range.** Each V-block is 60 x 33 x 20 mm with a true 90° V 50.3 mm wide at its face; the 48.3 mm design pole touches both V faces 24.9 mm from the plate [D6b]. On a 40 mm pole the V contacts sit 14.1 mm either side of the center and on a 60 mm pole 21.2 mm, both inside the V, which seats poles up to 71 mm. Each band needs about 229 to 280 mm of length around the pole, block and plate [D6], [D6b].
 - **R13 is met on paper**, subject to the preload assumption. The pole, its footing and any wall anchors are site supplied and outside this note; the node adds about 81 N of wind load about 2 m up the pole, which the site owner should check.
 
 ## E. Installation and service (R12, R15)
 
 - **Installation.** Fitting the bracket and panel on the ground, lifting the node, tightening two clamps, aiming the panel, plugging in the sensor and confirming an uplink take an estimated 15 min with a helper [E1], exactly the R12 limit. Only a timed installation can verify it.
-- **Cell swap.** Opening the lid, swapping the cell in its fused holder, renewing the desiccant and confirming an uplink take an estimated 7 min with a screwdriver and no soldering [E2]. R15 is met by design.
+- **Cell swap.** Opening the lid, swapping the cell in its fused holder, renewing the desiccant and confirming an uplink take an estimated 7 min with a screwdriver and no soldering [E2]. Where the sun shield is fitted it covers the lid; it lifts off after four thumb screws, which adds about 2 min, 9 min in all [E2b]. R15 is met by design for both.
 
 ## F. Mass and cost (R14, R16)
 
-- **Mass.** The enclosure body and lid weigh 0.43 kg, the printed ASA internal plate 0.08 kg, the bracket 0.14 kg and the back plate with V-blocks 0.63 kg; bought parts add 1.14 kg: 2.41 kg in all for the base node [F1]. The TRL 2 figure of about 1.7 kg left out most of the back plate. R14, now stated for the base node, is met on paper with 0.09 kg of margin; the margin is thin and rests on catalogue masses. The shield, 181 x 106 x 206 mm of 0.5 mm aluminium, weighs 0.15 kg with fixings, so a hot-climate node weighs 2.55 kg [F1b].
-- **Cost.** The BOM has 14 lines, all priced; line 14, the shield, is an option at quantity 0 in the base node. The base node totals $126.00 against the $150 `budget_usd`, a margin of $24.00 (16 %) [F2]; the 9 V class panel is priced as the 6 V class was. A hot-climate node with the shield costs $134.00 and weighs 2.55 kg [F3]. R16 is met on paper for both.
+- **Mass.** The enclosure body, lid and lugs weigh 0.43 kg, the printed ASA internal plate 0.07 kg, the bracket 0.22 kg and the back plate with V-blocks 0.48 kg; bought parts add 1.24 kg: 2.45 kg in all for the base node [F1]. The TRL 2 figure of about 1.7 kg left out most of the back plate. The design for construction (FND-DDR-003) added clips, bolts, a connector strip and fuses, and took mass out with a window in the back plate behind the enclosure and a 20 mm bar. R14, stated for the base node, is met on paper with 0.05 kg of margin; the margin is thin and rests on catalogue masses. The shield, 181 x 106 x 206 mm of 0.5 mm aluminium with its fixing flanges, weighs 0.16 kg with its thumb screws, so a hot-climate node weighs 2.61 kg [F1b].
+- **Cost.** The BOM has 15 lines, all priced; line 14, the shield, is an option at quantity 0 in the base node, and line 15, the plug-in connectors and rail fuses, was added by FND-DDR-003. The base node totals $139.00 against the $150 `budget_usd`, a margin of $11.00 (7 %) [F2]. A hot-climate node with the shield costs $148.00 and weighs 2.61 kg [F3]. R16 is met on paper for both.
 
 ## L. Results against every requirement
 
@@ -135,12 +139,12 @@ The design case is a node on a 48.3 mm pole with the enclosure base 1.75 m above
 | R9 | Airtime within fair use | 23.7 s a day at SF9 and 15 min; firmware rule gives 22 min at SF10 and 87 min at SF12; 30.0 s a day or less | 30 s a day or less on The Things Network | Met on paper (firmware rule) |
 | R10 | Store and forward | 30 days in 90 kB of 16 MB | 30 days or more | Met on paper |
 | R11 | Standard sensor interface | Two M12 5-pin ports: switched rail, ground and three signal pins | Two sealed ports with a bus, analog input and one switched rail each | Met on paper (pinout open, DDR-001 O2) |
-| R13 | Wind | Clamp pull 59 N (63 N with the shield) against 2,000 N; slip factor 13; bracket factor 32 | 35 m/s without loosening | Met on paper (preload assumed) |
-| R14 | Mass | Base node 2.41 kg (0.09 kg margin); 2.55 kg with the shield, which R14 excludes | 2.5 kg or less, base node | Met on paper |
-| R16 | Cost | $126.00 base node; $134.00 with the shield | $150 or less for the FieldNode core | Met on paper |
+| R13 | Wind | Clamp pull 59 N (63 N with the shield) against 2,000 N; slip factor 12; bracket factor 30 | 35 m/s without loosening | Met on paper (preload assumed) |
+| R14 | Mass | Base node 2.45 kg (0.05 kg margin); 2.61 kg with the shield, which R14 excludes | 2.5 kg or less, base node | Met on paper |
+| R16 | Cost | $139.00 base node; $148.00 with the shield | $150 or less for the FieldNode core | Met on paper |
 | R1 | Weather protection | IP65 box and ePTFE vent; IP67 class glands, capped ports and bulkhead | IP65; sealed penetrations | Met by design |
 | R4 | Safe charging window | NTC gates the charger at 0 and 45 °C | Charging blocked outside 0 to 45 °C | Met by design |
-| R15 | Serviceable | Cell swap in about 7 min | 10 min or less, no soldering | Met by design |
+| R15 | Serviceable | Cell swap in about 7 min; 9 min with the shield | 10 min or less, no soldering | Met by design |
 | R17 | Open and independent | CERN-OHL-S-2.0 and MIT; standard LoRaWAN | Open files, any network server | Met by design |
 | R18 | Privacy pass-through | Core forwards only what the sensor firmware passes | No images or audio leave the node | Met by design |
 
@@ -157,7 +161,7 @@ Counts: none not met, 2 at risk, 10 met on paper, 5 met by design, 1 not verifia
 | Airtime 24 s at SF9, 43 s at SF10 | 23.7 s and 43.5 s | Stands |
 | Link budget about 145 dB | 145.0 dB; 18.6 dB margin at 2 km | Precis updated |
 | Wind about 52 N, about 16 N·m | 52.2 N; 14.8 N·m about the lower clamp | Precis updated |
-| Mass about 1.7 kg | 2.41 kg | Precis updated; back plate was under-counted |
-| Cost about $126 | $126.00 | Stands |
+| Mass about 1.7 kg | 2.45 kg | Precis updated; back plate was under-counted |
+| Cost about $126 | $139.00 | Precis updated; parts added for construction (FND-DDR-003) |
 | Panel hood "helps" with interior heat | Shades 86 % of the top but not the front; R3 not met without a shield; charging blocked in hot weather | Precis updated; shield option for sites above 30 °C (FND-DDR-002) |
 | One gland fitted, one blanked | The panel lead needs a gland; both glands are fitted | BOM line 3 updated |

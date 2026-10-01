@@ -1,4 +1,4 @@
-"""FieldNode general arrangement sheet FND-DWG-001, Rev P2 (TRL 3; FND-DDR-002 applied).
+"""FieldNode general arrangement sheet FND-DWG-001, Rev P3 (TRL 3; FND-DDR-002 and FND-DDR-003 applied).
 
 Run from the repo root:  python cad/src/sheets.py
 Writes cad/drawings/FND-DWG-001.svg, .pdf and .png from the parametric model in
@@ -15,6 +15,7 @@ from drawing import Sheet, _viewbox, _t, M, TB_Y, INK, MUTED  # noqa: E402
 from model import PARAMS as P, assembly, derived, bracket_geometry, shield_geometry  # noqa: E402
 
 DATE = "2026-09-25"
+DATE_P3 = "2026-09-30"
 
 
 def safe_project_views(part, workdir, line_weight=0.35):
@@ -56,8 +57,9 @@ def ortho_cells(sheet, views, names=("front", "top", "right")):
     tw, th = dims["top"]
     rw, rh = dims["right"]
     k = sheet.scale
-    ax += (aw - (k * (max(fw, tw) + rw) + gap)) / 2
-    ay += (ah - (k * (th + max(fh, rh)) + gap + 2 * lab)) / 2
+    dl = 11                     # room add_ortho leaves for its overall dimensions (kit 1.7)
+    ax += (aw - (k * (max(fw, tw) + rw) + gap + dl)) / 2 + dl
+    ay += (ah - (k * (th + max(fh, rh)) + gap + 2 * lab + dl)) / 2 + dl
     colw = k * max(fw, tw)
     front_y = ay + k * th + lab + gap
     row_h = k * max(fh, rh)
@@ -98,11 +100,12 @@ def main():
     asm = assembly(with_pole=True)
     views = safe_project_views(asm, work)
     bb = asm.bounding_box()
-    s = Sheet(project="FieldNode", title="General arrangement", dwg_no="FND-DWG-001", rev="P2",
-              author="Amish Chadha", date=DATE, scale=0.1, theme="technical",
+    s = Sheet(project="FieldNode", title="General arrangement", dwg_no="FND-DWG-001", rev="P3",
+              author="Amish Chadha", date=DATE_P3, scale=0.1, theme="technical",
               material="Bought-in parts per bom/bom.csv; aluminium bracket and plate. PRELIMINARY, NOT FOR FABRICATION",
               revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
-                         ("P2", "FND-DDR-002: 9 V class panel; sun shield option (14)", DATE, "AC")])
+                         ("P2", "FND-DDR-002: 9 V class panel; sun shield option (14)", DATE, "AC"),
+                         ("P3", "FND-DDR-003: design for construction", DATE_P3, "AC")])
     s.add_ortho(views)
     k = s.scale
     c = ortho_cells(s, views)
@@ -114,18 +117,21 @@ def main():
     x, y, w, h = c["front"]
     X = lambda mx: x + (mx - bb.min.X) * k   # noqa: E731
     Z = lambda mz: y + h - (mz - bb.min.Z) * k   # noqa: E731
-    xl = X(bb.min.X) - 5
+    xl = X(bb.min.X) - 17
     L += [ext(X(-ew / 2), Z(D["enc_bot"]), xl - 1, Z(D["enc_bot"])), ext(X(-ew / 2), Z(D["enc_top"]), xl - 1, Z(D["enc_top"]))]
     L += dim_v(xl, Z(D["enc_top"]), Z(D["enc_bot"]), f"{eh:.0f}")
-    L += [ext(X(-P['plate'][0] / 2), Z(zl), xl - 7, Z(zl)), ext(X(-P['plate'][0] / 2), Z(zu), xl - 7, Z(zu))]
-    L += dim_v(xl - 6, Z(zu), Z(zl), f"{D['clamp_span']:.0f} clamps")
-    yd = Z(D["enc_bot"] - 45)
+    L += [ext(X(-P['plate'][0] / 2), Z(zl), xl - 15, Z(zl)), ext(X(-P['plate'][0] / 2), Z(zu), xl - 15, Z(zu))]
+    L += dim_v(xl - 14, Z(zu), Z(zl), f"{D['clamp_span']:.0f} clamps")
+    yd = Z(D["whip_tip"] - 12)
     L += dim_h(X(-ew / 2), X(ew / 2), yd, f"{ew:.0f}")
     L += [ext(X(-ew / 2), Z(D["enc_bot"]), X(-ew / 2), yd + 1), ext(X(ew / 2), Z(D["enc_bot"]), X(ew / 2), yd + 1)]
     L += dim_h(X(-P["panel"][0] / 2), X(P["panel"][0] / 2), Z(D["overall_top"]) - 4, f"{P['panel'][0]:.0f} panel")
-    L += leader(X(P["ant_x"]), Z(D["whip_tip"] + 40), X(P["ant_x"]) + 6, Z(D["whip_tip"] + 10), "ANTENNA WHIP (9)")
-    L += leader(X(P["port_x"][0]), Z(D["enc_bot"] - 12), X(-ew / 2) - 3, Z(D["enc_bot"] - 60), "2 x M12 PORTS (10)", "end")
-    L += leader(X(P["gland_x"][0]), Z(D["enc_bot"] - 10), X(P["gland_x"][0]) - 2, Z(D["enc_bot"] - 120), "2 x M16 GLANDS (3)", "end")
+    ax_ = P["pens"]["antenna"][0]
+    L += leader(X(ax_), Z(D["whip_tip"] + 40), X(ax_) + 6, Z(D["whip_tip"] + 10), "ANTENNA WHIP (9)")
+    px_ = P["pens"]["port_a"][0]
+    L += leader(X(px_), Z(D["enc_bot"] - 14), X(-ew / 2) - 3, Z(D["enc_bot"] - 60), "2 x M12 PORTS (10)", "end")
+    gx_ = P["pens"]["gland_1"][0]
+    L += leader(X(gx_), Z(D["enc_bot"] - 8), X(gx_) - 2, Z(D["enc_bot"] - 120), "2 x M16 GLANDS (3)", "end")
 
     # top view (from +Z): X to the right, Y up the sheet
     x, y, w, h = c["top"]
@@ -138,13 +144,13 @@ def main():
     x, y, w, h = c["right"]
     Yr = lambda my: x + w - (my - bb.min.Y) * k   # noqa: E731
     Zr = lambda mz: y + h - (mz - bb.min.Z) * k   # noqa: E731
-    yb = Zr(D["enc_bot"] - 45)
+    yb = Zr(D["whip_tip"] - 12)
     L += dim_h(min(Yr(D["enc_front"]), Yr(D["enc_back"])), max(Yr(D["enc_front"]), Yr(D["enc_back"])), yb, f"{ed:.0f}")
     L += [ext(Yr(D["enc_front"]), Zr(D["enc_bot"]), Yr(D["enc_front"]), yb + 1), ext(Yr(D["enc_back"]), Zr(D["enc_bot"]), Yr(D["enc_back"]), yb + 1)]
     xr = max(Yr(bb.min.Y), Yr(bb.max.Y)) + 5
     L += [ext(Yr(0), Zr(D["overall_top"]), xr + 1, Zr(D["overall_top"])), ext(Yr(0), Zr(D["enc_bot"]), xr + 1, Zr(D["enc_bot"]))]
     L += dim_v(xr, Zr(D["overall_top"]), Zr(D["enc_bot"]), f"{D['overall_top'] - D['enc_bot']:.0f}", side=1)
-    L.append(_t(Yr(D["panel_cy"]), Zr(D["overall_top"]) - 5, f"PANEL TILT {P['tilt']:.0f} DEG", 2.0, 400, INK, "middle"))
+    L.append(_t(Yr(D["panel_cy"]) - 14, Zr(D["overall_top"]) - 5, f"PANEL TILT {P['tilt']:.0f} DEG", 2.0, 400, INK, "middle"))
 
     s._layers += L
     s.add_svg(views["iso"], 276, 32, 140, 100, label="Isometric view", sublabel="Not to scale; grey pole stub is site supplied")
@@ -154,12 +160,13 @@ def main():
         f"Enclosure IP65 {ew:.0f} x {ed:.0f} x {eh:.0f} (W x D x H); base {P['z0']:,.0f} above ground",
         f"Panel 6 W 9 V class, {P['panel'][0]:.0f} x {P['panel'][1]:.0f}, tilt {P['tilt']:.0f} deg; top {D['overall_top']:,.0f} above ground",
         f"Panel overhangs lid by {D['overhang_front']:.0f}; front edge {D['clear_top']:.0f} above enclosure",
-        f"Back plate {P['plate'][0]:.0f} x {P['plate'][1]:.0f} x {P['plate'][2]:.0f} Al; V-blocks {P['vblock'][0]:.0f} wide",
-        f"Band clamps {P['band_w']:.0f} wide, {D['clamp_span']:.0f} apart; poles 40 to 60 OD",
-        f"Bracket flat bar {P['bar'][0]:.0f} x {P['bar'][1]:.0f}: posts {bg['post']['L']:.0f}, struts {bg['strut']['L']:.0f}",
-        f"Bottom face: 2 x M12 ports, 2 x M16 glands, antenna bulkhead, vent",
+        f"Back plate {P['plate'][0]:.0f} x {P['plate'][1]:.0f} x {P['plate'][2]:.0f} Al; V-blocks {P['vblock'][0]:.0f} x {P['vblock'][1]:.0f} x {P['vblock'][2]:.0f}, 90 deg V",
+        f"Band clamps {P['band'][0]:.0f} wide, {D['clamp_span']:.0f} apart; poles 40 to 60 OD",
+        f"Bracket bar {P['bar'][0]:.0f} x {P['bar'][1]:.0f}: posts {bg['post']['L']:.0f}, struts {bg['strut']['L']:.0f} between holes",
+        "Enclosure on 4 lugs, M5; bracket on 30 x 30 x 3 angle clips, M6",
+        f"Bottom face: 2 rows, {P['pen_rows'][0]:.0f} and {P['pen_rows'][1]:.0f} in from the back face",
         f"Whip {P['whip'][1]:.0f} long; tip {D['whip_tip']:,.0f} above ground",
-        f"Option (14), not shown: sun shield {SG['w']:.0f} x {SG['d']:.0f} x {SG['h']:.0f}, {P['shield_gap']:.0f} gap; sites above 30 C",
+        f"Option (14), not shown: shield {SG['w']:.0f} x {SG['d']:.0f} x {SG['h']:.0f}, {P['shield_gap']:.0f} gap, 4 thumb screws",
         "Third-angle; front view from -Y; pole on the Z axis",
         "Numbers in brackets are BOM lines; loads in FND-CAL-001",
     ], x=276, y=150, width=146)

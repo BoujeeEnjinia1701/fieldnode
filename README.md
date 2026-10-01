@@ -8,13 +8,13 @@ A solar-powered, weatherproof sensor node with a common mounting, power and radi
 
 ![FieldNode: solar-powered outdoor sensor node core, product render](media/render-hero.png)
 
-[Exploded render](media/render-exploded.png) · [Detail render](media/render-detail.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement (PDF)](cad/drawings/FND-DWG-001.pdf) · [Calculations](docs/04-calcs/01-sizing.md) · [Review note](docs/REVIEW.md)
+[Exploded render](media/render-exploded.png) · [Detail render](media/render-detail.png) · [Interactive 3D model](media/viewer.html) · [Concept blueprint (PDF)](media/concept-blueprint.pdf) · [General arrangement (PDF)](cad/drawings/FND-DWG-001.pdf) · [Calculations](docs/04-calcs/01-sizing.md) · [Prototype build plan](docs/05-build-plan.md) · [Review note](docs/REVIEW.md)
 
 ## Concept rationale
 
 Outdoor sensing projects in the lab fail for the same few reasons: water gets in, the battery runs flat in a cloudy week, the charger overheats or will not charge in the cold, or the radio link drops. FieldNode solves these once. It pairs a stock IP65 enclosure with a 6 W panel that also hoods the box, a single LiFePO4 cell, an MPPT charger with a cold-charge lockout, and an STM32WL-class LoRaWAN module, with two sealed sensor ports. Each project then designs only its sensor and firmware, and a fix found in one deployment reaches all of them.
 
-Keeping it open and garage-buildable matters because the users who most need monitoring are the least able to buy closed commercial nodes or pay for their clouds. Every part is off the shelf or cut from flat bar with hand tools, the design files are under CERN-OHL-S-2.0, and the node talks to any LoRaWAN server, including the lab's TwinKit gateway and The Things Network.
+Keeping it open and garage-buildable matters because the users who most need monitoring are the least able to buy closed commercial nodes or pay for their clouds. Every part is off the shelf or cut from aluminium bar, angle and sheet with hand tools, the design files are under CERN-OHL-S-2.0, and the node talks to any LoRaWAN server, including the lab's TwinKit gateway and The Things Network.
 
 ## Burning platform
 
@@ -70,9 +70,15 @@ Full design precis: [docs/02-concept.md](docs/02-concept.md)
 - Two sealed M12 sensor ports (pinout still open)
 - Pole and wall mounting kit for 40 to 60 mm poles
 
-TRL 3 calculations ([FND-CAL-001](docs/04-calcs/01-sizing.md)): in the worst month (2 peak sun hours) the cell stores 7.75 Wh a day against 2.67 Wh drawn at the published 100 mW sensor allowance, and a full cell lasts 5.75 days without sun. The base node costs $126 in parts and weighs 2.41 kg. At sites whose design maximum exceeds 30 °C a ventilated white sun shield is fitted ($134 and 2.55 kg in all), which keeps the inside at or below about 52 °C in 45 °C sun so the cell can still charge. The panel is 9 V class so the charger keeps its input voltage when hot, and firmware lengthens the reporting interval at slow spreading factors to stay within The Things Network's fair use. Two requirements remain at risk: charging on very cold days and autonomy with a cold or aged cell. See the [requirements](docs/03-requirements.md).
+TRL 3 calculations ([FND-CAL-001](docs/04-calcs/01-sizing.md)): in the worst month (2 peak sun hours) the cell stores 7.75 Wh a day against 2.67 Wh drawn at the published 100 mW sensor allowance, and a full cell lasts 5.75 days without sun. The base node costs $139 in parts and weighs 2.45 kg. At sites whose design maximum exceeds 30 °C a ventilated white sun shield is fitted ($148 and 2.61 kg in all), which keeps the inside at or below about 52 °C in 45 °C sun so the cell can still charge. The panel is 9 V class so the charger keeps its input voltage when hot, and firmware lengthens the reporting interval at slow spreading factors to stay within The Things Network's fair use. Two requirements remain at risk: charging on very cold days and autonomy with a cold or aged cell. See the [requirements](docs/03-requirements.md).
 
 The working bill of materials is in [bom/bom.csv](bom/bom.csv).
+
+## Building the prototype
+
+![FieldNode prototype: every component pulled apart and numbered in build order](docs/05-build-plan/overview.png)
+
+The [prototype build plan](docs/05-build-plan.md) (FND-BLD-001) shows, in pictures, how to make each of the fifteen components and put them together in twelve steps; nothing has been built yet. The made parts are an aluminium back plate and V-blocks, a bracket of angle clips and flat bars, a printed internal plate and a folded white sun shield; the bought box is drilled, and the electronics are bought modules wired at block level. Writing the plan made the design buildable: the V-blocks, the holes in the bottom of the box, the bracket joints and the shield fixing were redesigned, and fixings, a connector strip and sensor-supply fuses were added (FND-DDR-003, open for Amish's review). Every picture is drawn from the model, and the model checks that each part touches what it should and clears what it should not.
 
 ## Safety
 

@@ -3,9 +3,9 @@ doc_id: FND-PRC-001
 title: FieldNode design precis
 project: FieldNode
 doc_type: Design precis
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-09-30'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,13 +25,17 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.5"
+  date: '2026-09-30'
+  author: Amish Chadha
+  change: "Design for construction (FND-DDR-003) applied; mass, cost, bracket, mounting and service figures updated; open for Amish's review"
 ---
 
 # FieldNode design precis
 
 ## Summary
 
-FieldNode is a pole- or wall-mounted outdoor node built from a stock IP65 enclosure, a 6 W, 9 V class solar panel that doubles as a rain hood, a single 6 Ah LiFePO4 cell, an MPPT charge and power board, and an STM32WL-class LoRaWAN module. Two sealed M12 sensor ports carry power and data to whatever the host project measures, within a published sensor allowance of 100 mW. The TRL 3 calculations (FND-CAL-001 v0.2) confirm the worst-month energy budget: at 2 peak sun hours the cell stores 7.75 Wh a day against 2.67 Wh drawn at 100 mW, which lasts 5.75 days without sun. They also found the design's weak point: in full sun at 45 °C ambient the bare enclosure runs at 59 to 73 °C, above the 60 °C target, and the cell's 45 °C charge lockout then blocks charging for most of a hot, clear day. Amish decided on 2026-09-25 (FND-DDR-002) to fit a ventilated white sun shield, BOM line 14, at sites whose design maximum exceeds 30 °C; with it the inside stays at or below about 52 °C. The base node costs $126.00 in parts and weighs 2.41 kg; the hot-climate node costs $134.00 and weighs 2.55 kg. All design choices below are decided by Amish (FND-DDR-001 and FND-DDR-002).
+FieldNode is a pole- or wall-mounted outdoor node built from a stock IP65 enclosure, a 6 W, 9 V class solar panel that doubles as a rain hood, a single 6 Ah LiFePO4 cell, an MPPT charge and power board, and an STM32WL-class LoRaWAN module. Two sealed M12 sensor ports carry power and data to whatever the host project measures, within a published sensor allowance of 100 mW. The TRL 3 calculations (FND-CAL-001 v0.2) confirm the worst-month energy budget: at 2 peak sun hours the cell stores 7.75 Wh a day against 2.67 Wh drawn at 100 mW, which lasts 5.75 days without sun. They also found the design's weak point: in full sun at 45 °C ambient the bare enclosure runs at 59 to 73 °C, above the 60 °C target, and the cell's 45 °C charge lockout then blocks charging for most of a hot, clear day. Amish decided on 2026-09-25 (FND-DDR-002) to fit a ventilated white sun shield, BOM line 14, at sites whose design maximum exceeds 30 °C; with it the inside stays at or below about 52 °C. The base node costs $139.00 in parts and weighs 2.45 kg; the hot-climate node costs $148.00 and weighs 2.61 kg. All design choices below are decided by Amish (FND-DDR-001 and FND-DDR-002); the changes made on 2026-09-30 so that every part can be made and fixed (FND-DDR-003, "Design for construction") are open for his review.
 
 ![FieldNode concept](../media/hero.png)
 
@@ -43,8 +47,8 @@ Figure 1. Node on a 48 mm pole, from the parametric model, with a 1.75 m person 
 2. **Charge and protect.** An MPPT-style charger on the power board holds the panel near its maximum power point and charges one LiFePO4 cell to 3.6 V. An NTC on the cell blocks charging below 0 °C and above 45 °C, since LiFePO4 cells are typically rated to charge only between 0 and 45 °C ([example cell specification](https://www.batteryspace.com/prod-specs/9055.pdf)). A protection IC and an inline fuse guard against over-discharge and short circuit.
 3. **Power the sensors.** The board provides switched 3.3 V, 5 V and 12 V rails; each sensor port takes one of them, selected at build, so sensors draw nothing while the node sleeps.
 4. **Measure and send.** The controller wakes on a timer, powers the sensor, reads it, stores the reading in SPI flash and sends a short LoRaWAN uplink to a TwinKit gateway, The Things Network or any LoRaWAN server. Readings are kept and resent when the link returns.
-5. **Mount.** A 3 mm aluminium back plate with two V-blocks and two stainless band clamps fits 40 to 60 mm poles; the same plate screws to a wall.
-6. **Shade, at hot sites.** Where the site's design maximum ambient exceeds 30 °C, a white aluminium shield screws to the back plate and stands 15 mm off the enclosure's front, sides and top. Air enters at the open bottom and leaves through a slot at the back of the top sheet, so the box sits in moving shade.
+5. **Mount.** A 3 mm aluminium back plate with two V-blocks and two stainless band clamps fits 40 to 60 mm poles; the same plate screws to a wall. The enclosure hangs on the plate by four external lugs, and the panel bracket bolts to angle clips on the plate and on the panel frame.
+6. **Shade, at hot sites.** Where the site's design maximum ambient exceeds 30 °C, a white aluminium shield is held to the back plate by four thumb screws and stands 15 mm off the enclosure's front, sides and top. Air enters at the open bottom and leaves through a slot at the back of the top sheet, so the box sits in moving shade.
 
 ![Exploded view](../media/exploded.png)
 
@@ -60,15 +64,16 @@ Table 1. Components (numbers match the BOM and Figure 2)
 | 2 | Lid | Supplied with the enclosure; gasketed, captive screws |
 | 3 | Cable glands | Two M16: one for the panel lead, one for a sensor with its own cable (blanked when unused) |
 | 4 | Solar panel | 6 W monocrystalline, 9 V class (Vmp about 9 V at 25 °C), about 290 x 200 mm |
-| 5 | Panel tilt bracket | Aluminium flat bar 25 x 3 mm: two rear posts and two front struts, tilt set by hole position |
+| 5 | Panel tilt bracket | Two rear posts and two front struts in 20 x 3 mm aluminium flat bar, bolted flat to 30 x 30 x 3 mm angle clips on the back plate and on the panel frame's back lip; tilt set by hole position |
 | 6 | Cell | LiFePO4 32700, 3.2 V, 6 Ah, in a holder with inline fuse and NTC |
 | 7 | Power board | MPPT charger for 1S LiFePO4, protection, fuel gauge, switched 3.3, 5 and 12 V rails |
 | 8 | Controller and radio | STM32WL-class module (for example RAK3172 or Wio-E5) on a carrier with SPI flash and status LED |
 | 9 | Antenna | Sub-GHz whip, about 190 mm, on a bottom bulkhead, pointing down |
 | 10 | Sensor ports | Two M12 5-pin panel connectors with caps |
 | 11 | Internal mounting plate | 3 mm printed ASA; carries cell and boards and lifts out as one unit |
-| 12 | Pole mounting kit | Back plate 180 x 320 x 3 mm, two 50 mm V-blocks, two stainless band clamps 250 mm apart; wall screws |
-| 14 | Sun shield (hot-climate option) | White powder-coated aluminium sheet 0.5 mm, 181 x 106 x 206 mm, 15 mm off the enclosure, open bottom, 30 mm vent slot at the back of the top; fitted only where the design maximum exceeds 30 °C; not shown in the figures |
+| 12 | Pole mounting kit | Back plate 180 x 320 x 3 mm with a window behind the enclosure, two 60 x 33 x 20 mm V-blocks with a true 90° V, two stainless band clamps 250 mm apart; wall screws |
+| 15 | Plug-in connectors and rail fuses | Pluggable terminal strip on the internal plate, so it lifts out as one unit; a resettable fuse on each sensor rail |
+| 14 | Sun shield (hot-climate option) | White powder-coated aluminium sheet 0.5 mm, 181 x 106 x 206 mm, 15 mm off the enclosure, open bottom, 30 mm vent slot at the back of the top, lifts off after four thumb screws; fitted only where the design maximum exceeds 30 °C; not shown in the figures |
 
 ![Cutaway](../media/cutaway.png)
 
@@ -123,11 +128,11 @@ Table 3. Airtime per day at a 15 min interval (96 uplinks)
 
 **Store and forward.** Thirty days of readings take 90 kB of the 16 MB flash. Under The Things Network's fair use a 30-day backlog at SF9 would take about 68 days to resend, so backlogs are best sent through a private gateway.
 
-**Wind.** At 35 m/s the dynamic pressure is 750 Pa: 52.2 N on the panel and 29.3 N on the enclosure (36.3 N on the shield where fitted). Wind from behind gives 14.8 N·m about the lower clamp and pulls the upper clamp with 59 N (63 N with the shield), against about 2,000 N of assumed clamp preload. The bracket's flat bars carry at most about 41 N.
+**Wind.** At 35 m/s the dynamic pressure is 750 Pa: 52.2 N on the panel and 29.3 N on the enclosure (36.3 N on the shield where fitted). Wind from behind gives 14.8 N·m about the lower clamp and pulls the upper clamp with 59 N (63 N with the shield), against about 2,000 N of assumed clamp preload. The bracket's flat bars carry at most about 39 N.
 
-**Mass.** 2.41 kg for the base node: enclosure 0.43 kg, back plate and V-blocks 0.63 kg, bracket 0.14 kg, internal plate 0.08 kg and bought parts 1.14 kg (panel 0.55 kg). The TRL 2 estimate of 1.7 kg under-counted the back plate. The shield adds 0.15 kg (2.55 kg); R14 applies to the base node.
+**Mass.** 2.45 kg for the base node: enclosure with lugs 0.43 kg, back plate and V-blocks 0.48 kg, bracket 0.22 kg, internal plate 0.07 kg and bought parts 1.24 kg (panel 0.55 kg). The TRL 2 estimate of 1.7 kg under-counted the back plate. The shield adds 0.16 kg (2.61 kg); R14 applies to the base node.
 
-**Cost.** $126.00 in parts at quantity 1 for the base node (see `bom/bom.csv`), within the $150 budget; $134.00 with the shield. The gateway is not included.
+**Cost.** $139.00 in parts at quantity 1 for the base node (see `bom/bom.csv`), within the $150 budget; $148.00 with the shield. The gateway is not included.
 
 ## Key design choices
 
