@@ -3,9 +3,9 @@ doc_id: FND-PRC-001
 title: FieldNode design precis
 project: FieldNode
 doc_type: Design precis
-version: "0.6"
+version: "0.7"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -33,6 +33,10 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Budget treated as a value-engineering target
+- version: "0.7"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Pilot band, pinout and firmware update decisions of 2026-10-02 (FND-DEC-001)"
 ---
 
 # FieldNode design precis
@@ -148,7 +152,7 @@ These choices are decided by Amish, 2026-09-25: go with recommendation (FND-DDR-
 4. **6 W panel as standard, 9 V class**, with 3 W and 10 W variants kept as later options. The 9 V class keeps voltage headroom for the charger when hot.
 5. **Panel as rain hood and partial sun shade** over the enclosure. FND-CAL-001 shows it does not shade enough for hot climates on its own, so a ventilated white shield is added at sites whose design maximum exceeds 30 °C (choice 12).
 6. **Antenna pointing down** below the enclosure, out of the panel's shadow and away from hands at the lid.
-7. **M12 5-pin sensor ports** rather than bare glands, so sensors can be swapped without opening the box; a gland remains for sensors with fixed cables. Pinout still open.
+7. **M12 5-pin sensor ports** rather than bare glands, so sensors can be swapped without opening the box; a gland remains for sensors with fixed cables. Pinout: pin 1 switched rail, pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog, the proposed standard decided by Amish on 2026-10-02 and awaiting sign-off by the adopting projects (FND-DEC-001).
 8. **Mounting above head height** (1.75 m to the enclosure base) to reduce tampering while staying reachable from a short ladder.
 9. **Default 15 min reporting interval**, adjustable from 1 min to 24 h within airtime limits, with the firmware airtime rule above on The Things Network.
 10. **TwinKit gateway as the default network**, with The Things Network as the public fallback.
@@ -173,6 +177,6 @@ These choices are decided by Amish, 2026-09-25: go with recommendation (FND-DDR-
 
 ## Open questions
 
-- [ ] Which two lab projects adopt FieldNode first, and in which region (EU868, US915, AS923 or IN865)? Awaiting Amish (FND-DDR-001, O1).
-- [ ] Sensor port pinout: which pins carry which bus, and which rail each port gets. Awaiting Amish and the adopting teams (FND-DDR-001, O2).
-- [ ] Firmware update method in the field: USB through a sealed port, or over the air? Awaiting Amish (FND-DDR-001, O3).
+- [ ] Which two lab projects adopt FieldNode first. The band is decided (Amish, 2026-10-02, FND-DEC-001): US915 with a 915 MHz whip is the default first variant, switching to EU868, AS923 or IN865 if the first adopting project's site is outside North America.
+- [ ] Sign-off of the proposed standard pinout (pin 1 switched rail, pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog) by HeatMap Node and the next adopting project (decided by Amish as the proposal, 2026-10-02, FND-DEC-001).
+- [x] Firmware update method in the field: by cable inside the box with the lid open, through a USB or serial header on the board, with no extra hole in the enclosure; over the air is left for a later private-gateway variant (Amish, 2026-10-02, FND-DEC-001).

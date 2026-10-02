@@ -67,7 +67,7 @@ Full design precis: [docs/02-concept.md](docs/02-concept.md)
 - LiFePO4 cell, 3.2 V 6 Ah, fused, with a 0 to 45 °C charge lockout
 - MPPT charge and power board with switched 3.3, 5 and 12 V sensor rails
 - STM32WL-class microcontroller with LoRaWAN radio and SPI flash for store and forward
-- Two sealed M12 sensor ports (pinout still open)
+- Two sealed M12 sensor ports with a proposed standard pinout, awaiting sign-off by the adopting projects
 - Pole and wall mounting kit for 40 to 60 mm poles
 
 TRL 3 calculations ([FND-CAL-001](docs/04-calcs/01-sizing.md)): in the worst month (2 peak sun hours) the cell stores 7.75 Wh a day against 2.67 Wh drawn at the published 100 mW sensor allowance, and a full cell lasts 5.75 days without sun. The base node costs $139 in parts and weighs 2.45 kg. At sites whose design maximum exceeds 30 °C a ventilated white sun shield is fitted ($148 and 2.61 kg in all), which keeps the inside at or below about 52 °C in 45 °C sun so the cell can still charge. The panel is 9 V class so the charger keeps its input voltage when hot, and firmware lengthens the reporting interval at slow spreading factors to stay within The Things Network's fair use. Two requirements remain at risk: charging on very cold days and autonomy with a cold or aged cell. See the [requirements](docs/03-requirements.md).

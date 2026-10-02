@@ -3,9 +3,9 @@ doc_id: FND-DDR-002
 title: FieldNode recommendations accepted
 project: FieldNode
 doc_type: Design decision record
-version: "0.1"
+version: "0.2"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -13,12 +13,16 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Record Amish's acceptance of all recommendations and what changed in the repo
+- version: "0.2"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "O1 to O3 decided by Amish as recommended (FND-DEC-001)"
 ---
 
 # 0002: Recommendations accepted
 
 - **Date:** 2026-09-25
-- **Status:** accepted. Every item below marked "Decided" is decided by Amish, 2026-09-25: go with recommendation. Items without a recommendation remain "Proposed, awaiting Amish".
+- **Status:** accepted. Every item below marked "Decided" is decided by Amish, 2026-09-25: go with recommendation. Items without a recommendation (O1 to O3) were decided by Amish on 2026-10-02, as later recommended: "i approve your recommendations for all 555 open decisions." (FND-DEC-001).
 
 ## Context
 
@@ -37,13 +41,13 @@ After the TRL 3 session, FieldNode had twelve items adopted for TRL 3 work pendi
 | N4 | Published sensor allowance (REVIEW item 7) | 100 mW | R7 notes 100 mW as published; precis, README, blueprint key figures; autonomy 5.75 days, 15 % margin; sibling notes citing 115 mW listed as a cross-repo action |
 | N5 | Firmware airtime rule (REVIEW item 8) | On The Things Network, lengthen the interval automatically at SF10 and slower: 22 min at SF10, 48 min at SF11, 87 min at SF12 | R9 restated to include the rule; FND-CAL-001 [B1b] shows 30.0 s a day or less at every spreading factor; precis airtime table. Writing the firmware is TRL 4 work and on hold |
 
-*Table 2. Items still open.*
+*Table 2. Items left open on 2026-09-25, decided by Amish on 2026-10-02.*
 
 | # | Item | Status |
 | --- | --- | --- |
-| O1 | First adopting projects and pilot region, which set the radio band and antenna. No recommendation was made. | Proposed, awaiting Amish |
-| O2 | Sensor port pinout, to be agreed with the first two adopting projects. FND-CAL-001 offers a candidate for discussion only, not a recommendation. | Proposed, awaiting Amish and the adopting project teams |
-| O3 | Firmware update method in the field (sealed USB port or over the air). No recommendation was made. | Proposed, awaiting Amish |
+| O1 | First adopting projects and pilot region, which set the radio band and antenna. No recommendation was made on 2026-09-25. | Decided by Amish, 2026-10-02, as recommended: US915 (North America) is the default first variant with a 915 MHz whip; the band switches to that of the first adopting project's site if it is outside North America (FND-DEC-001) |
+| O2 | Sensor port pinout, to be agreed with the first two adopting projects. FND-CAL-001 offers a candidate for discussion only, not a recommendation, on 2026-09-25. | Decided by Amish, 2026-10-02, as recommended: the candidate pinout above is the proposed standard, sent to HeatMap Node and the next adopting project for sign-off (FND-DEC-001) |
+| O3 | Firmware update method in the field (sealed USB port or over the air). No recommendation was made on 2026-09-25. | Decided by Amish, 2026-10-02, as recommended: update by cable inside the box with the lid open (a USB or serial header on the board, no extra hole in the enclosure); over the air left for a later private-gateway variant (FND-DEC-001) |
 
 The suggestion in `docs/REVIEW.md` of a panel-powered cell heater for long sub-zero spells was a suggestion, not a recommendation awaiting decision, and is not adopted.
 

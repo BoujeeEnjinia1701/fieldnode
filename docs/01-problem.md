@@ -3,9 +3,9 @@ doc_id: FND-PRB-001
 title: FieldNode problem statement
 project: FieldNode
 doc_type: Problem statement
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,6 +25,10 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.5"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Pilot band and pinout decisions of 2026-10-02 (FND-DEC-001)"
 ---
 
 # FieldNode problem statement
@@ -75,12 +79,12 @@ Open loggers exist. The EnviroDIY Mayfly is an Arduino-compatible logger release
 ## Co-design and deployment partner
 
 - [ ] Identify the first two lab projects to adopt FieldNode and their pilot sites.
-- [ ] Agree a sensor port pinout with those project teams (FND-DDR-001, O2; still open at TRL 3).
+- [ ] Get sign-off from HeatMap Node and the next adopting project on the proposed standard pinout (FND-DEC-001, decided 2026-10-02).
 - [ ] Find a site host (school, utility or municipality) for a first season outdoors.
 
 ## Open questions
 
-- Which lab projects adopt the node first, and in which region (which sets the radio band)? Proposed, awaiting Amish (FND-DDR-001, O1).
+- Which lab projects adopt the node first, and in which region? The radio band is decided (Amish, 2026-10-02, FND-DEC-001): US915 is the default first variant, switching to the band of the first adopting project's site if it is outside North America.
 - Is a single common node realistic for both low-power sensors (water level, tilt) and higher-power ones (particulate fans, microphones)? FND-CAL-001 finds that every sibling load quoted so far fits a 100 mW allowance except CurbCount (about 300 mW), which would need more storage and the 10 W panel variant kept as a later option (FND-DDR-001, D4).
 - A cellular (LTE-M or NB-IoT) variant for sites with no gateway is kept as a later variant (FND-DDR-001, D1), decided by Amish on 2026-09-25.
 - Hot-climate sun shield: decided by Amish on 2026-09-25 (FND-DDR-002). The shield is fitted only where the site's design maximum exceeds 30 °C; the threshold rests on an assumed shield factor that a test must confirm.

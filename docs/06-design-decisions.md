@@ -3,9 +3,9 @@ doc_id: FND-DEC-001
 title: FieldNode design decisions register
 project: FieldNode
 doc_type: Design decisions register
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,6 +17,10 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Budget treated as a value-engineering target
+- version: "0.3"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Amish approved the recommendations for open decisions 1 to 3 (FND-DDR-001, O1 to O3); moved to decisions made"
 ---
 
 # FieldNode design decisions register
@@ -25,11 +29,7 @@ Every design decision still to be made, and every decision made, in one place. E
 
 ## Open decisions
 
-| # | Decision needed | Options | Recommendation | Affects in the build | Source |
-| --- | --- | --- | --- | --- | --- |
-| 1 | Pilot region and radio band | Region and LoRaWAN band of the first adopting project | None yet | Antenna and radio variant | FND-DDR-001, O1 |
-| 2 | Sensor port pin assignment | Pinout of the two M12 ports, agreed with the adopting projects | None yet | Port wiring (build plan section 3.4.1, wire 6) | FND-DDR-001, O2 |
-| 3 | Firmware update method in the field | Over the air, cable, card swap | None yet | Not part of the TRL 3 build; needed at TRL 4 | FND-DDR-001, O3 |
+None. All open decisions were decided on 2026-10-02.
 
 ## To confirm when parts are bought
 
@@ -55,3 +55,6 @@ Value-engineering target: USD 150 (a hypothetical control target, not a limit). 
 | 2026-09-25 | Sun shield for hot-climate sites only; base node mass limit 2.5 kg; 9 V class panel; 100 mW sensor allowance; airtime rule at slow spreading factors | Amish: go with recommendation | FND-DDR-002 |
 | 2026-09-30 | Design for construction: V-blocks, bottom-face layout, bracket, shield fixing, connector strip, enclosure lugs and other changes that make the node buildable | Amish: "i accept your recommended changes on design that are currently being sent across for my approval" | FND-DDR-003 |
 | 2026-09-30 | Thumb screws on the shield for the prototype; 5 mm spacers for wall mounting; accept the 0.05 kg mass margin and weigh at TRL 4; fit the shield on the first prototype | Amish, same instruction | FND-DDR-003, A1 to A4 |
+| 2026-10-02 | Pilot region and radio band: US915 (North America) is the default first variant with a 915 MHz whip; the band switches to that of the first adopting project's site if it is outside North America (EU868, AS923 or IN865) | Amish: "i approve your recommendations for all 555 open decisions." | FND-DDR-001, O1 |
+| 2026-10-02 | Sensor port pin assignment: the candidate pinout of FND-CAL-001 is the proposed standard (pin 1 switched rail, pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog), sent to HeatMap Node and the next adopting project for sign-off | Amish: "i approve your recommendations for all 555 open decisions." | FND-DDR-001, O2 |
+| 2026-10-02 | Firmware update method in the field: by cable inside the box with the lid open (a USB or serial header on the board, no extra hole in the enclosure); over-the-air updates left for a later private-gateway variant | Amish: "i approve your recommendations for all 555 open decisions." | FND-DDR-001, O3 |

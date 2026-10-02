@@ -3,9 +3,9 @@ doc_id: FND-DDR-001
 title: FieldNode TRL 2 review decisions
 project: FieldNode
 doc_type: Design decision record
-version: "0.2"
+version: "0.3"
 status: Draft
-date: '2026-09-25'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -17,12 +17,16 @@ revisions:
   date: '2026-09-25'
   author: Amish Chadha
   change: Recommendations accepted by Amish (DDR-002)
+- version: "0.3"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "O1 to O3 decided by Amish as recommended (FND-DEC-001)"
 ---
 
 # 0001: TRL 2 review decisions
 
 - **Date:** 2026-09-25
-- **Status:** accepted for D1 to D12. Decided by Amish, 2026-09-25: go with recommendation (see FND-DDR-002). Items O1 to O3 had no recommendation and remain "Proposed, awaiting Amish".
+- **Status:** accepted for D1 to D12. Decided by Amish, 2026-09-25: go with recommendation (see FND-DDR-002). Items O1 to O3 had no recommendation at TRL 2; recommendations were written for them later, and Amish approved them on 2026-10-02: "i approve your recommendations for all 555 open decisions." (FND-DEC-001).
 
 ## Context
 
@@ -51,13 +55,13 @@ The options for each item are those listed in `docs/REVIEW.md` (session 2026-09-
 | D11 | Mounting height (precis choice 7) | Enclosure base about 1.75 m above ground, reachable from a short ladder | Decided by Amish, 2026-09-25: go with recommendation |
 | D12 | Budget, pitch and problem | No change was recommended; `budget_usd` stays at $150 and the pitch and problem lines are unchanged | Decided by Amish, 2026-09-25: go with recommendation |
 
-*Table 2. Items that remain open.*
+*Table 2. Items left open at TRL 2, decided by Amish on 2026-10-02.*
 
 | # | Item | Status |
 | --- | --- | --- |
-| O1 | First adopting projects and pilot region, which set the radio band (EU868, US915, AS923 or IN865) and the antenna. No preference stated and no recommendation made. | Proposed, awaiting Amish |
-| O2 | Sensor port pinout. D5 fixes the connector and the signal set; the pin assignment is to be agreed with the first two adopting projects. FND-CAL-001 offers a candidate (pin 1 switched rail, 2 data A, 3 ground, 4 data B, 5 analog) for that discussion only. | Proposed, awaiting Amish and the adopting project teams |
-| O3 | Firmware update method in the field (sealed USB port or over the air). No recommendation was made. | Proposed, awaiting Amish |
+| O1 | First adopting projects and pilot region, which set the radio band (EU868, US915, AS923 or IN865) and the antenna. No preference stated and no recommendation made at TRL 2. | Decided by Amish, 2026-10-02, as recommended: US915 (North America) is the default first variant with a 915 MHz whip; the band switches to that of the first adopting project's site if it is outside North America (FND-DEC-001) |
+| O2 | Sensor port pinout. D5 fixes the connector and the signal set; the pin assignment is to be agreed with the first two adopting projects. FND-CAL-001 offers a candidate (pin 1 switched rail, 2 data A, 3 ground, 4 data B, 5 analog) for that discussion only. | Decided by Amish, 2026-10-02, as recommended: the candidate pinout above is the proposed standard, sent to HeatMap Node and the next adopting project for sign-off (FND-DEC-001) |
+| O3 | Firmware update method in the field (sealed USB port or over the air). No recommendation was made at TRL 2. | Decided by Amish, 2026-10-02, as recommended: update by cable inside the box with the lid open (a USB or serial header on the board, no extra hole in the enclosure); over the air left for a later private-gateway variant (FND-DEC-001) |
 
 ## Consequences
 

@@ -3,9 +3,9 @@ doc_id: FND-CAL-001
 title: FieldNode sizing calculations
 project: FieldNode
 doc_type: Calculation
-version: "0.4"
+version: "0.5"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -25,6 +25,10 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Budget treated as a value-engineering target
+- version: "0.5"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Requirement table: R11 pinout status after the 2026-10-02 decision (FND-DEC-001); no figure changed"
 ---
 
 # FieldNode sizing calculations
@@ -142,7 +146,7 @@ The design case is a node on a 48.3 mm pole with the enclosure base 1.75 m above
 | R8 | Radio link | 18.6 dB margin at 2 km, SF9, 30 m gateway; 3.5 km with 10 dB fade margin | 2 km suburban at SF9 or faster | Met on paper |
 | R9 | Airtime within fair use | 23.7 s a day at SF9 and 15 min; firmware rule gives 22 min at SF10 and 87 min at SF12; 30.0 s a day or less | 30 s a day or less on The Things Network | Met on paper (firmware rule) |
 | R10 | Store and forward | 30 days in 90 kB of 16 MB | 30 days or more | Met on paper |
-| R11 | Standard sensor interface | Two M12 5-pin ports: switched rail, ground and three signal pins | Two sealed ports with a bus, analog input and one switched rail each | Met on paper (pinout open, DDR-001 O2) |
+| R11 | Standard sensor interface | Two M12 5-pin ports: switched rail, ground and three signal pins | Two sealed ports with a bus, analog input and one switched rail each | Met on paper (pinout decided as the proposed standard, awaiting sign-off; FND-DEC-001) |
 | R13 | Wind | Clamp pull 59 N (63 N with the shield) against 2,000 N; slip factor 12; bracket factor 30 | 35 m/s without loosening | Met on paper (preload assumed) |
 | R14 | Mass | Base node 2.45 kg (0.05 kg margin); 2.61 kg with the shield, which R14 excludes | 2.5 kg or less, base node | Met on paper |
 | R16 | Cost | $139.00 base node; $148.00 with the shield | $150 value-engineering target for the FieldNode core | Met on paper, within the target |

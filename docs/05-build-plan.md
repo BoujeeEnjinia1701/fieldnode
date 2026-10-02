@@ -3,9 +3,9 @@ doc_id: FND-BLD-001
 title: FieldNode prototype build plan
 project: FieldNode
 doc_type: Build plan
-version: "0.3"
+version: "0.4"
 status: Draft
-date: '2026-09-30'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -21,6 +21,10 @@ revisions:
     date: '2026-09-30'
     author: Amish Chadha
     change: Open decisions moved to the design decisions register
+  - version: "0.4"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: "Port pinout and antenna band as decided on 2026-10-02 (FND-DEC-001)"
 ---
 
 # FieldNode prototype build plan
@@ -201,7 +205,7 @@ Wire it like this, with stranded copper and a ferrule on every screw terminal:
 3. Protection board pack terminals to the load bus (a small terminal block): 0.75 mm².
 4. Load bus to the 3.3 V converter and on to the controller: 0.5 mm² (20 AWG).
 5. Load bus to each port rail converter, through its resettable fuse, to the connector strip: 0.5 mm².
-6. Controller signal pins to the connector strip: 0.25 mm² (24 AWG). The port pin assignment is still open (section 8); wire the ports only once it is decided.
+6. Controller signal pins to the connector strip: 0.25 mm² (24 AWG). Wire each port to the standard pinout: pin 1 switched rail, pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog (FND-DEC-001).
 7. Controller output pin to each converter's enable input: 0.25 mm².
 8. The cell holder's temperature sensor to the charger's temperature input: 0.25 mm², twisted, with the sensor taped to the cell.
 9. The panel lead comes in through gland 1 and plugs into the connector strip; the strip then feeds the charger input: 0.5 mm².
@@ -333,7 +337,7 @@ Buy to specification, not brand. Line numbers are those of the bill of materials
 - **Solar panel (line 4).** 6 W monocrystalline, 9 V class, about 290 x 200 x 17 mm, aluminium frame with a flat back lip at least 12 mm wide, 1 m lead.
 - **Cell and holder (line 6).** 32700 lithium iron phosphate cell, 3.2 V, 6 Ah, from a maker that publishes a datasheet; holder with an inline 5 A fuse, a 10 k temperature sensor and a plug-in lead.
 - **Power modules (line 7) and controller (line 8).** As Table 2.
-- **Antenna (line 9).** Sub-GHz whip about 190 mm, bulkhead and pigtail, for the band of the pilot region (section 8).
+- **Antenna (line 9).** Sub-GHz whip about 190 mm, bulkhead and pigtail, 915 MHz for the US915 first variant, or the band of the first adopting project's site if it is outside North America (FND-DEC-001).
 - **Sensor ports (line 10).** Two M12 5-pin A-coded panel sockets, IP67, with caps.
 - **Band clamps (line 12).** Two 12 mm stainless worm-drive band clamps, band about 230 to 280 mm round the pole, block and plate.
 - **Connector strip and fuses (line 15).** Pluggable terminal strip, 5.08 mm pitch, about 12 ways, plug and header; two resettable fuses of about 0.5 A hold.

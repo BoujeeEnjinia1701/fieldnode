@@ -288,3 +288,40 @@ Amish reviews FND-DDR-003 and the illustrated plan, decides A1 to A4, and says w
 ### Decisions, 2026-09-30
 
 Amish, 2026-09-30: "i accept your recommended changes on design that are currently being sent across for my approval". FND-DDR-003 (design for construction) is accepted as v0.2, and A1 to A4 are decided as recommended: thumb screws on the shield for the prototype, 5 mm spacers for wall mounting with the V-blocks removed, accept the 0.05 kg mass margin and weigh at TRL 4, and fit the shield on the first prototype.
+
+## 2026-10-02: open decisions decided
+
+Amish, 2026-10-02: "i approve your recommendations for all 555 open decisions." The recommendations written for this repo's open decisions are recorded as decided.
+
+### Decisions recorded
+
+3 decisions, moved from "Open decisions" to "Decisions made" in the register (FND-DEC-001 v0.3):
+
+1. Pilot region and radio band (FND-DDR-001, O1): US915 (North America) is the default first variant with a 915 MHz whip; the band switches to that of the first adopting project's site if it is outside North America (EU868, AS923 or IN865).
+2. Sensor port pin assignment (FND-DDR-001, O2): pin 1 switched rail, pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog, as the proposed standard, sent to HeatMap Node and the next adopting project for sign-off.
+3. Firmware update method in the field (FND-DDR-001, O3): by cable inside the box with the lid open, through a USB or serial header on the board, with no extra hole in the enclosure; over-the-air updates are left for a later private-gateway variant.
+
+### Documents changed
+
+- `docs/06-design-decisions.md`: FND-DEC-001 v0.3
+- `docs/decisions/0001-trl2-review-decisions.md`: FND-DDR-001 v0.3 (O1 to O3 marked decided)
+- `docs/decisions/0002-recommendations-accepted.md`: FND-DDR-002 v0.2 (O1 to O3 marked decided)
+- `docs/01-problem.md`: FND-PRB-001 v0.5 (co-design partner and open questions)
+- `docs/02-concept.md`: FND-PRC-001 v0.7 (pinout, band and firmware update)
+- `docs/03-requirements.md`: FND-REQ-001 v0.7 (R11 status)
+- `docs/04-calcs/01-sizing.md`: FND-CAL-001 v0.5 (R11 status in the requirement table; no figure changed)
+- `docs/05-build-plan.md`: FND-BLD-001 v0.4 (port wiring and antenna text)
+- `README.md` and `bom/bom-notes.md` (not controlled): pinout, antenna band and update method
+
+### Follow-up actions to carry approved decisions into the design
+
+1. Decision 1: BOM line 9, respecify the antenna as a 915 MHz whip for the US915 first variant (description only; price unchanged) (BOM).
+2. Decision 1: set the LoRaWAN region to US915 in the firmware configuration when the firmware is written at TRL 4 (docs).
+3. Decision 2: label the pin numbers and signals of ports A and B on the wiring picture of the build plan and on FND-DWG-001 (build plan pictures, drawings).
+4. Decision 2: send the proposed pinout to HeatMap Node and the next adopting project and record their sign-off; this also closes HeatMap Node's open item 6 (docs).
+5. Decision 3: add a USB or serial programming header to the power board and controller layout in the model, reachable with the lid open, and to the BOM notes of line 7 (model, BOM).
+
+### Points found in the review
+
+- Pole range is stated two ways: FND-DDR-003 P1 says poles of 40 to 71 mm seat on both V faces, while the concept, requirement R12 and the build plan say 40 to 60 mm. The band clamp length probably sets the 60 mm limit; worth one line saying so.
+- HeatMap Node's open item 6 depends on item 2 here; deciding it closes both.

@@ -3,9 +3,9 @@ doc_id: FND-REQ-001
 title: FieldNode requirements
 project: FieldNode
 doc_type: Requirements
-version: "0.6"
+version: "0.7"
 status: Draft
-date: '2026-10-01'
+date: '2026-10-02'
 author: Amish Chadha
 license: CERN-OHL-S-2.0
 revisions:
@@ -33,6 +33,10 @@ revisions:
   date: '2026-10-01'
   author: Amish Chadha
   change: Budget treated as a value-engineering target
+- version: "0.7"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "R11 status: pinout decided as the proposed standard (FND-DEC-001, 2026-10-02)"
 ---
 
 # FieldNode requirements
@@ -53,7 +57,7 @@ Table 1. Requirements and status at TRL 3
 | R8 | Radio link | LoRaWAN uplink to a gateway 2 km away in suburban terrain at SF9 or faster | Link budget; later field test | Met on paper: 18.6 dB margin at 2 km to a 30 m gateway |
 | R9 | Airtime within fair use | 30 s uplink airtime per day or less on The Things Network; firmware keeps the 15 min default at SF7 to SF9 and lengthens the interval at SF10 and slower (22 min at SF10, 48 min at SF11, 87 min at SF12) | Airtime calculation; later firmware review | Met on paper: 23.7 s at SF9; 30.0 s or less at every spreading factor under the rule |
 | R10 | Store and forward | 30 days or more of readings kept on the node when the link is down | Memory calculation | Met on paper: 30 days in 90 kB of 16 MB |
-| R11 | Standard sensor interface | Two sealed M12 5-pin ports, each carrying I2C, UART or RS-485, one analog input and one switched rail selectable at 3.3, 5 or 12 V; a gland for fixed-cable sensors | Pinout review with adopting projects | Met on paper; pinout open (FND-DDR-001, O2) |
+| R11 | Standard sensor interface | Two sealed M12 5-pin ports, each carrying I2C, UART or RS-485, one analog input and one switched rail selectable at 3.3, 5 or 12 V; a gland for fixed-cable sensors | Pinout review with adopting projects | Met on paper; pinout decided as the proposed standard (pin 1 switched rail, 2 data A, 3 ground, 4 data B, 5 analog), awaiting sign-off by the adopting projects (FND-DEC-001, 2026-10-02) |
 | R12 | Mounting and install | Fits 40 to 60 mm poles and flat walls; one person installs in 15 min or less with hand tools | Design review; later timed install | Fit met by design (seats 40 to 71 mm); time estimated at 15 min, not verifiable at TRL 3 |
 | R13 | Wind | Survives 35 m/s (126 km/h) gusts on the panel without loosening | Load calculation | Met on paper: clamp pull 59 N against 2,000 N; band preload assumed |
 | R14 | Mass | 2.5 kg or less for the base node, including panel and mounts; the hot-climate sun shield is excluded | Massing model, then weighing | Met on paper: 2.45 kg, a thin 0.05 kg margin on catalogue masses after the design for construction (FND-DDR-003); 2.61 kg with the shield |
