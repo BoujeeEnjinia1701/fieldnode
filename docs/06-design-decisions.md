@@ -3,7 +3,7 @@ doc_id: FND-DEC-001
 title: FieldNode design decisions register
 project: FieldNode
 doc_type: Design decisions register
-version: "0.3"
+version: "0.4"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -21,6 +21,10 @@ revisions:
   date: '2026-10-02'
   author: Amish Chadha
   change: "Amish approved the recommendations for open decisions 1 to 3 (FND-DDR-001, O1 to O3); moved to decisions made"
+- version: "0.4"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Value engineering updated after the approved follow-ups: USD 139.50 base node, USD 148.50 with the shield (programming header on line 7)"
 ---
 
 # FieldNode design decisions register
@@ -41,10 +45,10 @@ None. All open decisions were decided on 2026-10-02.
 
 ## Value engineering
 
-Value-engineering target: USD 150 (a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 139 for the base node (USD 11 under the target); USD 148 with the sun shield (USD 2 under the target). Main cost drivers and savings worth trying:
+Value-engineering target: USD 150 (a hypothetical control target, not a limit). Estimated cost of the constructable design: USD 139.50 (USD 10.50 under the target) for the base node; USD 148.50 with the sun shield (USD 1.50 under the target). Main cost drivers and savings worth trying:
 
-- The largest lines are the power board (USD 22, a prototype carrier price; the board design is TRL 4 work), the enclosure with vent and lug kit (USD 20), the solar panel (USD 14), the controller and LoRa module (USD 14) and the antenna (USD 10).
-- Making the design constructable repriced lines 1, 5, 13 and 14 and added line 15, the plug-in connectors and rail fuses (USD 5); the base node rose from USD 126 to USD 139.
+- The largest lines are the power board (USD 22.50, a prototype carrier price including the USD 0.50 serial programming header added for the 2026-10-02 firmware update decision; the board design is TRL 4 work), the enclosure with vent and lug kit (USD 20), the solar panel (USD 14), the controller and LoRa module (USD 14) and the antenna (USD 10).
+- Making the design constructable repriced lines 1, 5, 13 and 14 and added line 15, the plug-in connectors and rail fuses (USD 5); the base node rose from USD 126 to USD 139. The programming header (2026-10-02) adds USD 0.50; the 915 MHz whip costs the same as the band-specific whip it names.
 - Savings worth trying: the sun shield (USD 9) is an option for hot-climate sites only, so the base node carries none; the power board price should fall once its design is done.
 
 ## Decisions made

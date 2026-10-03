@@ -1,4 +1,4 @@
-"""FieldNode sizing calculations, FND-CAL-001 v0.2 (TRL 3, decisions of FND-DDR-002 applied).
+"""FieldNode sizing calculations, FND-CAL-001 v0.6 (TRL 3; FND-DDR-002, FND-DDR-003 and the 2026-10-02 decisions applied).
 
 Run from the repo root:  python docs/04-calcs/sizing.py
 Prints every number quoted in docs/04-calcs/01-sizing.md (tags in brackets, for example
@@ -60,6 +60,12 @@ LOSS_NODE, LOSS_GW = 0.5, 2.0               # dB cable and connector
 NF = 6.0                 # dB receiver noise figure (gateway and node alike, assumption)
 SNR_LIM = {7: -7.5, 8: -10.0, 9: -12.5, 10: -15.0, 11: -17.5, 12: -20.0}
 F_MHZ, D_KM = 868.0, 2.0
+# US915, the default first variant (FND-DEC-001, 2026-10-02): LoRaWAN Regional Parameters RP002 uplink
+# data rates at 125 kHz (DR0 SF10 to DR3 SF7), their largest application payloads, and the 400 ms
+# dwell-time limit on each uplink; no duty cycle applies
+F_MHZ_US = 915.0
+MAXPL_US = {10: 11, 9: 53, 8: 125, 7: 242}
+DWELL_US = 0.400
 HB, HB_LOW = 30.0, 15.0  # gateway antenna height, m (Hata validity starts at 30 m)
 FADE = 10.0              # dB margin for fading, foliage and clutter
 # Store and forward
@@ -95,7 +101,9 @@ M_BOUGHT = {"panel": 0.55, "cell": 0.15, "holder_fuse_ntc": 0.03, "power": 0.05,
             "antenna": 0.06, "ports": 0.06, "glands": 0.03, "vent": 0.01, "bands": 0.08, "hardware": 0.10,
             # added by FND-DDR-003 (design for construction): plug-in connector strip and two
             # resettable fuses (line 15); bracket, lug, clip and panel-clip bolts and nuts (line 13)
-            "connectors_fuses": 0.02, "construction_fixings": 0.08}
+            "connectors_fuses": 0.02, "construction_fixings": 0.08,
+            # serial programming header on the power board (FND-DEC-001, 2026-10-02)
+            "prog_header": 0.002}
 RHO_KG = {"pc": 1.20e-6, "al": 2.70e-6, "asa": 1.07e-6}     # kg/mm3
 
 # =============================================================== A. Core consumption and energy budget
@@ -206,6 +214,29 @@ for sf in (7, 9):
     out("B5", f"SF{sf}: {backlog:.0f} readings after {OUTAGE_D} days, {k} per uplink, {n_up} uplinks of {t_b * 1000:.0f} ms = "
               f"{n_up * t_b:.0f} s; spare fair-use airtime {spare:.1f} s/day -> {n_up * t_b / spare:.0f} days; "
               f"under the 1 % duty cycle alone {n_up * t_b / dc_day:.2f} days")
+
+# US915 default first variant (FND-DEC-001): which spreading factors can carry the uplink, link at 915 MHz
+us_ok = []
+for sf in (10, 9, 8, 7):
+    t = toa(sf)
+    fits = PAYLOAD <= MAXPL_US[sf] and t <= DWELL_US
+    if fits:
+        us_ok.append(sf)
+    out("B6", f"US915 SF{sf}: largest payload {MAXPL_US[sf]} B, uplink {t * 1000:.1f} ms against the {DWELL_US * 1000:.0f} ms dwell limit; "
+              f"{PAYLOAD}-byte payload {'fits' if fits else 'does not fit'}")
+sens9 = -174 + 10 * math.log10(BW) + NF + SNR_LIM[9]
+budget9 = eirp + ANT_DBI_GW - LOSS_GW - sens9
+pl_us = hata_suburban(F_MHZ_US, HB, hm, D_KM)
+lo, hi = 0.1, 100.0
+for _ in range(60):
+    mid = (lo + hi) / 2
+    (lo, hi) = (mid, hi) if hata_suburban(F_MHZ_US, HB, hm, mid) + FADE < budget9 else (lo, mid)
+link9_us = (budget9, pl_us, budget9 - pl_us, lo)
+worst_us = max(toa(sf) for sf in us_ok) * reports
+k_us = MAXPL_US[9] // BATCH_REC
+out("B6b", f"US915: the node uses SF{min(us_ok)} to SF{max(us_ok)} only, so the 15 min interval holds at every usable rate; largest airtime "
+           f"{worst_us:.1f} s/day; SF9 budget {budget9:.1f} dB, Hata suburban loss at 915 MHz {pl_us:.1f} dB at {D_KM:.0f} km, margin "
+           f"{budget9 - pl_us:.1f} dB, range with {FADE:.0f} dB fade margin {lo:.1f} km; backlog batching at SF9 {k_us} readings per uplink")
 
 # =============================================================== C. Enclosure temperature (R2, R3) and charging window (R4, R5)
 ew, ed, eh = (v / 1000 for v in P["enc"])
@@ -523,14 +554,14 @@ res("R5", f"Worst month: stored {stored:.2f} Wh/day against {d100:.2f} Wh/day dr
 res("R6", f"{e_usable / d100:.2f} d at the published 100 mW ({(e_usable / d100 / AUTONOMY_REQ - 1) * 100:.0f} % margin); {e_usable * CAP_COLD / d100:.2f} d at -20 C; {e_usable * CAP_EOL / d100:.2f} d at end of life",
     "5 days or more at full allowance", "At risk (cold or aged cell)")
 res("R7", f"Published allowance 100 mW; {allow_max * 1000:.1f} mW would give exactly 5 days", "100 mW or more", "Met on paper")
-res("R8", f"SF9 budget {link9[0]:.1f} dB; Hata suburban loss {link9[1]:.1f} dB at 2 km (30 m gateway); margin {link9[2]:.1f} dB",
+res("R8", f"SF9 budget {link9[0]:.1f} dB; Hata suburban loss at 2 km (30 m gateway) {link9_us[1]:.1f} dB at 915 MHz (US915 default), margin {link9_us[2]:.1f} dB; {link9[1]:.1f} dB at 868 MHz, margin {link9[2]:.1f} dB",
     "2 km suburban at SF9 or faster", "Met on paper")
-res("R9", f"{tab[2][2]:.1f} s/day at SF9 at 15 min; firmware rule lengthens the interval to {RULE[10]:.0f} min at SF10 and {RULE[12]:.0f} min at SF12; largest {worst_rule:.1f} s/day",
+res("R9", f"{tab[2][2]:.1f} s/day at SF9 at 15 min; US915 (default) uses SF7 to SF9 only, largest {worst_us:.1f} s/day; EU868 firmware rule lengthens the interval to {RULE[10]:.0f} min at SF10 and {RULE[12]:.0f} min at SF12; largest {worst_rule:.1f} s/day",
     "30 s/day or less on The Things Network", "Met on paper (firmware rule)")
 res("R10", f"30 days = {per_day_b * OUTAGE_D / 1024:.0f} kB of 16 MB flash; backlog upload limited by fair use",
     "30 days or more kept on the node", "Met on paper")
-res("R11", "Two M12 5-pin ports: V+, GND and three signal pins; one switched rail per port, 3.3, 5 or 12 V",
-    "Two sealed ports, I2C, UART or RS-485, analog, switched rails", "Met on paper (pinout awaiting adopting projects)")
+res("R11", "Two M12 5-pin ports: pin 1 switched rail (3.3, 5 or 12 V), pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog",
+    "Two sealed ports, I2C, UART or RS-485, analog, switched rails", "Met on paper (pinout decided as the proposed standard, awaiting sign-off by the adopting projects)")
 res("R12", f"V-block seats 40 to 60 mm poles; install estimate {t_inst} min", "40 to 60 mm poles and walls; 15 min or less",
     "Not verifiable at TRL 3 (install time); fit met by design")
 res("R13", f"Clamp pull {pull:.0f} N ({pull_sh:.0f} N with the shield) against {2 * T_BAND:.0f} N; slip factor {slip_ax / fz_down:.0f}; bracket factor {Pcr / f_member:.0f}",

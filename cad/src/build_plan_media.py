@@ -23,6 +23,7 @@ from model import PARAMS as P, build_components, derived, bracket_points, bracke
 OUT = ROOT / "docs" / "05-build-plan"
 DWG = ROOT / "cad" / "drawings"
 DATE = "2026-09-30"
+DATE_P2 = "2026-10-02"
 D = derived(P)
 C = build_components(P, shield=True)
 S = lambda *ks: _fuse([C[k].shape for k in ks])  # noqa: E731
@@ -58,7 +59,7 @@ def made():
         "pens": part("Glands, ports, antenna", S("glands", "ports", "antenna"), COL["pens"]),
         "lugs": part("Enclosure lugs (4) and M5 screws", S("lugs", "lug_screws"), COL["lugs"]),
         "mplate": part("Internal plate", C["mplate"].shape, COL["mplate"]),
-        "modules": part("Cell, modules, connector strip", S("cell", "power", "ctrl", "connectors"), COL["power"]),
+        "modules": part("Cell, modules, header, connector strip", S("cell", "power", "prog_header", "ctrl", "connectors"), COL["power"]),
         "lid": part("Lid", C["lid"].shape, COL["lid"]),
         "clips": part("Plate clips (2)", S("plate_clip_r", "plate_clip_l"), COL["clip"]),
         "posts": part("Posts (2)", S("post_r", "post_l"), COL["post"]),
@@ -100,6 +101,8 @@ def sheets():
     M = made()
     ctx = [pole(700)]
     base = dict(project="FieldNode", date=DATE)
+    p2 = lambda why: dict(project="FieldNode", date=DATE_P2, rev="P2", revisions=[  # noqa: E731
+        ("P1", "Making sketch for the prototype build plan", DATE, "AC"), ("P2", why, DATE_P2, "AC")])
     out = []
     B = bracket_points(P)
     bg = bracket_geometry(P)
@@ -221,8 +224,8 @@ def sheets():
                "Fit: M4 bolts through the clip and the frame lip, nut inside the frame.",
                "  Drill the lip through the clip; keep clear of the glass and cells.",
                "Check the panel you buy has a back lip at least 12 mm wide;",
-               "  if not, stop and see open question 3 in the plan."],
-        **base))
+               "  if not, stop and choose clips to suit before drilling."],
+        **p2("Lip check note no longer points to an open question")))
 
     # 107 internal plate
     out.append(bv.component_sheet(
@@ -234,14 +237,15 @@ def sheets():
                "  (110 x 160 mm apart), to match the enclosure's four moulded bosses.",
                "  Measure your enclosure's bosses first and move the holes to suit.",
                "Finger slot 40 x 10 mm, 7 mm below the top edge, for lifting out.",
-               "Lay out on the front: cell holder lower left, power modules lower right,",
+               "Lay out on the front: cell holder lower left, power modules lower right",
+               "  (programming header at their top right, pins toward the lid),",
                "  controller above, connector strip along the bottom edge.",
                "Mark each module's holes through the module; drill 3.2 mm for M3",
                "  screws on 6 mm nylon standoffs.",
                "Fit: four M4 screws into the bosses; the plate sits 6 mm off the back",
                "  wall and 7 mm above the floor, clear of the gland nuts.",
                "Check: flat within 0.5 mm; drops in and lifts out without force."],
-        **base))
+        **p2("Programming header on the power board (FND-DEC-001)")))
 
     # 108 enclosure body, drilled, drawn upside down so the top view shows the bottom face
     body = S("body", "vent")
@@ -402,17 +406,18 @@ def steps():
        elev=18, azim=-55)
     st(4, [M["mplate"]], [mv(part("Cell holder (no cell yet, fuse out)", C["cell"].shape, COL["cell"]), (0, -70, 0)),
                           mv(part("Power modules", C["power"].shape, COL["power"]), (0, -70, 0)),
+                          mv(part("Programming header (pins toward the lid)", C["prog_header"].shape, COL["bolt"]), (0, -70, 0)),
                           mv(part("Controller", C["ctrl"].shape, COL["ctrl"]), (0, -70, 0)),
                           mv(part("Connector strip", C["connectors"].shape, COL["strip"]), (0, -70, 0))],
        "build the internal plate",
        "Each on M3 screws and 6 mm nylon standoffs; then wire them as the wiring diagram shows",
        elev=15, azim=-40, label_done=True)
     box_done = [pl, vb, M["body"], M["pens"], M["lugs"]]
-    st(5, box_done, [mv(part("Internal plate with modules", S("mplate", "cell", "power", "ctrl", "connectors", "mplate_screws"), COL["mplate"]), (0, -180, 0))],
+    st(5, box_done, [mv(part("Internal plate with modules", S("mplate", "cell", "power", "prog_header", "ctrl", "connectors", "mplate_screws"), COL["mplate"]), (0, -180, 0))],
        "internal plate into the enclosure",
        "Four M4 screws into the bosses; plug in the panel, port and gland leads at the strip; fresh desiccant",
        elev=18, azim=-55, label_done=False)
-    inside = part("Internal plate with modules", S("mplate", "cell", "power", "ctrl", "connectors"), COL["mplate"])
+    inside = part("Internal plate with modules", S("mplate", "cell", "power", "prog_header", "ctrl", "connectors"), COL["mplate"])
     st(6, box_done + [inside], [mv(M["lid"], (0, -150, 0))], "close the lid",
        "Gasket clean and seated, no wire across it; tighten the captive screws evenly in a cross pattern",
        elev=18, azim=-55, label_done=False)
@@ -563,17 +568,17 @@ def wiring():
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from matplotlib.patches import FancyBboxPatch
-    fig = plt.figure(figsize=(12, 7.2), dpi=150)
-    ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 120); ax.set_ylim(0, 72); ax.set_axis_off()
+    fig = plt.figure(figsize=(14, 7.2), dpi=150)
+    ax = fig.add_axes([0, 0, 1, 1]); ax.set_xlim(0, 140); ax.set_ylim(0, 72); ax.set_axis_off()
     INK, MUT = "#111827", "#4B5563"
     ax.text(2, 70, "FieldNode prototype: block-level wiring", fontsize=13, fontweight="bold", color=INK, va="top")
     ax.text(2, 66.6, "Bought modules wired at block level; no circuit board is laid out. Wire sizes are stranded copper; ferrules on every screw terminal.",
             fontsize=8.5, color=MUT, va="top")
     ax.text(2, 1.5, "BUILD PLAN ILLUSTRATION, PLAN NOT YET BUILT", fontsize=7, color="#B45309")
-    ax.text(118, 1.5, "github.com/BoujeeEnjinia1701/fieldnode", fontsize=7, color="#0F766E", ha="right", family="monospace")
+    ax.text(138, 1.5, "github.com/BoujeeEnjinia1701/fieldnode", fontsize=7, color="#0F766E", ha="right", family="monospace")
     # the internal plate outline
-    ax.add_patch(FancyBboxPatch((23, 12), 83, 49, boxstyle="round,pad=0.4", fc="#F8FAFC", ec="#94A3B8", lw=1, ls="--"))
-    ax.text(24.5, 59.8, "On the internal plate (lifts out after unplugging the connector strip)", fontsize=8, color=MUT, va="top")
+    ax.add_patch(FancyBboxPatch((23, 12), 83, 52, boxstyle="round,pad=0.4", fc="#F8FAFC", ec="#94A3B8", lw=1, ls="--"))
+    ax.text(24.5, 63.4, "On the internal plate (lifts out after unplugging the connector strip)", fontsize=8, color=MUT, va="top")
     B = {}
 
     def blk(key, x, y, w, h, title, sub, color):
@@ -602,7 +607,20 @@ def wiring():
     ax.text(65, 16, "Connector strip (plug and socket): the plate unplugs here", ha="center", va="center", fontsize=8, fontweight="bold", color=INK)
     blk("ports", 107, 12, 11, 20, "", "", "#D4A017")
     ax.text(112.5, 22, "Sensor ports A, B (M12)\nand gland 2 cable", rotation=90, ha="center", va="center", fontsize=7.6, fontweight="bold", color=INK)
-    blk("ant", 107, 44, 11, 12, "Antenna", "bulkhead\nand whip", RF)
+    blk("ant", 107, 44, 11, 12, "Antenna", "915 MHz whip,\nbulkhead", RF)
+    # serial programming header on the power board, wired to the controller (FND-DEC-001, 2026-10-02)
+    ax.add_patch(FancyBboxPatch((84, 58.4), 21, 3.4, boxstyle="round,pad=0.3", fc="white", ec="#16A34A", lw=1.8))
+    ax.text(94.5, 60.1, "Programming header, 6-pin serial", ha="center", va="center", fontsize=7.4, fontweight="bold", color=INK)
+    # pinout of both sensor ports (proposed standard, FND-DEC-001)
+    ax.add_patch(FancyBboxPatch((121, 12), 17, 31, boxstyle="round,pad=0.3", fc="white", ec="#D4A017", lw=1.8))
+    ax.text(129.5, 42, "Port A and port B\npinout (both the same)", ha="center", va="top", fontsize=7.8, fontweight="bold", color=INK, linespacing=1.25)
+    for i, (pin, sig) in enumerate((("1", "switched rail"), ("2", "data A"), ("3", "ground"), ("4", "data B"), ("5", "analog"))):
+        yy = 34.5 - 3.6 * i
+        ax.add_patch(plt.Circle((123.6, yy), 1.25, fc="#FEF3C7", ec="#D4A017", lw=1))
+        ax.text(123.6, yy, pin, ha="center", va="center", fontsize=7.4, fontweight="bold", color=INK)
+        ax.text(125.8, yy, sig, ha="left", va="center", fontsize=7.6, color=INK)
+    ax.text(129.5, 15.2, "M12 5-pin, A-coded;\npin positions as the\nsocket maker's sheet", ha="center", va="center", fontsize=6.6, color=MUT, linespacing=1.25)
+    wire([(118, 22), (121, 22)], BLU, 1.2)
     # panel: through gland 1 to the strip, then to the charger input
     wire([(10.5, 44), (10.5, 16), (26, 16)], RED); lab(11.5, 30, "panel lead through\ngland 1, 0.5 mm²", RED)
     wire([(29, 18), (29, 44)], RED); lab(28.4, 40.5, "PV in,\n0.5 mm²", RED, "right")
@@ -616,6 +634,7 @@ def wiring():
     ax.text(69, 49.3, "load bus", fontsize=6.8, color=MUT, ha="center", va="center")
     wire([(69, 51), (69, 36)], RED); lab(69.6, 40.5, "0.5 mm²", RED)
     wire([(85, 51), (88, 51)], RED); lab(86.5, 53, "0.5 mm²", RED, "center")
+    wire([(94.5, 56.3), (94.5, 58.1)], GRY, 1.2); lab(95.3, 57.2, "TX, RX, boot, reset", GRY)
     wire([(80, 29), (86, 29)], RED); lab(83, 31, "0.5 mm²", RED, "center")
     wire([(92.5, 24), (92.5, 18)], RED); lab(84, 21, "rails 0.5 mm²", RED)
     wire([(102.5, 38), (102.5, 18)], BLU); lab(99.2, 36.4, "signals\n0.25 mm²", BLU)
@@ -624,7 +643,7 @@ def wiring():
     wire([(104, 16), (107, 16)], BLK)
     ax.text(28, 9.6, "Safety: fuse out and cell out until the stop points in section 6 of the plan are passed. Never charge below 0 °C or above 45 °C.",
             fontsize=7.6, color="#B45309", fontweight="bold")
-    ax.text(28, 6.2, "Red: power. Blue: signal (I2C, UART or RS-485, analog; port pinout still open). Grey: sensing and control. "
+    ax.text(28, 6.2, "Red: power. Blue: signal (I2C, UART or RS-485, analog; pinout in the yellow box). Grey: sensing, control and programming. "
             "All circuits are extra-low voltage: 3.6 V cell, 12 V highest rail.", fontsize=7.2, color=MUT)
     out = OUT / "wiring.png"
     OUT.mkdir(parents=True, exist_ok=True)

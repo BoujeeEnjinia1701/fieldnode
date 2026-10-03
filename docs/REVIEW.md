@@ -267,10 +267,8 @@ Run under `/build-plan` steps 1 to 4 with Amish's instruction of 2026-09-30 to r
 4. **A4, shield on the first prototype** (carried over): (a) yes, $148.00 within the value-engineering target; (b) base node first. Recommendation: (a). **Decided by Amish, 2026-09-30: go with recommendation.**
 5. Still open: O1 pilot region and band, O2 port pin assignment, O3 firmware update method; the enclosure part (boss spacing, lug kit); a panel with a back lip at least 12 mm wide; the band torque that gives 1,000 N preload.
 
-### Stale, to regenerate on Amish's Mac
+### Still to regenerate
 
-- `media/render-hero.png`, `media/render-exploded.png`, `media/render-detail.png` (Blender photoreal renders) still show the concept bracket, V-blocks and penetration layout. `media/card.png` and `media/social-preview.png` are built from them.
-- `cad/src/product_model.py` (the appearance model for those renders) still reads PARAMS keys the model no longer has (`port_x`, `gland_x`, `ant_x`, `bracket_x`, `post_ly` and others) and will not run until it is updated to the constructable geometry.
 - `docs/pdf/` PDFs of FND-CAL-001, FND-PRC-001 and FND-REQ-001 are the older versions until `python .kit/render.py` is run.
 - Cross-repo: sibling READMEs that cost the FieldNode core at about $126 should read $139.
 
@@ -325,3 +323,63 @@ Amish, 2026-10-02: "i approve your recommendations for all 555 open decisions." 
 
 - Pole range is stated two ways: FND-DDR-003 P1 says poles of 40 to 71 mm seat on both V faces, while the concept, requirement R12 and the build plan say 40 to 60 mm. The band clamp length probably sets the 60 mm limit; worth one line saying so.
 - HeatMap Node's open item 6 depends on item 2 here; deciding it closes both.
+
+## 2026-10-02: approved follow-ups carried out
+
+Amish, 2026-10-02: "497 follow-up actions that need CAD, drawing, picture, BOM or calculation work ... APPROVED CHANGES, COMPLETE THESE", and "Photoreal renders are out of date in most repos ... COMPLETE THESE". The five follow-ups listed above under "Follow-up actions to carry approved decisions into the design" are carried out here.
+
+### Approved follow-ups carried out
+
+1. **Done. BOM line 9, antenna respecified as a 915 MHz whip** for the US915 first variant, price unchanged (`bom/bom.csv`, `bom/bom-notes.md`). The GA leader now reads "915 MHz whip (9)".
+2. **Done as far as TRL 3 allows. US915 region in the firmware.** There is no firmware yet (TRL 4 work), so the setting is recorded where the firmware will be written from: the precis (FND-PRC-001 v0.8), first checks of the build plan ("Firmware load by cable": load with the region set to US915; the node joins a US915 network) and safety stop S6. The calculation note now checks US915 (FND-CAL-001 v0.6, B6): the 20-byte uplink cannot use SF10 (11-byte limit and the 400 ms dwell time), so the node uses SF7 to SF9 only and the 15 min interval fits fair use at every usable rate; the SF9 margin at 2 km is 18.2 dB at 915 MHz (18.6 dB at 868 MHz).
+3. **Done. Port A and B pin numbers and signals labelled** on the build plan wiring picture (`docs/05-build-plan/wiring.png`, a pinout box: 1 switched rail, 2 data A, 3 ground, 4 data B, 5 analog) and on FND-DWG-001 Rev P4 (notes and port leader). Pin positions on the socket face are left to the socket maker's datasheet (IEC 61076-2-101, A-coded) rather than drawn from memory.
+4. **Part done; the rest is cross-repo.** The proposed pinout is now in the README, precis, BOM notes, wiring picture and GA, ready to send. Sending it to HeatMap Node and the next adopting project and recording their sign-off happen outside this repo (see Cross-repo actions); R11 stays "Met on paper, awaiting sign-off".
+5. **Done. Serial programming header.** `cad/src/model.py` adds a 1 x 6, 2.54 mm serial header (ground, 3.3 V, TX, RX, boot, reset) on the front face of the power board, wired to the controller, pins toward the lid, 92 mm above the box floor and 50 mm right of centre; its pin tips are 47.5 mm in from the box's open front. A serial header rather than USB because the STM32WL-class module has no USB port. Four new constructability checks: header on the power board (touch), clear of the closed lid (49.9 mm, at least 10 required), clear of the controller and cell (34.3 mm, at least 3), and a 22 x 40 x 14 mm plug and cable space in front of the pins clear of every part with the lid open (9.0 mm, at least 1). Checks: **101 of 101 pass** (97 before). STEP and STL regenerated. BOM line 7 now names the header; price USD 22.00 to USD 22.50 (USD 0.50 header, distributor price class at quantity 1).
+
+### Documents changed and new versions
+
+- `cad/src/model.py` (header, four checks), `cad/step/*.step`, `cad/stl/*.stl`
+- `bom/bom.csv` (lines 7, 9, 10 and the line 14 note), `bom/bom-notes.md` (stale USD 126 and USD 134 figures corrected)
+- `docs/04-calcs/sizing.py` and `results.csv`; `docs/04-calcs/01-sizing.md`: FND-CAL-001 v0.6
+- `docs/03-requirements.md`: FND-REQ-001 v0.8; `docs/02-concept.md`: FND-PRC-001 v0.8; `docs/06-design-decisions.md`: FND-DEC-001 v0.4 (Value engineering); `docs/05-build-plan.md`: FND-BLD-001 v0.5; `README.md`
+- `cad/drawings/FND-DWG-001` Rev P4 (pinout, header, 915 MHz whip); FND-DWG-106 P2 (lip note no longer points to an open question) and FND-DWG-107 P2 (header on the layout); FND-DWG-101 to 105, 108 and 109 regenerated, unchanged at P1
+- Build plan pictures regenerated: `overview.png`, `step-01.png` to `step-12.png` (step 4 shows the header), `wiring.png`; joints and drilling layouts unchanged (the header is in none of them)
+- Concept media regenerated: `media/hero.png`, `concept-blueprint.*` (key figures USD 139.50, US915), `exploded.png`, `cutaway.png`, `flow.png`, `model.glb`
+- `cad/src/product_model.py`: brought up to the constructable design (see below)
+- `docs/pdf/` regenerated by `.kit/render.py`
+
+### Key results
+
+- Cost: Value-engineering target: USD 150. Estimated cost of the constructable design: USD 139.50 (USD 10.50 under the target) for the base node; USD 148.50 with the sun shield (USD 1.50 under the target). `budget_usd` unchanged.
+- Mass: base node 2.45 kg (header about 2 g), 0.05 kg under R14; hot-climate node 2.61 kg.
+- Requirement status: **no status changed.** R8 and R9 values now quote US915 (18.2 dB margin; SF7 to SF9 only, 23.7 s a day at most); R11 value now lists the pins; R16 value USD 139.50 and USD 148.50. Counts unchanged: 10 met on paper, 5 met by design, 2 at risk (R2, R6), 1 not verifiable at TRL 3 (R12), none not met.
+
+### Appearance model and render scenes
+
+`cad/src/product_model.py` no longer reads the removed PARAMS keys and runs again. The mount, bracket (plate clips, posts, struts, panel clips and bolts), enclosure lugs, V-blocks, band clamps, internal plate, connector strip and programming header are now the `model.py` solids; ports, glands, vent and antenna sit in the two-row layout; the whip is labelled 915 MHz; the panel lead runs outboard of the bracket. RENDER_VIEWS kept (hero, exploded, detail). Scenes exported to `/home/claude/renders/fieldnode/` (one .npz and .json per view and `fieldnode__jobs.json`). Photoreal renders, `card.png` and `social-preview.png` are not regenerated here; they are made on Amish's Mac next, so `media/render-*.png` still show the concept until then.
+
+Appearance deviations from `model.py`, **proposed, awaiting Amish** (carried over): a clear window in the lid over the controller with a lit status light pipe, a lid label and A and B port markings, rounded box corners and side ribs, and a short black riser under the programming header so it reads as sitting on the board (the model's power board envelope is a box, the appearance board is a thin PCB). Recommendation: keep them for the renders only.
+
+### Cross-repo actions (not edited here)
+
+- **HeatMap Node** and the next adopting project: send the proposed FieldNode pinout (pin 1 switched rail, 2 data A, 3 ground, 4 data B, 5 analog; M12 5-pin A-coded) and record their sign-off; this closes HeatMap Node's open item 6. Record the sign-off back in FND-DEC-001 and R11.
+- **Sibling repos that cost the FieldNode core** (about USD 126 or USD 139): update to USD 139.50 (USD 148.50 with the shield).
+- **Sibling repos that assume EU868 or a sub-GHz whip of either band:** the default first variant is now US915 with a 915 MHz whip; their airtime figures should allow SF7 to SF9 only.
+
+### Not done, with reason
+
+- Writing firmware with the US915 region set: TRL 4 work, on hold under the TRL 3 cap.
+- Pinout sign-off by the adopting projects: needs those projects; listed under Cross-repo actions.
+- Photoreal renders, `card.png`, `social-preview.png`: made on Amish's Mac from the exported scenes, per the instruction.
+
+## Session 2026-10-02: Photoreal renders redone on the constructable design
+
+Amish, 2026-10-02: "Photoreal renders are out of date in most repos ... COMPLETE THESE". Rendered with Blender Cycles on Amish's Mac (batch F1) from the scenes exported from `cad/src/product_model.py`, captioned with `.kit/photo_caption.py`; `media/card.png` and `media/social-preview.png` regenerated with `.kit/cards.py`. Each raw render was looked at once. No commit or push; `trl` unchanged.
+
+- Views: `media/render-hero.png`, `media/render-exploded.png`, `media/render-detail.png`.
+- Re-render: detail, once. At 8 degrees the whole unit stood on the tip of its whip antenna with the studio horizon behind, and the ports were too small to read. Re-rendered at 12 degrees with `--focus` on the enclosure, lid, ports, glands, vent and antenna base, so the frame closes in on the enclosure. `RENDER_VIEWS` now has `el` 12 and a matching note; `.kit/export_views.py` does not carry `--focus`, so a re-render of this view needs it passed by hand.
+- Exploded note: "pole kit behind" now reads "pole mounting kit (back plate, V-blocks and band clamps) behind", since no pole is in that view.
+- Faint thin streaks remain on the lid label and back plate in the close detail view; they come from `.kit/photoreal.py` merging vertices closer than 0.05 mm on small features. Kit action (not edited here): lower that merge distance or skip it for parts with fine detail.
+- Appearance deviations already logged (2026-10-02, Proposed, awaiting Amish): clear lid window with a lit status light pipe, lid label and A and B port markings, rounded box corners and side ribs, riser under the programming header. Unchanged.
+- `python3 .kit/image_qc.py`: 5 images, 0 problems. `python3 .kit/render.py --check`: no FAIL, no storefront warning.
+- The two render items of the "Stale, to regenerate on Amish's Mac" note (2026-09-30) are removed; its PDF and cross-repo items stay, under "Still to regenerate".

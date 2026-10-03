@@ -6,14 +6,14 @@ R4,NTC on the cell gates the charger at 0 and 45 C,Charging blocked below 0 C an
 R5,"Worst month: stored 7.75 Wh/day against 2.67 Wh/day drawn (2.9 times); hot clear day with the shield 13.1 Wh clean, 10.8 Wh dusty stored; 9 V class Vmp headroom 2.42 V when hot",Harvest exceeds demand at 2 peak sun hours,Met on paper
 R6,5.75 d at the published 100 mW (15 % margin); 4.03 d at -20 C; 4.60 d at end of life,5 days or more at full allowance,At risk (cold or aged cell)
 R7,Published allowance 100 mW; 115.0 mW would give exactly 5 days,100 mW or more,Met on paper
-R8,SF9 budget 145.0 dB; Hata suburban loss 126.4 dB at 2 km (30 m gateway); margin 18.6 dB,2 km suburban at SF9 or faster,Met on paper
-R9,23.7 s/day at SF9 at 15 min; firmware rule lengthens the interval to 22 min at SF10 and 87 min at SF12; largest 30.0 s/day,30 s/day or less on The Things Network,Met on paper (firmware rule)
+R8,"SF9 budget 145.0 dB; Hata suburban loss at 2 km (30 m gateway) 126.9 dB at 915 MHz (US915 default), margin 18.2 dB; 126.4 dB at 868 MHz, margin 18.6 dB",2 km suburban at SF9 or faster,Met on paper
+R9,"23.7 s/day at SF9 at 15 min; US915 (default) uses SF7 to SF9 only, largest 23.7 s/day; EU868 firmware rule lengthens the interval to 22 min at SF10 and 87 min at SF12; largest 30.0 s/day",30 s/day or less on The Things Network,Met on paper (firmware rule)
 R10,30 days = 90 kB of 16 MB flash; backlog upload limited by fair use,30 days or more kept on the node,Met on paper
-R11,"Two M12 5-pin ports: V+, GND and three signal pins; one switched rail per port, 3.3, 5 or 12 V","Two sealed ports, I2C, UART or RS-485, analog, switched rails",Met on paper (pinout awaiting adopting projects)
+R11,"Two M12 5-pin ports: pin 1 switched rail (3.3, 5 or 12 V), pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog","Two sealed ports, I2C, UART or RS-485, analog, switched rails","Met on paper (pinout decided as the proposed standard, awaiting sign-off by the adopting projects)"
 R12,V-block seats 40 to 60 mm poles; install estimate 15 min,40 to 60 mm poles and walls; 15 min or less,Not verifiable at TRL 3 (install time); fit met by design
 R13,Clamp pull 59 N (63 N with the shield) against 2000 N; slip factor 12; bracket factor 30,35 m/s gusts without loosening,Met on paper (band preload assumed)
 R14,"Base node 2.45 kg (0.05 kg margin); 2.61 kg with the hot-climate shield, which R14 excludes","2.5 kg or less, base node",Met on paper
 R15,"Cell swap estimate 7 min (9 min with the shield, which lifts off after four thumb screws), screwdriver, plug-in cell lead","10 min or less, no soldering",Met by design
-R16,$139.00 base node; $148.00 with the shield,"$150 or less (FieldNode core, gateway excluded)",Met on paper
+R16,$139.50 base node; $148.50 with the shield,"$150 or less (FieldNode core, gateway excluded)",Met on paper
 R17,CERN-OHL-S-2.0 and MIT; standard LoRaWAN,"Open files, any network server",Met by design
 R18,Core forwards only what the sensor firmware passes,No images or audio leave the node,Met by design

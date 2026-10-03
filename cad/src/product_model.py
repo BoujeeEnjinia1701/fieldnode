@@ -5,17 +5,21 @@ side ribs, a parting line with the dark lid gasket showing, four captive lid scr
 window in the lid showing the controller and LoRa module with its lit green status light, a lid
 label with port markings, two M12 sensor sockets (one capped, one with a sensor plug), two M16
 glands (panel lead and blanked), the ePTFE vent, the whip antenna on its bulkhead; the 6 W panel
-with an aluminium frame, cell grid and junction box on the flat-bar bracket with its angle clips
-and bolts; and the pole kit (back plate with keyhole slots, 90 deg V-blocks, stainless band clamps
-with worm housings). Inside: the ASA mounting plate, the LiFePO4 cell in its fused holder, the
-power board and the controller carrier (illustrative envelopes from model.py). Context is a short
+with an aluminium frame, cell grid and junction box on the bracket of the constructable design
+(angle clips on the back plate and on the panel frame's back lip, flat-bar posts and struts, M6
+bolts); and the pole kit (back plate with its window, band slots and fixing holes, four enclosure
+lugs, 90 deg V-blocks, stainless band clamps through the plate slots). Inside: the ASA mounting
+plate, the LiFePO4 cell in its fused holder, the power board with its serial programming header,
+the controller carrier and the plug-in connector strip (envelopes from model.py). Context is a short
 section of the 48.3 mm design pole, the panel lead and a sensor cable tied to the pole.
 APPEARANCE MODEL ONLY: no tolerances, no fabrication detail. CONCEPT, NOT FOR FABRICATION.
 
-Every main dimension and interface comes from PARAMS, derived(), build_parts() and on_panel() in
-model.py, with the same axes: the pole is the Z axis, Z is up with the ground at z = 0 and the node
-faces -Y. Differences from model.py (lid window, vent position) are recorded in docs/REVIEW.md
-(session 2026-09-26) as proposed, awaiting Amish.
+Every main dimension and interface comes from PARAMS, derived(), build_components() and on_panel()
+in model.py, with the same axes: the pole is the Z axis, Z is up with the ground at z = 0 and the
+node faces -Y. The mount, bracket, lugs, bands, internal plate, programming header and connector
+strip are the model.py solids themselves. Updated 2026-10-02 to the constructable design
+(FND-DDR-003) and the 2026-10-02 decisions (FND-DEC-001). Remaining differences from model.py
+(lid window, label, rounded corners) are recorded in docs/REVIEW.md as proposed, awaiting Amish.
 
     from product_model import product_parts
     for p in product_parts(): print(p["name"], p["group"], p["material"])
@@ -28,7 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from build123d import (Align, Axis, Box, Cylinder, Plane, Pos, RegularPolygon, Rot, Solid, Sphere, Text,
                        Vector, extrude, fillet)
-from model import PARAMS, derived, build_parts, on_panel
+from model import PARAMS, derived, build_components, on_panel
 
 _FONT = Path(__file__).resolve().parents[2] / ".kit" / "fonts" / "IBMPlexSans-SemiBold.ttf"
 
@@ -42,10 +46,13 @@ RENDER_VIEWS = [
     {"name": "exploded", "groups": ["shell", "internal", "accessory"], "explode": True, "el": 28, "az": -55,
      "note": "Exploded view from the front right and above (about 28 deg elevation): panel and bracket above; "
              "lid, gasket and enclosure base at centre; mounting plate, LiFePO4 cell, power board, controller "
-             "and LoRa module at right; ports, glands and antenna below; pole kit behind"},
-    {"name": "detail", "groups": ["shell", "internal"], "explode": False, "el": 8, "az": -32,
-     "note": "Detail from the front right, just above the enclosure base (about 8 deg elevation), without the "
-             "pole: lid label and window, M12 sensor ports A (open) and B (capped), glands, vent and antenna"},
+             "and LoRa module at right; ports, glands and antenna below; pole mounting kit (back plate, V-blocks and "
+             "band clamps) behind"},
+    # rendered with --focus on the enclosure (see docs/REVIEW.md, 2026-10-02) so the frame closes in on the ports
+    {"name": "detail", "groups": ["shell", "internal"], "explode": False, "el": 12, "az": -32,
+     "note": "Detail from the front right, slightly above (about 12 deg elevation), close on the enclosure "
+             "without the pole: lid label and window, M12 sensor ports A (open) and B (capped), glands, vent "
+             "and antenna base"},
 ]
 
 # Colours (restrained product palette, shared with the other FieldNode renders; kit accent)
@@ -72,8 +79,9 @@ C_CABLE = "#23272D"
 C_DESICCANT = "#E9E4D4"
 
 # Appearance-only positions (mm)
-VENT_XY = (30.0, -63.0)  # moved from model.py (58, -63), which overlaps the antenna bulkhead; see REVIEW
 POLE_Z = (1560.0, 2250.0)
+C_STRIP = "#2E7D5B"
+C_HEADER = "#111827"
 
 
 def _fillet_try(shape, edges, radii):
@@ -184,7 +192,7 @@ def _knurl_cap(x, y, z_top, r, h, n=18, groove=0.8):
 
 def product_parts(P=PARAMS):
     D = derived(P)
-    model = build_parts(P)
+    C = build_components(P)
     out = []
 
     def add(name, shape, color, material, bom, group, explode):
@@ -197,10 +205,12 @@ def product_parts(P=PARAMS):
     zc = D["enc_zc"]
     y_back, y_front = D["enc_back"], D["enc_front"]        # -45 (on the back plate) and -135 (lid face)
     ys = y_front + P["lid_d"]                               # parting line, as model.py
-    ybody = y_back - (ed - P["lid_d"]) / 2
-    yb = ybody - 5                                          # port and gland line, as model.py
-    ya = ybody + 8                                          # antenna bulkhead line, as model.py
     R = P["pole_od"] / 2
+    # bottom-face penetrations in two rows, as model.py: name -> (x, y, thread dia, flange dia)
+    PEN = {k: (x, y_back - P["pen_rows"][row], dt, df) for k, (x, row, dt, df) in P["pens"].items()}
+    ports_xy = [PEN["port_a"][:2], PEN["port_b"][:2]]
+    glands_xy = [PEN["gland_1"][:2], PEN["gland_2"][:2]]
+    ax, ya = PEN["antenna"][:2]
 
     E_BODY = (0, 0, 0)
     E_GASKET = (0, -120, 0)
@@ -226,12 +236,8 @@ def product_parts(P=PARAMS):
         for sz in (-1, 1):
             x, z = sx * (ew / 2 - 11), zc + sz * (eh / 2 - 11)
             body += _ycyl(x, ys + 10, z, 5.0, 20.0) - _ycyl(x, ys + 10, z, 1.6, 22.0)
-    for x in P["port_x"]:                                   # holes in the bottom face
-        body -= _zcyl(x, yb, z0 + wt / 2, P["m12_d"][0] / 2, wt + 2)
-    for x in P["gland_x"]:
-        body -= _zcyl(x, yb, z0 + wt / 2, P["m16_d"][0] / 2, wt + 2)
-    body -= _zcyl(P["ant_x"], ya, z0 + wt / 2, 6.0, wt + 2)
-    body -= _zcyl(VENT_XY[0], VENT_XY[1], z0 + wt / 2, 6.0, wt + 2)
+    for x, y, dt, df in PEN.values():                       # holes in the bottom face, as model.py
+        body -= _zcyl(x, y, z0 + wt / 2, dt / 2, wt + 2)
     add("Enclosure base (IP65 polycarbonate)", body, C_SHELL, "plastic", 1, "shell", E_BODY)
 
     # ------------------------------------------------------------ lid (BOM 2), window, gasket, screws
@@ -280,7 +286,7 @@ def product_parts(P=PARAMS):
     add("Lid label band text", _text_ny("OPEN HARDWARE CORE", 6.0, 0, ly - 0.4, lz + 27, h=0.2), C_LABEL, "paper", 2,
         "shell", E_LID)
     marks = None
-    for x, t in zip(P["port_x"], ("A", "B")):
+    for (x, _), t in zip(ports_xy, ("A", "B")):
         m = _text_ny(t, 8.0, x, y_front - 0.1, z0 + 14, h=0.4)
         m += _box(x, y_front - 0.3, z0 + 6.5, 6.0, 0.4, 1.2)
         marks = m if marks is None else marks + m
@@ -295,9 +301,10 @@ def product_parts(P=PARAMS):
 
     # ------------------------------------------------------------ bottom face: ports, glands, vent, antenna
     socks, caps, inserts = None, None, None
-    for i, x in enumerate(P["port_x"]):
-        s = _hex_z(x, yb, z0 - 2.0, P["m12_d"][1], 4.0)                    # panel nut against the base
-        s += _zcyl(x, yb, z0 - 4.0 - 9.0, P["m12_d"][0] / 2, 18.0)           # threaded barrel, to z0 - 22
+    for i, (x, yb) in enumerate(ports_xy):
+        df = PEN["port_a"][3]
+        s = _hex_z(x, yb, z0 - 2.0, df, 4.0)                                 # panel nut against the base
+        s += _zcyl(x, yb, z0 - 4.0 - 9.0, 8.0, 18.0)                         # threaded barrel, to z0 - 22
         s -= _zcyl(x, yb, z0 - 21.0, 5.6, 4.0)
         socks = s if socks is None else socks + s
         ins = _zcyl(x, yb, z0 - 20.5, 5.6, 3.0)
@@ -307,18 +314,17 @@ def product_parts(P=PARAMS):
             ins -= _zcyl(x + rr * math.cos(a + 0.785), yb + rr * math.sin(a + 0.785), z0 - 22.0, 0.6, 2.0)
         inserts = ins if inserts is None else inserts + ins
         if i == 1:                                                            # port B capped
-            c = _knurl_cap(x, yb, z0 - 8.0, 10.0, 17.0)
-            caps = c
+            caps = _knurl_cap(x, yb, z0 - 8.0, 10.0, 17.0)
     add("M12 sensor sockets (ports A and B)", socks, C_STEEL, "metal", 10, "shell", E_DOWN)
     add("M12 socket inserts", inserts, C_BLACK, "plastic", 10, "shell", E_DOWN)
     add("M12 sealing cap (port B)", caps, C_DARK, "rubber", 10, "shell", (0, 0, -120))
-    tether = _pipe([(P["port_x"][1] + 9.5, yb, z0 - 14), (P["port_x"][1] + 12, yb - 4, z0 - 5),
-                    (P["port_x"][1] + 12, yb - 4, z0 - 1.5)], 0.9)
+    xb, yb_ = ports_xy[1]
+    tether = _pipe([(xb + 9.5, yb_, z0 - 14), (xb + 12, yb_ - 4, z0 - 5), (xb + 12, yb_ - 4, z0 - 1.5)], 0.9)
     add("M12 cap tether", tether, C_DARK, "rubber", 10, "shell", (0, 0, -120))
 
     gl = None
-    for k, x in enumerate(P["gland_x"]):
-        g = _hex_z(x, yb, z0 - 3.0, P["m16_d"][1], 6.0)
+    for x, yb in glands_xy:
+        g = _hex_z(x, yb, z0 - 3.0, 22.0, 6.0)
         dome = _zcyl(x, yb, z0 - 12.0, 9.5, 12.0)
         dome = _fillet_try(dome, _fmin(dome, Axis.Z), [3.0, 2.0])
         for j in range(6):
@@ -326,35 +332,30 @@ def product_parts(P=PARAMS):
             dome -= _box(x + 9.5 * math.cos(a), yb + 9.5 * math.sin(a), z0 - 12.0, 1.2, 1.2, 8.0)
         g += dome
         gl = g if gl is None else gl + g
-    add("M16 cable glands (panel lead, blanked)", gl, C_BLACK, "plastic", 3, "shell", E_DOWN)
+    add("M16 cable glands (panel lead, fixed-cable sensor)", gl, C_BLACK, "plastic", 3, "shell", E_DOWN)
 
-    vx, vy = VENT_XY
+    vx, vy, _, vdf = PEN["vent"]
     vent = _zcyl(vx, vy, z0 - 1.5, 6.5, 3.0)
-    vcap = _zcyl(vx, vy, z0 - 7.0, P["vent_d"] / 2, 5.0)
+    vcap = _zcyl(vx, vy, z0 - 7.0, vdf / 2, 5.0)
     vcap = _fillet_try(vcap, _fmin(vcap, Axis.Z), [2.0, 1.2])
     add("ePTFE pressure vent", vent + vcap, C_DARK, "plastic", 1, "shell", E_DOWN)
 
     wd, wl = P["whip"]
-    ax = P["ant_x"]
-    base = _hex_z(ax, ya, z0 - 2.5, 16.0, 5.0) + _zcyl(ax, ya, z0 - 12.5, 7.5, 15.0)
+    base = _hex_z(ax, ya, z0 - 2.0, 16.0, 4.0) + _zcyl(ax, ya, z0 - 12.0, 7.0, 16.0)
     base = _fillet_try(base, _fmin(base, Axis.Z), [1.5, 1.0])
-    base += _zcyl(ax, ya, z0 - 20 + 1.0, 9.0, 2.0)                           # bulkhead collar, model.py r = 9
     add("Antenna bulkhead and base", base, C_STEEL, "metal", 9, "shell", E_DOWN)
     whip = _zcyl(ax, ya, z0 - 20 - wl / 2, wd / 2, wl)
     whip = _fillet_try(whip, _fmin(whip, Axis.Z), [4.0, 2.5])
     whip += _zcyl(ax, ya, z0 - 20 - 5.0, wd / 2 + 0.8, 10.0)
-    add("Whip antenna (sub-GHz)", whip, C_BLACK, "rubber", 9, "shell", (0, 0, -150))
+    add("Whip antenna (915 MHz)", whip, C_BLACK, "rubber", 9, "shell", (0, 0, -150))
 
     # ------------------------------------------------------------ inside (BOM 6, 7, 8, 11), model.py envelopes
-    mw, mh, mt = P["mplate"]
-    in_back = y_back - wt
+    mt = P["mplate"][2]
+    in_back = y_back - wt - P["boss"][2]                                     # internal plate on its bosses
     mf = in_back - mt
-    mp = _bx(-mw / 2, mw / 2, mf, in_back, zc - mh / 2, zc + mh / 2)
-    mp = _fillet_try(mp, mp.edges().filter_by(Axis.Y), [6.0, 4.0])
-    for x, z in ((-52, zc - 78), (52, zc - 78), (-52, zc + 78), (52, zc + 78)):
-        mp -= _ycyl(x, (mf + in_back) / 2, z, 2.5, mt + 2)
-    mp -= _bx(-10, 10, mf - 1, in_back + 1, zc + 70, zc + 84)                # lift-out grip slot
-    add("Internal mounting plate (ASA)", mp, C_ASA, "plastic", 11, "internal", E_IN)
+    add("Internal mounting plate (ASA)", C["mplate"].shape, C_ASA, "plastic", 11, "internal", E_IN)
+    add("Internal plate screws", C["mplate_screws"].shape, C_STEEL, "metal", 13, "internal", E_IN)
+    add("Plug-in connector strip and rail fuses", C["connectors"].shape, C_STRIP, "plastic", 15, "internal", E_IN)
 
     cd, cl = P["cell"]
     cy_ = mf - cd / 2 - 4
@@ -389,7 +390,10 @@ def product_parts(P=PARAMS):
     pc += _ycyl(8, pf - 6, z0 + 56, 4.0, 12.0)                               # capacitor
     add("Power board components", pc, C_CHIP, "plastic", 7, "internal", E_PWR)
     tb = _bx(5 - 7, 5 + 7, mf - pt_ - 8, pf, z0 + 82 - 5, z0 + 82 + 5)       # terminal block, model.py envelope
-    add("Power board terminal block", tb, "#2E7D5B", "plastic", 7, "internal", E_PWR)
+    add("Power board terminal block", tb, C_STRIP, "plastic", 7, "internal", E_PWR)
+    hx, hz, hl, hb, _ = P["prog_header"]
+    riser = _bx(hx - hl / 2, hx + hl / 2, mf - pt_, pf, z0 + hz - hb / 2, z0 + hz + hb / 2)   # header body down to the PCB
+    add("Serial programming header (6 pins, facing the lid)", C["prog_header"].shape + riser, C_HEADER, "plastic", 7, "internal", E_PWR)
 
     cw, ch, ct = P["ctrl"]
     cpcb = _bx(10 - cw / 2, 10 + cw / 2, py0 - pcb_t, py0, z0 + 150 - ch / 2, z0 + 150 + ch / 2)
@@ -407,8 +411,8 @@ def product_parts(P=PARAMS):
     add("Controller components", cc, C_CHIP, "plastic", 8, "internal", E_CTRL)
     led = _bx(36, 40, cf - 1.4, cf, z0 + 164, z0 + 167)
     add("Status light, green (lit)", led, C_LED_G, "emissive", 8, "internal", E_CTRL)
-    pig = _pipe(_bezier((-18, cf - 2, z0 + 162), (-18, -84, z0 + 150), (P["ant_x"], -84, z0 + 60),
-                        (P["ant_x"], ya, z0 + wt + 1), n=10), 1.0)
+    pig = _pipe(_bezier((-18, cf - 2, z0 + 162), (-18, -84, z0 + 150), (ax, -84, z0 + 60),
+                        (ax, ya, z0 + wt + 8), n=10), 1.0)
     add("Antenna pigtail", pig, C_CABLE, "rubber", 9, "internal", E_CTRL)
 
     des = _bx(40, 62, mf - 6, mf, z0 + 108, z0 + 128)
@@ -442,80 +446,21 @@ def product_parts(P=PARAMS):
         "painted", 4, "shell", E_PAN)
 
     # ------------------------------------------------------------ bracket (BOM 5): model.py bars, clips, bolts
-    brk = model["bracket"]
-    add("Panel tilt bracket (aluminium flat bar)", brk, C_ALU2, "metal", 5, "shell", E_BRK)
-    bw, bt = P["bar"]
-    yf = P["plate_y0"] - P["plate"][2]
-    clips, bolts = None, None
-    for sx in (-1, 1):
-        x = sx * P["bracket_x"]
-        for ly, dz in ((P["post_ly"], P["post_foot_dz"]), (P["strut_ly"], P["strut_foot_dz"])):
-            a = Vector(x, yf - bt / 2, z0 + dz)
-            hy, hz = on_panel(ly, P)
-            d = (Vector(x, hy, hz) - a).normalized()
-            p = a + d * 16.0
-            xi = x - sx * (bt / 2 + 1.5)                                     # clip leg beside the bar, inboard
-            leg = _box(xi, (yf + p.Y - 10) / 2, p.Z, 3.0, yf - (p.Y - 10), 24.0)
-            foot = _box(x - sx * 8.0, yf - 1.5, p.Z, 16.0, 3.0, 24.0)
-            c = leg + foot
-            c = _fillet_try(c, c.edges().filter_by(Axis.X), [1.0, 0.5])
-            clips = c if clips is None else clips + c
-            b = _hex_x(x + sx * (bt / 2 + 2.0), p.Y, p.Z, 10.0, 4.0)
-            b += _xcyl(xi - sx * 2.5, p.Y, p.Z, 5.0, 2.0)                    # washer face on the clip
-            bolts = b if bolts is None else bolts + b
-            # panel end: small tab and bolt on the frame underside
-            hp = pan * Pos(x, ly, -pt / 2 - 4.0) * Box(3.0, 30.0, 8.0)
-            clips += hp
-            bolts += pan * (Pos(x + sx * 3.5, ly, -pt / 2 - 4.0) * Rot(0, 90, 0) * Cylinder(4.5, 4.0))
-    add("Bracket angle clips", clips, C_ALU2, "metal", 5, "shell", E_BRK)
-    add("M6 bracket bolts", bolts, C_STEEL, "metal", 13, "shell", (E_BRK[0], E_BRK[1], E_BRK[2]))
+    def grp(*keys):
+        return _union(C[k].shape for k in keys)
+    sides = ("r", "l")
+    add("Bracket posts and struts (aluminium flat bar)", grp(*[f"{n}_{s_}" for n in ("post", "strut") for s_ in sides]),
+        C_ALU2, "metal", 5, "shell", E_BRK)
+    add("Bracket angle clips (plate and panel)", grp(*[f"{n}_{s_}" for n in ("plate_clip", "high_panel_clip", "low_panel_clip") for s_ in sides]),
+        C_ALU2, "metal", 5, "shell", E_BRK)
+    add("Bracket and panel clip bolts (stainless)", grp("bracket_bolts", "panel_bolts"), C_STEEL, "metal", 13, "shell", E_BRK)
 
-    # ------------------------------------------------------------ pole mounting kit (BOM 12)
-    plw, plh, plt = P["plate"]
-    pb_, ptop_ = D["plate_bot"], D["plate_top"]
-    plate = _bx(-plw / 2, plw / 2, P["plate_y0"] - plt, P["plate_y0"], pb_, ptop_)
-    plate = _fillet_try(plate, plate.edges().filter_by(Axis.Y), [10.0, 8.0, 5.0])
-    for x in (-plw / 2 + 14, plw / 2 - 14):                                  # wall-mount keyhole slots
-        for z in (pb_ + 16, ptop_ - 16):
-            plate -= _ycyl(x, P["plate_y0"] - plt / 2, z, 4.5, plt + 2)
-            plate -= _box(x, P["plate_y0"] - plt / 2, z + 6, 5.0, plt + 2, 12.0)
-    for z in D["clamps"]:                                                    # band slots
-        for sx in (-1, 1):
-            plate -= _box(sx * 33, P["plate_y0"] - plt / 2, z, 6.0, plt + 2, P["band_w"] + 2)
-    add("Back plate (aluminium)", plate, C_ALU, "metal", 12, "shell", E_MOUNT)
-
-    vw, vh = P["vblock"]
-    depth = D["vblock_depth"]
-    vy0, vy1 = P["plate_y0"], P["plate_y0"] + depth
-    vbs = None
-    apex = -R * math.sqrt(2)                                                 # 90 deg V touching the pole
-    for z in D["clamps"]:
-        vb = _bx(-vw / 2, vw / 2, vy0, vy1, z - vh / 2, z + vh / 2)
-        vb = _fillet_try(vb, vb.edges().filter_by(Axis.Y), [3.0, 2.0])
-        vcut = Pos(0, apex, z) * Rot(0, 0, 45) * Box(80, 80, vh + 2, align=(Align.MIN, Align.MIN, Align.CENTER))
-        vb -= vcut
-        vbs = vb if vbs is None else vbs + vb
-    add("V-blocks (aluminium)", vbs, C_ALU2, "metal", 12, "shell", (0, 210, 150))
-
-    bands, heads = None, None
-    band_w = P["band_w"]
-    for z in D["clamps"]:
-        ring = _zcyl(0, 0, z, R + 1.0, band_w) - _zcyl(0, 0, z, R, band_w + 2)
-        ring &= _bx(-40, 40, -R * 0.7, 40, z - 10, z + 10)
-        xs = R * math.sqrt(1 - 0.49) + 0.5
-        run = None
-        for sx in (-1, 1):
-            r_ = _bx(sx * xs - 0.5, sx * xs + 0.5, P["plate_y0"] - plt - 1.0, -R * 0.7 + 0.5, z - band_w / 2, z + band_w / 2)
-            run = r_ if run is None else run + r_
-        front = _bx(-xs - 0.5, xs + 0.5, P["plate_y0"] - plt - 1.0, P["plate_y0"] - plt, z - band_w / 2, z + band_w / 2)
-        hous = _box(0, P["plate_y0"] - plt - 6.0, z, 16, 10, band_w + 4)
-        hous = _fillet_try(hous, hous.edges().filter_by(Axis.Z), [2.0, 1.0])
-        c = ring + run + front + hous
-        bands = c if bands is None else bands + c
-        h = _hex_x(8 + 2.0, P["plate_y0"] - plt - 6.0, z, 8.0, 4.0) + _xcyl(8 + 0.5, P["plate_y0"] - plt - 6.0, z, 3.0, 1.0)
-        heads = h if heads is None else heads + h
-    add("Stainless band clamps", bands, C_STEEL, "metal", 12, "shell", (0, 250, 150))
-    add("Band clamp worm screws", heads, C_ALU2, "metal", 12, "shell", (0, 250, 150))
+    # ------------------------------------------------------------ pole mounting kit (BOM 12) and enclosure lugs (BOM 1)
+    add("Back plate (aluminium)", C["plate"].shape, C_ALU, "metal", 12, "shell", E_MOUNT)
+    add("Enclosure lugs (maker's kit)", C["lugs"].shape, C_DARK, "plastic", 1, "shell", E_MOUNT)
+    add("Lug screws and nuts (stainless)", C["lug_screws"].shape, C_STEEL, "metal", 13, "shell", E_MOUNT)
+    add("V-blocks (aluminium)", grp("vblock_low", "vblock_up"), C_ALU2, "metal", 12, "shell", (0, 210, 150))
+    add("Stainless band clamps", C["bands"].shape, C_STEEL, "metal", 12, "shell", (0, 250, 150))
 
     # ------------------------------------------------------------ context (not in the BOM)
     pz0, pz1 = POLE_Z
@@ -527,16 +472,17 @@ def product_parts(P=PARAMS):
     add("Pole cap", pcap, C_DARK, "plastic", None, "context", (0, 0, 0))
 
     # panel lead: gland 1 down, back behind the antenna, up the right side to the junction box
-    gx = P["gland_x"][0]
+    gx, gy = glands_xy[0]
+    xr = 95.0                                                                # outboard of the plate clips and posts
     jy, jz = on_panel(JLY - 20.0, P, lz=-pt / 2 - 8.0)
-    pts = _bezier((gx, yb, z0 - 17), (gx, yb, z0 - 50), (40, -54, z0 - 45), (70, -54, z0 - 40))
-    pts += _bezier((70, -54, z0 - 40), (88, -54, z0 - 38), (88, -54, z0 - 30), (88, -54, z0 - 5))[1:]
-    pts += [(88, -54, z0 + 200)]
-    pts += _bezier((88, -54, z0 + 200), (88, -54, z0 + 260), (JX, jy + 10, jz - 40), (JX, jy, jz))[1:]
+    pts = _bezier((gx, gy, z0 - 17), (gx, gy, z0 - 50), (40, -60, z0 - 45), (70, -60, z0 - 40))
+    pts += _bezier((70, -60, z0 - 40), (xr, -60, z0 - 38), (xr, -60, z0 - 30), (xr, -60, z0 - 5))[1:]
+    pts += [(xr, -60, z0 + 200)]
+    pts += _bezier((xr, -60, z0 + 200), (xr, -60, z0 + 260), (JX, jy + 10, jz - 40), (JX, jy, jz))[1:]
     lead = _pipe(pts, 3.0)
     add("Panel lead", lead, C_CABLE, "rubber", 4, "context", (0, 0, 0))
     # sensor cable: M12 plug in port A, down and tied to the pole
-    px_ = P["port_x"][0]
+    px_, yb = ports_xy[0]
     plug = _knurl_cap(px_, yb, z0 - 10.0, 9.5, 16.0, n=16)
     plug += _zcyl(px_, yb, z0 - 36.0, 7.0, 20.0)
     plug = _fillet_try(plug, _fmin(plug, Axis.Z), [3.0, 2.0])

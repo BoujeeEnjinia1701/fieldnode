@@ -1,4 +1,4 @@
-"""FieldNode general arrangement sheet FND-DWG-001, Rev P3 (TRL 3; FND-DDR-002 and FND-DDR-003 applied).
+"""FieldNode general arrangement sheet FND-DWG-001, Rev P4 (TRL 3; FND-DDR-002, FND-DDR-003 and FND-DEC-001 applied).
 
 Run from the repo root:  python cad/src/sheets.py
 Writes cad/drawings/FND-DWG-001.svg, .pdf and .png from the parametric model in
@@ -16,6 +16,7 @@ from model import PARAMS as P, assembly, derived, bracket_geometry, shield_geome
 
 DATE = "2026-09-25"
 DATE_P3 = "2026-09-30"
+DATE_P4 = "2026-10-02"
 
 
 def safe_project_views(part, workdir, line_weight=0.35):
@@ -100,12 +101,13 @@ def main():
     asm = assembly(with_pole=True)
     views = safe_project_views(asm, work)
     bb = asm.bounding_box()
-    s = Sheet(project="FieldNode", title="General arrangement", dwg_no="FND-DWG-001", rev="P3",
-              author="Amish Chadha", date=DATE_P3, scale=0.1, theme="technical",
+    s = Sheet(project="FieldNode", title="General arrangement", dwg_no="FND-DWG-001", rev="P4",
+              author="Amish Chadha", date=DATE_P4, scale=0.1, theme="technical",
               material="Bought-in parts per bom/bom.csv; aluminium bracket and plate. PRELIMINARY, NOT FOR FABRICATION",
               revisions=[("P1", "Preliminary GA for TRL 3 (from cad/src/model.py)", DATE, "AC"),
                          ("P2", "FND-DDR-002: 9 V class panel; sun shield option (14)", DATE, "AC"),
-                         ("P3", "FND-DDR-003: design for construction", DATE_P3, "AC")])
+                         ("P3", "FND-DDR-003: design for construction", DATE_P3, "AC"),
+                         ("P4", "Port pinout, programming header (7), 915 MHz whip", DATE_P4, "AC")])
     s.add_ortho(views)
     k = s.scale
     c = ortho_cells(s, views)
@@ -127,9 +129,9 @@ def main():
     L += [ext(X(-ew / 2), Z(D["enc_bot"]), X(-ew / 2), yd + 1), ext(X(ew / 2), Z(D["enc_bot"]), X(ew / 2), yd + 1)]
     L += dim_h(X(-P["panel"][0] / 2), X(P["panel"][0] / 2), Z(D["overall_top"]) - 4, f"{P['panel'][0]:.0f} panel")
     ax_ = P["pens"]["antenna"][0]
-    L += leader(X(ax_), Z(D["whip_tip"] + 40), X(ax_) + 6, Z(D["whip_tip"] + 10), "ANTENNA WHIP (9)")
+    L += leader(X(ax_), Z(D["whip_tip"] + 40), X(ax_) + 6, Z(D["whip_tip"] + 10), "915 MHZ WHIP (9)")
     px_ = P["pens"]["port_a"][0]
-    L += leader(X(px_), Z(D["enc_bot"] - 14), X(-ew / 2) - 3, Z(D["enc_bot"] - 60), "2 x M12 PORTS (10)", "end")
+    L += leader(X(px_), Z(D["enc_bot"] - 14), X(-ew / 2) - 12, Z(D["enc_bot"] - 45), "PORTS A (LEFT) AND B, M12 5-PIN (10)", "end")
     gx_ = P["pens"]["gland_1"][0]
     L += leader(X(gx_), Z(D["enc_bot"] - 8), X(gx_) - 2, Z(D["enc_bot"] - 120), "2 x M16 GLANDS (3)", "end")
 
@@ -153,7 +155,7 @@ def main():
     L.append(_t(Yr(D["panel_cy"]) - 14, Zr(D["overall_top"]) - 5, f"PANEL TILT {P['tilt']:.0f} DEG", 2.0, 400, INK, "middle"))
 
     s._layers += L
-    s.add_svg(views["iso"], 276, 32, 140, 100, label="Isometric view", sublabel="Not to scale; grey pole stub is site supplied")
+    s.add_svg(views["iso"], 276, 40, 140, 84, label="Isometric view", sublabel="Not to scale; grey pole stub is site supplied")
     bg = bracket_geometry()
     SG = shield_geometry()
     s.add_notes("Main dimensions and interfaces (mm)", [
@@ -165,11 +167,13 @@ def main():
         f"Bracket bar {P['bar'][0]:.0f} x {P['bar'][1]:.0f}: posts {bg['post']['L']:.0f}, struts {bg['strut']['L']:.0f} between holes",
         "Enclosure on 4 lugs, M5; bracket on 30 x 30 x 3 angle clips, M6",
         f"Bottom face: 2 rows, {P['pen_rows'][0]:.0f} and {P['pen_rows'][1]:.0f} in from the back face",
-        f"Whip {P['whip'][1]:.0f} long; tip {D['whip_tip']:,.0f} above ground",
+        f"Whip 915 MHz (US915), {P['whip'][1]:.0f} long; tip {D['whip_tip']:,.0f} above ground",
         f"Option (14), not shown: shield {SG['w']:.0f} x {SG['d']:.0f} x {SG['h']:.0f}, {P['shield_gap']:.0f} gap, 4 thumb screws",
-        "Third-angle; front view from -Y; pole on the Z axis",
-        "Numbers in brackets are BOM lines; loads in FND-CAL-001",
-    ], x=276, y=150, width=146)
+        "Ports A and B (10), M12 5-pin A-coded, pin positions per maker:",
+        "  1 switched rail, 2 data A, 3 ground, 4 data B, 5 analog",
+        f"Serial header (7) on the power board, pins {D['hdr_depth']:.0f} in from box front (lid off)",
+        "Third-angle; front view from -Y; pole on Z axis; (n) = BOM line",
+    ], x=276, y=135, width=146)
     out = s.save(ROOT / "cad" / "drawings" / "FND-DWG-001")
     shutil.rmtree(work, ignore_errors=True)
     print(f"wrote {out} and .pdf, .png at scale 1:{1 / k:g}")

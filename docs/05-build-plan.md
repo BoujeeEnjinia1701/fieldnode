@@ -3,7 +3,7 @@ doc_id: FND-BLD-001
 title: FieldNode prototype build plan
 project: FieldNode
 doc_type: Build plan
-version: "0.4"
+version: "0.5"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -25,6 +25,10 @@ revisions:
     date: '2026-10-02'
     author: Amish Chadha
     change: "Port pinout and antenna band as decided on 2026-10-02 (FND-DEC-001)"
+  - version: "0.5"
+    date: '2026-10-02'
+    author: Amish Chadha
+    change: "Approved follow-ups carried out: programming header on the power modules, pinout on the wiring picture, firmware load check, pictures regenerated"
 ---
 
 # FieldNode prototype build plan
@@ -37,7 +41,7 @@ revisions:
 
 *Figure 1. Every component pulled apart and numbered in build order; 15, the sun shield, is fitted only at hot sites.*
 
-The prototype is one FieldNode on a short length of 48 mm pole: a grey plastic box holding a battery cell and small electronic modules, hung on an aluminium back plate that clamps to the pole, with a solar panel above it on a small bracket that also keeps rain off the box. Figure 1 shows the 15 components in the order you make or fit them. Nine are made in a small workshop: the back plate, two V-blocks, the bracket (two plate clips, two posts, two struts and four panel clips), the printed internal plate and the folded sun shield; the bought box is drilled. Everything else is bought and fitted: the box and lid, cable glands, sensor sockets, vent, antenna, panel, cell, electronic modules and band clamps. The work is sawing, drilling, filing and bending aluminium bar, angle and sheet, drilling a plastic box, one 3D print, and wiring bought modules together with screw terminals. The parts cost about $148 with the shield, from the bill of materials.
+The prototype is one FieldNode on a short length of 48 mm pole: a grey plastic box holding a battery cell and small electronic modules, hung on an aluminium back plate that clamps to the pole, with a solar panel above it on a small bracket that also keeps rain off the box. Figure 1 shows the 15 components in the order you make or fit them. Nine are made in a small workshop: the back plate, two V-blocks, the bracket (two plate clips, two posts, two struts and four panel clips), the printed internal plate and the folded sun shield; the bought box is drilled. Everything else is bought and fitted: the box and lid, cable glands, sensor sockets, vent, antenna, panel, cell, electronic modules and band clamps. The work is sawing, drilling, filing and bending aluminium bar, angle and sheet, drilling a plastic box, one 3D print, and wiring bought modules together with screw terminals. The parts cost about $148.50 with the shield, from the bill of materials.
 
 > **Safety:** The prototype holds a lithium iron phosphate cell of about 19 Wh and its charger. Keep the fuse out and the cell out of the holder until section 6 says otherwise, never charge it below 0 °C or above 45 °C, and never leave a first build charging unattended. Cut aluminium edges are sharp: deburr everything and wear gloves when handling bar and sheet. Printing ASA gives off fumes; print in a ventilated space.
 
@@ -56,6 +60,7 @@ The concept showed what the node does; some of its parts could not be made or fi
 | Panel bracket | Flat bars standing on their edges against the plate and panel, with no frame behind the panel end; the panel could swing | Angle clips on the plate and on the panel frame's back lip, with flat bars bolted flat to them; each post held by two bolts (Figures 14, 18 and 19) | Every joint is face to face and bolted, and the frame is a rigid triangle |
 | Sun shield | No fixing; it blocked the lid | Folded flanges on the plate and four thumb screws; it slides off to open the lid (Figure 21) | A fixing you can undo by hand at the pole |
 | Wiring | No fuses on the sensor supplies; no way to unplug the internal plate | A plug-in connector strip and a resettable fuse on each sensor supply (Figure 12) | A shorted sensor cable cannot drain the cell; the plate lifts out as one unit |
+| Firmware updates | No way to load new firmware in the field | A six-pin serial programming header on the power modules, pins facing the lid (Figures 10 and 12) | Firmware is loaded by cable with the lid open, with no extra hole in the box (decided on 2026-10-02) |
 | Back plate | Solid | A 100 x 150 mm window behind the box, and 20 mm (not 25 mm) bar for the bracket | Keeps the node under its 2.5 kg mass limit after the added clips and bolts |
 
 ## 3. Making the components
@@ -163,7 +168,7 @@ The back face sits flat on the back of the back plate, held by two M4 countersun
 
 1. Measure the four bosses inside your box. The model assumes they are 110 apart across and 160 apart up and down; move the plate's holes to match your box.
 2. Print the plate with four 4.5 mm holes at the bosses and a 40 x 10 mm finger slot 7 below the top edge. Let it cool on the bed so it does not warp.
-3. Lay out the parts on the front face as Figure 10 shows: cell holder lower left, power modules lower right, controller above them, connector strip along the bottom edge.
+3. Lay out the parts on the front face as Figure 10 shows: cell holder lower left, power modules lower right, controller above them, connector strip along the bottom edge. The six-pin programming header goes at the top right of the power modules, about 92 mm above the floor of the box and 50 mm right of centre, with its pins pointing straight out toward the lid; the pin tips then sit about 47 mm in from the open front of the box, with nothing in front of them, so the programming cable plugs on with the lid open.
 4. Mark each module's mounting holes through the module, drill 3.2 mm, and fit the modules on M3 screws with 6 mm nylon standoffs. Fit the cell holder with no cell in it and its fuse out.
 5. Wire the modules as Figure 12 shows (section 3.4.1).
 
@@ -183,7 +188,7 @@ The back face sits flat on the back of the back plate, held by two M4 countersun
 
 ![Figure 12. Block-level wiring](05-build-plan/wiring.png)
 
-*Figure 12. Block-level wiring with wire sizes. No circuit board is laid out at this stage; bought modules stand in for the power board.*
+*Figure 12. Block-level wiring with wire sizes, the pinout of both sensor ports and the programming header. No circuit board is laid out at this stage; bought modules stand in for the power board.*
 
 The power board in the bill of materials is a custom board, which is TRL 4 work. For this prototype, buy modules that meet this specification:
 
@@ -197,6 +202,7 @@ The power board in the bill of materials is a custom board, which is TRL 4 work.
 | Port rail converters | 5 V or 12 V boost converters with an enable input, one per sensor port |
 | Rail fuses | Two resettable fuses, about 0.5 A hold, one on each port supply |
 | Controller | STM32WL-class LoRa module (RAK3172 or Wio-E5) on its maker's breakout, 16 MB flash breakout, status LED |
+| Programming header | A single row of six straight pins at 2.54 mm pitch on a small board fixed to the power modules: ground, 3.3 V, serial transmit, serial receive, boot and reset. The module has no USB port, so it is loaded over its serial port |
 
 Wire it like this, with stranded copper and a ferrule on every screw terminal:
 
@@ -205,11 +211,12 @@ Wire it like this, with stranded copper and a ferrule on every screw terminal:
 3. Protection board pack terminals to the load bus (a small terminal block): 0.75 mm².
 4. Load bus to the 3.3 V converter and on to the controller: 0.5 mm² (20 AWG).
 5. Load bus to each port rail converter, through its resettable fuse, to the connector strip: 0.5 mm².
-6. Controller signal pins to the connector strip: 0.25 mm² (24 AWG). Wire each port to the standard pinout: pin 1 switched rail, pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog (FND-DEC-001).
+6. Controller signal pins to the connector strip: 0.25 mm² (24 AWG). Wire both ports the same, to the pinout in the yellow box of Figure 12: pin 1 switched supply, pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog. Find each pin's position on the socket from its maker's datasheet, and mark the pin numbers on the inside of the box beside each socket.
 7. Controller output pin to each converter's enable input: 0.25 mm².
 8. The cell holder's temperature sensor to the charger's temperature input: 0.25 mm², twisted, with the sensor taped to the cell.
 9. The panel lead comes in through gland 1 and plugs into the connector strip; the strip then feeds the charger input: 0.5 mm².
 10. The radio pigtail runs from the controller to the antenna bulkhead, away from the power wires.
+11. Programming header to the controller: ground, 3.3 V, serial transmit and receive (crossed, so the header's transmit goes to the module's receive), boot and reset, 0.25 mm², kept short and away from the charger.
 
 Check that the charger's temperature window really is 0 to 45 °C in its datasheet before buying: some chargers of this class fix a different window.
 
@@ -336,8 +343,8 @@ Buy to specification, not brand. Line numbers are those of the bill of materials
 - **Cable glands (line 3).** Two M16 x 1.5 nylon glands, IP68, for 4 to 8 mm cable, and one M16 blanking plug.
 - **Solar panel (line 4).** 6 W monocrystalline, 9 V class, about 290 x 200 x 17 mm, aluminium frame with a flat back lip at least 12 mm wide, 1 m lead.
 - **Cell and holder (line 6).** 32700 lithium iron phosphate cell, 3.2 V, 6 Ah, from a maker that publishes a datasheet; holder with an inline 5 A fuse, a 10 k temperature sensor and a plug-in lead.
-- **Power modules (line 7) and controller (line 8).** As Table 2.
-- **Antenna (line 9).** Sub-GHz whip about 190 mm, bulkhead and pigtail, 915 MHz for the US915 first variant, or the band of the first adopting project's site if it is outside North America (FND-DEC-001).
+- **Power modules with programming header (line 7) and controller (line 8).** As Table 2.
+- **Antenna (line 9).** 915 MHz whip about 190 mm, about 2 dBi, with bulkhead and pigtail, for the US915 first variant; a whip for the band of the first adopting project's site replaces it only if that site is outside North America.
 - **Sensor ports (line 10).** Two M12 5-pin A-coded panel sockets, IP67, with caps.
 - **Band clamps (line 12).** Two 12 mm stainless worm-drive band clamps, band about 230 to 280 mm round the pole, block and plate.
 - **Connector strip and fuses (line 15).** Pluggable terminal strip, 5.08 mm pitch, about 12 ways, plug and header; two resettable fuses of about 0.5 A hold.
@@ -369,7 +376,7 @@ Hold the box flat on the front of the plate, centred, 40 above the plate's botto
 
 ![Step 4](05-build-plan/step-04.png)
 
-Fit the cell holder (no cell, fuse out), modules and connector strip on M3 screws and standoffs and wire them as Figure 12. **Hold point:** the wiring checks of section 3.4 pass before going on.
+Fit the cell holder (no cell, fuse out), modules, programming header and connector strip on M3 screws and standoffs and wire them as Figure 12. **Hold point:** the wiring checks of section 3.4 pass before going on.
 
 ### Step 5: internal plate into the box
 
@@ -433,6 +440,7 @@ These are the checks a TRL 4 test report would record; this plan only lists them
 | Normal charge | R4, R5 | Sensor reconnected, cell fitted, bench supply at 9 V, 1 A limit | Current flows; charging ends at 3.6 V |
 | Over-discharge cut-off | R4 | Bench supply in place of the cell at 3.2 V, lowered slowly | The protection board cuts the output at its datasheet value |
 | Sensor supplies | R7, R11 | Switch each port supply on and off from the controller; measure at the M12 pin | Within 5 % of 5 or 12 V when on; 0 V when off; a short on the pin trips the resettable fuse |
+| Firmware load by cable | R15, R17 | Lid open, cell fitted, nothing unplugged: plug a 3.3 V serial cable onto the programming header and load the firmware with the region set to US915 | The firmware loads without lifting the plate out or soldering; the node then joins a US915 network |
 | Internal plate lifts out | R15 | Unplug the connector strip and pigtail, undo four screws | The plate and everything on it comes out in one piece |
 | Pole range | R12 | Seat the mount on 40, 48 and 60 mm tubes | Both V-blocks touch the tube on both faces; each band closes with adjustment to spare |
 | Band torque | R13 | Torque screwdriver on each band | The maker's torque is reached without the band slipping; value recorded |
@@ -449,13 +457,13 @@ Stop at each point. Carry on only when everything listed is true.
 - **S3. Before any charging source is connected.** The charge voltage is set and measured at 3.6 V; the panel input polarity is checked at the charger; the charger's maximum input is above the panel's open-circuit voltage at -20 °C.
 - **S4. Before the cell is allowed to charge.** Both charge-stop checks of section 5 pass with the substitute resistors. Then the temperature sensor is reconnected and taped to the cell, and the bench supply limit is 1 A or less.
 - **S5. First charge.** Attended the whole time, lid open, on the charging spot; cell temperature checked every 15 minutes. Stop if the cell passes 45 °C or 3.65 V. Never bypass the charge stop to gain energy.
-- **S6. Before the radio transmits.** The antenna is connected and matches the pilot region's band. Transmitting without an antenna can damage the radio.
+- **S6. Before the radio transmits.** The antenna is connected and matches the region set in the firmware (915 MHz for the US915 first variant). Transmitting without an antenna can damage the radio.
 - **S7. Before the node goes on the pole stub.** Every bracket bolt tight with nyloc nuts, panel glass whole, sharp edges deburred, both bands through their slots. The stub is clamped to a bench or stand that cannot tip under about 2.6 kg.
 - **S8. Before any outdoor installation (outside this plan).** Work from a stable ladder with a second person; never on a pole that carries power lines unless the utility allows it; check the site pole can carry about 81 N of wind load about 2 m up.
 
 ## 7. Tools, skills and workspace
 
-**Tools.** Hacksaw with a 24 teeth per inch blade (or a bandsaw); bench vice with soft jaws; bench drill or a drill in a stand; drills 2.5 to 12 mm; step drill to 20 mm; countersink; M4 tap and tap drill; jigsaw with a metal blade; flat and half-round files; deburring tool; scriber, engineer's square, 45° square, steel rule and calipers; digital angle finder; hand sheet folder (or two lengths of hardwood angle clamped in the vice) for 0.5 mm sheet 210 mm long; aviation snips; hand rivet tool; 3D printer with an enclosure and a bed of at least 130 x 180 mm that prints ASA; soldering iron; ferrule crimper and wire strippers; multimeter; bench power supply with an adjustable current limit (0 to 15 V, 0 to 2 A); torque screwdriver covering about 1 to 6 N·m; scale to 5 kg; stopwatch.
+**Tools.** Hacksaw with a 24 teeth per inch blade (or a bandsaw); bench vice with soft jaws; bench drill or a drill in a stand; drills 2.5 to 12 mm; step drill to 20 mm; countersink; M4 tap and tap drill; jigsaw with a metal blade; flat and half-round files; deburring tool; scriber, engineer's square, 45° square, steel rule and calipers; digital angle finder; hand sheet folder (or two lengths of hardwood angle clamped in the vice) for 0.5 mm sheet 210 mm long; aviation snips; hand rivet tool; 3D printer with an enclosure and a bed of at least 130 x 180 mm that prints ASA; soldering iron; ferrule crimper and wire strippers; multimeter; 3.3 V USB-to-serial cable with a six-way 2.54 mm socket, for loading firmware; bench power supply with an adjustable current limit (0 to 15 V, 0 to 2 A); torque screwdriver covering about 1 to 6 N·m; scale to 5 kg; stopwatch.
 
 **Skills.** No certified trade is needed. Basic metalwork (marking out, sawing, drilling, filing, tapping, folding thin sheet), through-hole soldering and crimping, safe use of a bench power supply and care with lithium cells. All circuits are extra-low voltage: 3.6 V at the cell, 12 V at most on a sensor supply, under about 15 V from the panel. The bench supply must be a certified, undamaged unit; no mains wiring is part of this build.
 
@@ -467,8 +475,8 @@ Stop at each point. Carry on only when everything listed is true.
 
 - Model and constructability checks: `cad/src/model.py` (`python cad/src/model.py --check`); STEP and STL exports in `cad/step/` and `cad/stl/`.
 - Pictures: `cad/src/build_plan_media.py`, using `.kit/build_views.py`; written to `docs/05-build-plan/` and `cad/drawings/FND-DWG-101` to `FND-DWG-109`.
-- General arrangement: `cad/drawings/FND-DWG-001.pdf`, Rev P3.
-- Calculations: `docs/04-calcs/01-sizing.md` (FND-CAL-001 v0.3) and `docs/04-calcs/sizing.py`; masses [F1], [F1b], cell swap [E2], [E2b], bracket [D5], V-blocks [D6], [D6b].
+- General arrangement: `cad/drawings/FND-DWG-001.pdf`, Rev P4.
+- Calculations: `docs/04-calcs/01-sizing.md` (FND-CAL-001 v0.6) and `docs/04-calcs/sizing.py`; masses [F1], [F1b], cell swap [E2], [E2b], bracket [D5], V-blocks [D6], [D6b].
 - Bill of materials: `bom/bom.csv`.
 - Decisions: `docs/decisions/0003-design-for-construction.md` (FND-DDR-003), with FND-DDR-001 and FND-DDR-002.
-- Requirements: `docs/03-requirements.md` (FND-REQ-001 v0.5).
+- Requirements: `docs/03-requirements.md` (FND-REQ-001 v0.8).

@@ -83,7 +83,7 @@ render_all(
                  "LiFePO4 cell 3.2 V, 6 Ah, about 19 Wh; charging 0 to 45 °C only",
                  "Worst month: 7.75 Wh/day stored against 2.67 Wh/day drawn",
                  "Published sensor allowance 100 mW; 5.75 days with no sun",
-                 "LoRaWAN every 15 min at SF9; $139, 2.45 kg; shield option above 30 °C"],
+                 "LoRaWAN US915 every 15 min at SF9; $139.50, 2.45 kg; shield above 30 °C"],
     scale_figure=False, context=context,
     cut_exclude=("Pole, 48 mm OD (site supplied)", "Solar panel, 6 W", "Panel tilt bracket"),
     flow={"title": "daily energy flow in the worst month, Wh per day (FND-CAL-001 estimates, 2 peak sun hours, 100 mW sensors)",

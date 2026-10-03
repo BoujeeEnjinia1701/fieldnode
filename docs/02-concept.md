@@ -3,7 +3,7 @@ doc_id: FND-PRC-001
 title: FieldNode design precis
 project: FieldNode
 doc_type: Design precis
-version: "0.7"
+version: "0.8"
 status: Draft
 date: '2026-10-02'
 author: Amish Chadha
@@ -37,13 +37,17 @@ revisions:
   date: '2026-10-02'
   author: Amish Chadha
   change: "Pilot band, pinout and firmware update decisions of 2026-10-02 (FND-DEC-001)"
+- version: "0.8"
+  date: '2026-10-02'
+  author: Amish Chadha
+  change: "Approved follow-ups carried out: serial programming header on the power board, 915 MHz whip, US915 airtime and link, cost USD 139.50 (USD 148.50 with the shield)"
 ---
 
 # FieldNode design precis
 
 ## Summary
 
-FieldNode is a pole- or wall-mounted outdoor node built from a stock IP65 enclosure, a 6 W, 9 V class solar panel that doubles as a rain hood, a single 6 Ah LiFePO4 cell, an MPPT charge and power board, and an STM32WL-class LoRaWAN module. Two sealed M12 sensor ports carry power and data to whatever the host project measures, within a published sensor allowance of 100 mW. The TRL 3 calculations (FND-CAL-001 v0.2) confirm the worst-month energy budget: at 2 peak sun hours the cell stores 7.75 Wh a day against 2.67 Wh drawn at 100 mW, which lasts 5.75 days without sun. They also found the design's weak point: in full sun at 45 °C ambient the bare enclosure runs at 59 to 73 °C, above the 60 °C target, and the cell's 45 °C charge lockout then blocks charging for most of a hot, clear day. Amish decided on 2026-09-25 (FND-DDR-002) to fit a ventilated white sun shield, BOM line 14, at sites whose design maximum exceeds 30 °C; with it the inside stays at or below about 52 °C. The base node costs $139.00 in parts and weighs 2.45 kg; the hot-climate node costs $148.00 and weighs 2.61 kg. All design choices below are decided by Amish (FND-DDR-001 and FND-DDR-002); the changes made on 2026-09-30 so that every part can be made and fixed (FND-DDR-003, "Design for construction") are open for his review.
+FieldNode is a pole- or wall-mounted outdoor node built from a stock IP65 enclosure, a 6 W, 9 V class solar panel that doubles as a rain hood, a single 6 Ah LiFePO4 cell, an MPPT charge and power board, and an STM32WL-class LoRaWAN module. Two sealed M12 sensor ports carry power and data to whatever the host project measures, within a published sensor allowance of 100 mW. The TRL 3 calculations (FND-CAL-001 v0.2) confirm the worst-month energy budget: at 2 peak sun hours the cell stores 7.75 Wh a day against 2.67 Wh drawn at 100 mW, which lasts 5.75 days without sun. They also found the design's weak point: in full sun at 45 °C ambient the bare enclosure runs at 59 to 73 °C, above the 60 °C target, and the cell's 45 °C charge lockout then blocks charging for most of a hot, clear day. Amish decided on 2026-09-25 (FND-DDR-002) to fit a ventilated white sun shield, BOM line 14, at sites whose design maximum exceeds 30 °C; with it the inside stays at or below about 52 °C. The base node costs $139.50 in parts and weighs 2.45 kg; the hot-climate node costs $148.50 and weighs 2.61 kg. All design choices below are decided by Amish (FND-DDR-001 and FND-DDR-002); the changes made on 2026-09-30 so that every part can be made and fixed (FND-DDR-003, "Design for construction") are open for his review.
 
 ![FieldNode concept](../media/hero.png)
 
@@ -74,9 +78,9 @@ Table 1. Components (numbers match the BOM and Figure 2)
 | 4 | Solar panel | 6 W monocrystalline, 9 V class (Vmp about 9 V at 25 °C), about 290 x 200 mm |
 | 5 | Panel tilt bracket | Two rear posts and two front struts in 20 x 3 mm aluminium flat bar, bolted flat to 30 x 30 x 3 mm angle clips on the back plate and on the panel frame's back lip; tilt set by hole position |
 | 6 | Cell | LiFePO4 32700, 3.2 V, 6 Ah, in a holder with inline fuse and NTC |
-| 7 | Power board | MPPT charger for 1S LiFePO4, protection, fuel gauge, switched 3.3, 5 and 12 V rails |
+| 7 | Power board | MPPT charger for 1S LiFePO4, protection, fuel gauge, switched 3.3, 5 and 12 V rails; a six-pin serial programming header facing the lid, wired to the controller, for firmware updates by cable with the lid open |
 | 8 | Controller and radio | STM32WL-class module (for example RAK3172 or Wio-E5) on a carrier with SPI flash and status LED |
-| 9 | Antenna | Sub-GHz whip, about 190 mm, on a bottom bulkhead, pointing down |
+| 9 | Antenna | 915 MHz whip for the US915 first variant, about 190 mm, on a bottom bulkhead, pointing down |
 | 10 | Sensor ports | Two M12 5-pin panel connectors with caps |
 | 11 | Internal mounting plate | 3 mm printed ASA; carries cell and boards and lifts out as one unit |
 | 12 | Pole mounting kit | Back plate 180 x 320 x 3 mm with a window behind the enclosure, two 60 x 33 x 20 mm V-blocks with a true 90° V, two stainless band clamps 250 mm apart; wall screws |
@@ -119,7 +123,7 @@ Table 2. Energy budget, worst month (2 peak sun hours)
 
 **Airtime.** Table 3 gives airtime for a 20-byte payload (33 bytes on air) at 125 kHz. The Things Network allows 30 s of uplink airtime per node per day ([TTN fair use](https://www.thethingsnetwork.org/docs/lorawan/duty-cycle/)).
 
-**Firmware airtime rule (FND-DDR-002).** On The Things Network the firmware keeps the 15 min default at SF7 to SF9 and, when adaptive data rate moves the node to SF10 or slower, lengthens the interval to 22 min at SF10, 48 min at SF11 and 87 min at SF12. Airtime then stays at 30 s a day or less at every spreading factor. On a private gateway only the regional duty cycle applies. This is a rule for the firmware; writing the firmware is TRL 4 work.
+**Firmware airtime rule (FND-DDR-002).** On The Things Network the firmware keeps the 15 min default at SF7 to SF9 and, when adaptive data rate moves the node to SF10 or slower, lengthens the interval to 22 min at SF10, 48 min at SF11 and 87 min at SF12. Airtime then stays at 30 s a day or less at every spreading factor. On a private gateway only the regional duty cycle applies. In the US915 default first variant (FND-DEC-001) the 20-byte uplink cannot use SF10 (11-byte limit and the 400 ms dwell time), so the node stays at SF7 to SF9 and the 15 min default already fits; the rule matters on EU868 and similar bands. The SF9 link margin at 2 km is 18.2 dB at 915 MHz (18.6 dB at 868 MHz). This is a rule for the firmware; setting the region and writing the firmware are TRL 4 work.
 
 Table 3. Airtime per day at a 15 min interval (96 uplinks)
 
@@ -140,7 +144,7 @@ Table 3. Airtime per day at a 15 min interval (96 uplinks)
 
 **Mass.** 2.45 kg for the base node: enclosure with lugs 0.43 kg, back plate and V-blocks 0.48 kg, bracket 0.22 kg, internal plate 0.07 kg and bought parts 1.24 kg (panel 0.55 kg). The TRL 2 estimate of 1.7 kg under-counted the back plate. The shield adds 0.16 kg (2.61 kg); R14 applies to the base node.
 
-**Cost.** $139.00 in parts at quantity 1 for the base node (see `bom/bom.csv`), within the $150 value-engineering target ($11.00 under); $148.00 with the shield ($2.00 under). The gateway is not included.
+**Cost.** Value-engineering target: USD 150. Estimated cost of the constructable design: USD 139.50 in parts at quantity 1 for the base node (USD 10.50 under the target; see `bom/bom.csv`); USD 148.50 with the shield (USD 1.50 under the target). The gateway is not included.
 
 ## Key design choices
 
@@ -179,4 +183,4 @@ These choices are decided by Amish, 2026-09-25: go with recommendation (FND-DDR-
 
 - [ ] Which two lab projects adopt FieldNode first. The band is decided (Amish, 2026-10-02, FND-DEC-001): US915 with a 915 MHz whip is the default first variant, switching to EU868, AS923 or IN865 if the first adopting project's site is outside North America.
 - [ ] Sign-off of the proposed standard pinout (pin 1 switched rail, pin 2 data A, pin 3 ground, pin 4 data B, pin 5 analog) by HeatMap Node and the next adopting project (decided by Amish as the proposal, 2026-10-02, FND-DEC-001).
-- [x] Firmware update method in the field: by cable inside the box with the lid open, through a USB or serial header on the board, with no extra hole in the enclosure; over the air is left for a later private-gateway variant (Amish, 2026-10-02, FND-DEC-001).
+- [x] Firmware update method in the field: by cable inside the box with the lid open, through a six-pin serial header on the power board, facing the lid (the STM32WL-class module has no USB port), with no extra hole in the enclosure; over the air is left for a later private-gateway variant (Amish, 2026-10-02, FND-DEC-001).

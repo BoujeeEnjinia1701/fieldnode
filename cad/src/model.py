@@ -20,6 +20,7 @@ drilled, bent, printed or bought, and every joint has a fixing:
     penetrations in two rows on the bottom face, at least 8 mm apart;
     enclosure held to the back plate by four external lugs and M5 screws;
     internal plate on four moulded bosses with M4 screws and a plug-in connector strip;
+    a serial programming header on the power board, facing the lid (FND-DEC-001, 2026-10-02);
     panel bracket of angle clips on the plate, angle clips on the panel frame's back lip,
     and flat-bar posts and struts bolted flat to them (post two bolts, strut one each end);
     sun shield with folded fixing flanges and four M4 thumb screws, so it lifts off;
@@ -64,6 +65,12 @@ PARAMS = {
     "mplate": (130.0, 180.0, 3.0), "boss": (55.0, 80.0, 6.0),
     # 6 cell 32700 (dia x length); 7 power modules; 8 controller carrier; 15 connector strip
     "cell": (32.0, 70.0), "power": (80.0, 60.0, 10.0), "ctrl": (70.0, 45.0, 8.0), "strip": (70.0, 12.0, 14.0),
+    # 7 serial programming header on the power board's front face, wired to the controller
+    #   (FND-DEC-001, 2026-10-02: firmware updated by cable with the lid open): x of centre,
+    #   height above z0, length (1 x 6 at 2.54 mm), body height, pin tips out from the board face
+    "prog_header": (50.0, 92.0, 15.3, 2.5, 8.5),
+    #   room the adapter plug and cable need in front of the pin tips (W x depth x H)
+    "prog_reach": (22.0, 40.0, 14.0),
     # bottom-face penetrations: two rows, distance forward of the enclosure's back face
     "pen_rows": (27.0, 55.0),
     #   name: (x, row, thread dia = hole, outside flange dia)
@@ -84,7 +91,7 @@ BOM = {  # model key: (BOM line, name)
     "panel": (4, "Solar panel, 6 W"),
     "bracket": (5, "Panel tilt bracket"),
     "cell": (6, "LiFePO4 cell, 6 Ah, fused holder"),
-    "power": (7, "Power board (MPPT, protection)"),
+    "power": (7, "Power board (MPPT, protection, programming header)"),
     "ctrl": (8, "Controller and LoRa module"),
     "antenna": (9, "Antenna, sub-GHz whip"),
     "ports": (10, "Sensor ports, 2 x M12 5-pin"),
@@ -133,6 +140,10 @@ def derived(p=PARAMS):
         "clamps": clamps, "clamp_span": clamps[1] - clamps[0],
         "overall_top": high[1] + p["panel"][2] / 2 * math.cos(t),
         "whip_tip": z0 - 20 - p["whip"][1],
+        # serial programming header: pin tips, and their depth inside the body's open front (lid off)
+        "hdr_tip_y": enc_back - p["enc_wall"] - p["boss"][2] - p["mplate"][2] - p["power"][2] - p["prog_header"][4],
+        "hdr_depth": (enc_back - p["enc_wall"] - p["boss"][2] - p["mplate"][2] - p["power"][2] - p["prog_header"][4])
+                     - (enc_front + p["lid_d"]),
         "vblock_depth": p["vblock"][1],
         "v_apex": apex,                                            # mm from the plate's rear face
         "v_mouth": 2 * (p["vblock"][1] - apex),                    # width of the V at the block's face
@@ -385,6 +396,11 @@ def build_components(p=PARAMS, shield=False):
     pw_, ph_, pt_ = p["power"]
     add("power", "Power modules", box(22, mf - pt_ / 2, z0 + 70, pw_, pt_, ph_)
         + box(30, mf - pt_ - 6, z0 + 62, 22, 12, 18) + box(5, mf - pt_ - 4, z0 + 82, 14, 8, 10), 7, "bought", "power")
+    # 7 serial programming header (1 x 6, 2.54 mm) on the power board's front face, pins toward the lid
+    hx, hz, hl, hb, hp = p["prog_header"]
+    pf_ = mf - pt_
+    add("prog_header", "Serial programming header", bx(hx - hl / 2, hx + hl / 2, pf_ - hb, pf_, z0 + hz - hb / 2, z0 + hz + hb / 2)
+        + bx(hx - hl / 2 + 1.0, hx + hl / 2 - 1.0, pf_ - hp, pf_ - hb, z0 + hz - 0.4, z0 + hz + 0.4), 7, "bought", "power")
     cw, ch, ct = p["ctrl"]
     add("ctrl", "Controller and LoRa module", box(10, mf - ct / 2, z0 + 150, cw, ct, ch) + box(0, mf - ct - 3, z0 + 150, 24, 6, 20),
         8, "bought", "ctrl")
@@ -621,6 +637,16 @@ def checks(p=PARAMS):
     for k in ("cell", "power", "ctrl", "connectors"):
         chk(f"{C[k].name} on the internal plate", S(k), S("mplate"), "touch")
         chk(f"{C[k].name} clear of the lid", S(k), S("lid"), 1.0)
+    # serial programming header (FND-DEC-001, 2026-10-02): on the power board, reachable with the lid open
+    chk("Programming header on the power board", S("prog_header"), S("power"), "touch")
+    chk("Programming header clear of the lid (closed)", S("prog_header"), S("lid"), 10.0)
+    chk("Programming header clear of the controller and cell", S("prog_header"), S("ctrl") + S("cell"), 3.0)
+    rw, rd, rh = p["prog_reach"]
+    hx, hz = p["prog_header"][0], p["prog_header"][1]
+    D_ = derived(p)
+    reach = bx(hx - rw / 2, hx + rw / 2, D_["hdr_tip_y"] - rd, D_["hdr_tip_y"] - 0.5, p["z0"] + hz - rh / 2, p["z0"] + hz + rh / 2)
+    inside = fuse(S(k) for k in ("body", "cell", "power", "ctrl", "connectors", "mplate", "mplate_screws", "glands", "ports", "vent", "antenna"))
+    chk("Plug and cable room in front of the header clear (lid open)", reach, inside, 1.0)
     for k in ("glands", "ports", "vent", "antenna"):
         chk(f"{C[k].name} in the bottom face", S(k), S("body"), "touch")
         chk(f"{C[k].name} clear of the internal plate", S(k), S("mplate"), 1.0)
@@ -688,7 +714,8 @@ if __name__ == "__main__":
     (out / "step").mkdir(exist_ok=True)
     (out / "stl").mkdir(exist_ok=True)
     C = build_components(shield=True)
-    core = ("body", "lid", "lugs", "vent", "glands", "ports", "antenna", "mplate", "mplate_screws", "cell", "power", "ctrl", "connectors", "lug_screws")
+    core = ("body", "lid", "lugs", "vent", "glands", "ports", "antenna", "mplate", "mplate_screws", "cell", "power", "prog_header", "ctrl",
+            "connectors", "lug_screws")
     mount = [k for k, c in C.items() if c.bom in (5, 12) or k in ("bracket_bolts", "panel_bolts")]
     base = [c.shape for k, c in C.items() if c.bom != 14]
     groups = {
@@ -708,6 +735,7 @@ if __name__ == "__main__":
           f"top of panel {D['overall_top']:.0f} mm above ground; clamp span {D['clamp_span']:.0f} mm")
     print(f"V-block: apex {D['v_apex']:.2f} mm from the plate, mouth {D['v_mouth']:.1f} mm, design pole touches at {D['v_contact']:.1f} mm")
     sg = shield_geometry()
+    print(f"programming header: pin tips {D['hdr_depth']:.1f} mm in from the open front of the body (lid off)")
     print(f"sun shield option: {sg['w']:.0f} x {sg['d']:.0f} x {sg['h']:.0f} mm, sheet {sg['area_m2']:.4f} m2")
     for k, v in bracket_geometry().items():
         print(f"bracket {k}: {v['L']:.1f} mm between holes at {v['angle']:.1f} deg; bar {v['bar_len']:.0f} mm")
